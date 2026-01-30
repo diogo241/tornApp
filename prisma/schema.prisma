@@ -8,12 +8,123 @@ datasource db {
 }
 
 model Club {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  tournaments  Tournament[]
+  clubFundings ClubFunding[]
+  clubBalances ClubBalance[]
+
   @@map("club")
+}
+
+model Rate {
+  id          String       @id @default(uuid())
+  name        String
+  players     Int // 7, 9, or 11
+  refRate     Float
+  aRate       Float
+  minuteRate  Float
+  tournaments Tournament[]
+
+  @@map("rate")
+}
+
+model Tournament {
+  id         String @id @default(uuid())
+  name       String
+  year       Int
+  totalGames Int
+
+  // Game Configuration (Batching)
+  countA    Int @default(0)
+  durationA Int @default(0)
+  countB    Int @default(0)
+  durationB Int @default(0)
+  countC    Int @default(0)
+  durationC Int @default(0)
+
+  // Financials
+  totalCost Float @default(0) // Total Cost for this Tournament
+
+  clubId String
+  club   Club   @relation(fields: [clubId], references: [id])
+
+  rateId String
+  rate   Rate   @relation(fields: [rateId], references: [id])
+
+  assignments RefereeAssignment[]
+
+  @@map("tournament")
+}
+
+model Referee {
+  id          String              @id @default(uuid())
+  name        String
+  assignments RefereeAssignment[]
+
+  @@map("referee")
+}
+
+model RefereeAssignment {
+  id String @id @default(cuid())
+
+  // Allocation
+  countA Int @default(0)
+  countB Int @default(0)
+  countC Int @default(0)
+
+  // Cost
+  totalCost Float @default(0)
+
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+
+  refereeId String
+  referee   Referee @relation(fields: [refereeId], references: [id])
+
+  @@map("referee_assignment")
+}
+
+// Tracks what Municipality pays to the Club
+model ClubFunding {
+  id String @id @default(cuid())
+
+  clubId String
+  club   Club   @relation(fields: [clubId], references: [id])
+
+  year   Int
+  amount Float @default(300.00)
+
+  isPaid   Boolean   @default(false)
+  paidDate DateTime?
+
+  @@unique([clubId, year])
+  @@map("club_funding")
+}
+
+// Tracks the Net Balance (Calculated Cost vs Received Funding)
+model ClubBalance {
+  id String @id @default(cuid())
+
+  clubId String
+  club   Club   @relation(fields: [clubId], references: [id])
+
+  year Int
+
+  // The total amount the club owes to referees (Sum of tournament costs)
+  totalCostToReferees Float @default(0)
+
+  // The total amount received from Municipality (Sum of funding)
+  totalFundingReceived Float @default(0)
+
+  // The Net Balance (Funding - Cost)
+  netBalance Float
+
+  @@unique([clubId, year])
+  @@map("club_balance")
 }
 
 model User {
