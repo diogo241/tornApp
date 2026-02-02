@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { CreateView } from "@/components/refine-ui/views/create-view";
-import { Button } from "@/components/ui/button";
+import { CreateView } from '@/components/refine-ui/views/create-view';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -9,23 +9,33 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "@refinedev/react-hook-form";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { Club } from '@lib/types';
+import { insertClub } from '@lib/validators';
+import type { BaseRecord, HttpError } from '@refinedev/core';
+import { useForm } from '@refinedev/react-hook-form';
+import { useRouter } from 'next/navigation';
 
-export default function CategoryCreate() {
+export default function ClubsCreate() {
   const router = useRouter();
 
   const {
     refineCore: { onFinish },
     ...form
-  } = useForm({
-    refineCoreProps: {},
+  } = useForm<BaseRecord, HttpError, Club>({
+    resolver: zodResolver(insertClub),
+    refineCoreProps: {
+      action: 'create',
+    },
+    defaultValues: {
+      name: '',
+    },
   });
 
-  function onSubmit(values: Record<string, string>) {
-    onFinish(values);
+  function onSubmit(data: Club) {
+    onFinish(data);
   }
 
   return (
@@ -34,17 +44,12 @@ export default function CategoryCreate() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="title"
-            rules={{ required: "Title is required" }}
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    value={field.value || ""}
-                    placeholder="Enter category title"
-                  />
+                  <Input {...field} placeholder="Enter a name" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -57,7 +62,7 @@ export default function CategoryCreate() {
               {...form.saveButtonProps}
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Creating..." : "Create"}
+              {form.formState.isSubmitting ? 'Creating...' : 'Create'}
             </Button>
             <Button
               type="button"
