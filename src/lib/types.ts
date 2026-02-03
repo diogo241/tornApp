@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertClub, type insertUser } from './validators';
+import { insertClub, type insertReferee, type insertUser } from './validators';
 
 export type Club = z.infer<typeof insertClub>;
 
@@ -7,6 +7,8 @@ export type User = z.infer<typeof insertUser> & {
   role?: string;
   sessions?: Session[];
 };
+
+export type Referee = z.infer<typeof insertReferee>;
 
 type Session = {
   id: string;

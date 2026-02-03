@@ -63,3 +63,18 @@ export const insertUser = z
     message: "Passwords don't match",
     path: ['confirmPassword'],
   });
+
+
+// Referee validators
+export const insertReferee = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(3).max(250).trim(),
+  createdAt: z.coerce
+    .date()
+    .default(() => new Date())
+    .optional(),
+  updatedAt: z.coerce
+    .date()
+    .default(() => new Date())
+    .optional(),
+});
