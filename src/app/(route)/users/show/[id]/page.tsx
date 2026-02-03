@@ -11,7 +11,7 @@ import type { User } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 
-export default function UserShow() {
+export default function UserShowPage() {
   const { result: record, query } = useShow({});
   const { isLoading, error } = query;
 

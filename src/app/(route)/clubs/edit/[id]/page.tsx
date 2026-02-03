@@ -22,7 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { insertClub } from '@lib/validators';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 
-export default function ClubEdit() {
+export default function ClubEditPage() {
   const router = useRouter();
   const { id } = useParams();
 

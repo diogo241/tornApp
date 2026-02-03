@@ -15,7 +15,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 
-export default function ClubsList() {
+export default function ClubListPage() {
   const columns = React.useMemo(() => {
     const columnHelper = createColumnHelper<Club>();
 
@@ -44,7 +44,6 @@ export default function ClubsList() {
           </div>
         ),
         enableSorting: false,
-        size: 290,
       }),
     ];
   }, []);

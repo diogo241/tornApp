@@ -18,7 +18,7 @@ import type { BaseRecord, HttpError } from '@refinedev/core';
 import { useForm } from '@refinedev/react-hook-form';
 import { useRouter } from 'next/navigation';
 
-export default function ClubsCreate() {
+export default function ClubCreatePage() {
   const router = useRouter();
 
   const {

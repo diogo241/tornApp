@@ -15,7 +15,7 @@ import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import React, { useState } from 'react';
 
-export default function UserList() {
+export default function UserListPage() {
   const columns = React.useMemo(() => {
     const columnHelper = createColumnHelper<User>();
 
@@ -58,7 +58,7 @@ export default function UserList() {
           </div>
         ),
         enableSorting: false,
-        size: 290,
+        size: 250,
       }),
     ];
   }, []);

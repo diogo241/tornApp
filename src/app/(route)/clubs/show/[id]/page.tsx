@@ -11,7 +11,7 @@ import type { Club } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 
-export default function ClubsShow() {
+export default function ClubShowPage() {
   const { result: record, query } = useShow({});
   const { isLoading, error } = query;
 
@@ -43,13 +43,13 @@ export default function ClubsShow() {
             <div>
               <h4 className="text-sm font-medium mb-2">Created at:</h4>
               <p className="text-sm text-muted-foreground">
-                {formatDateTime(club?.createdAt).dateTime}
+                {formatDateTime(club?.createdAt as Date).dateTime}
               </p>
             </div>
             <div>
               <h4 className="text-sm font-medium mb-2">Updated at:</h4>
               <p className="text-sm text-muted-foreground">
-                {formatDateTime(club?.updatedAt).dateTime ?? '-'}
+                {formatDateTime(club?.updatedAt as Date).dateTime ?? '-'}
               </p>
             </div>
           </CardContent>

@@ -18,7 +18,7 @@ import type { BaseRecord, HttpError } from '@refinedev/core';
 import { useForm } from '@refinedev/react-hook-form';
 import { useRouter } from 'next/navigation';
 
-export default function UserCreate() {
+export default function UserCreatePage() {
   const router = useRouter();
 
   const {
@@ -49,7 +49,7 @@ export default function UserCreate() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input {...field}/>
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

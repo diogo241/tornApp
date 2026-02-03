@@ -19,16 +19,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { useLink, useLogin, useRefineOptions } from '@refinedev/core';
+import { useLogin, useRefineOptions } from '@refinedev/core';
 
 export const SignInForm = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const Link = useLink();
-
   const { title } = useRefineOptions();
+  console.log('title', title);
 
   const { mutate: login, isPending } = useLogin();
 
@@ -53,21 +52,15 @@ export const SignInForm = () => {
       )}
     >
       <div className={cn('flex', 'items-center', 'justify-center')}>
-        {title.icon && (
-          <div
-            className={cn('text-foreground', '[&>svg]:w-12', '[&>svg]:h-12')}
-          >
-            {title.icon}
-          </div>
-        )}
+        {title.icon && <div>{title.icon}</div>}
       </div>
 
       <Card className={cn('sm:w-[456px]', 'p-12', 'mt-6')}>
         <CardHeader className={cn('px-0')}>
           <CardTitle
             className={cn(
-              'text-blue-600',
-              'dark:text-blue-400',
+              'text-green-600',
+              'dark:text-green-400',
               'text-3xl',
               'font-semibold',
             )}
@@ -125,21 +118,6 @@ export const SignInForm = () => {
                 />
                 <Label htmlFor="remember">Remember me</Label>
               </div>
-              <Link
-                to="/forgot-password"
-                className={cn(
-                  'text-sm',
-                  'flex',
-                  'items-center',
-                  'gap-2',
-                  'text-primary hover:underline',
-                  'text-blue-600',
-                  'dark:text-blue-400',
-                )}
-              >
-                <span>Forgot password</span>
-                <CircleHelp className={cn('w-4', 'h-4')} />
-              </Link>
             </div>
 
             <Button
@@ -152,27 +130,6 @@ export const SignInForm = () => {
             </Button>
           </form>
         </CardContent>
-
-        <Separator />
-
-        <CardFooter>
-          <div className={cn('w-full', 'text-center text-sm')}>
-            <span className={cn('text-sm', 'text-muted-foreground')}>
-              No account?{' '}
-            </span>
-            <Link
-              to="/register"
-              className={cn(
-                'text-green-600',
-                'dark:text-green-400',
-                'font-semibold',
-                'underline',
-              )}
-            >
-              Sign up
-            </Link>
-          </div>
-        </CardFooter>
       </Card>
     </div>
   );

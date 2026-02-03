@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -29,15 +28,19 @@ model Rate {
   aRate       Float
   minuteRate  Float
   tournaments Tournament[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("rate")
 }
 
 model Tournament {
-  id         String @id @default(uuid())
+  id         String   @id @default(uuid())
   name       String
   year       Int
   totalGames Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   // Game Configuration (Batching)
   countA    Int @default(0)
@@ -64,13 +67,17 @@ model Tournament {
 model Referee {
   id          String              @id @default(uuid())
   name        String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
   assignments RefereeAssignment[]
 
   @@map("referee")
 }
 
 model RefereeAssignment {
-  id String @id @default(cuid())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Allocation
   countA Int @default(0)
@@ -103,6 +110,9 @@ model ClubFunding {
   isPaid   Boolean   @default(false)
   paidDate DateTime?
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([clubId, year])
   @@map("club_funding")
 }
@@ -125,6 +135,9 @@ model ClubBalance {
 
   // The Net Balance (Funding - Cost)
   netBalance Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([clubId, year])
   @@map("club_balance")

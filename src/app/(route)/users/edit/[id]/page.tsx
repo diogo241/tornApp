@@ -23,7 +23,7 @@ import { insertUser } from '@lib/validators';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 
 
-export default function ClubEdit() {
+export default function UserEditPage() {
   const router = useRouter();
   const { id } = useParams();
 

@@ -1,11 +1,9 @@
 'use client';
 
-import { Refine } from '@refinedev/core';
+import { Refine, useRefineOptions } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import React from 'react';
-
 import routerProvider from '@refinedev/nextjs-router';
-
 import '@/app/globals.css';
 import { Toaster } from '@/components/refine-ui/notification/toaster';
 import { useNotificationProvider } from '@/components/refine-ui/notification/use-notification-provider';
@@ -13,6 +11,7 @@ import { ThemeProvider } from '@/components/refine-ui/theme/theme-provider';
 import { authProviderClient } from '@providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@providers/data-provider';
 import { DevtoolsPanel, DevtoolsProvider } from '@refinedev/devtools';
+import Image from 'next/image';
 
 type RefineContextProps = {
   children: React.ReactNode;
@@ -31,6 +30,16 @@ export const RefineContext = ({ children }: RefineContextProps) => {
             authProvider={authProviderClient}
             routerProvider={routerProvider}
             resources={[
+              {
+                name: 'referees',
+                list: '/referees',
+                create: '/referees/create',
+                edit: '/referees/edit/:id',
+                show: '/referees/show/:id',
+                meta: {
+                  canDelete: true,
+                },
+              },
               {
                 name: 'clubs',
                 list: '/clubs',
@@ -54,7 +63,18 @@ export const RefineContext = ({ children }: RefineContextProps) => {
             ]}
             options={{
               syncWithLocation: true,
-              warnWhenUnsavedChanges: true,
+              disableTelemetry: true,
+              title: {
+                icon: (
+                  <Image
+                    src="/logo.png"
+                    alt="Refine"
+                    width={100}
+                    height={100}
+                  />
+                ),
+                text: 'NAF',
+              },
             }}
           >
             {children}
