@@ -101,3 +101,66 @@ export const insertRate = z
     }
     return data;
   });
+
+// Referee Assignment validators
+export const insertRefereeAssignment = z.object({
+  id: z.string().uuid().optional(),
+  countA: z.coerce.number().min(0),
+  countB: z.coerce.number().min(0).optional(),
+  countC: z.coerce.number().min(0).optional(),
+  refereeId: z.string().uuid(),
+  createdAt: z.coerce
+    .date()
+    .default(() => new Date())
+    .optional(),
+  updatedAt: z.coerce
+    .date()
+    .default(() => new Date())
+    .optional(),
+});
+
+// Tournament validators
+export const insertTournament = z
+  .object({
+    id: z.string().uuid().optional(),
+    name: z.string().min(3).max(100).trim(),
+    startDate: z.coerce.date().default(() => new Date()),
+    endDate: z.coerce.date().default(() => new Date()),
+    year: z.coerce.number().min(0),
+    totalGames: z.coerce.number().min(0),
+    countA: z.coerce.number().min(1),
+    durationA: z.coerce.number().min(1),
+    countB: z.coerce.number().min(1).optional(),
+    durationB: z.coerce.number().min(1).optional(),
+    countC: z.coerce.number().min(1).optional(),
+    durationC: z.coerce.number().min(1).optional(),
+    clubId: z.string(),
+    rateId: z.string(),
+    createdAt: z.coerce
+      .date()
+      .default(() => new Date())
+      .optional(),
+    updatedAt: z.coerce
+      .date()
+      .default(() => new Date())
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    // Check B Batch
+    if (data.countB !== undefined && data.countB > 0 && !data.durationB) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Duration B is required when Count B is provided',
+        path: ['durationB'],
+      });
+    }
+
+    // Check C Batch
+    if (data.countC !== undefined && data.countC > 0 && !data.durationC) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Duration C is required when Count C is provided',
+        path: ['durationC'],
+      });
+    }
+  });

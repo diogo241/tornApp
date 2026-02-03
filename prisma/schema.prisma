@@ -13,7 +13,7 @@ model Club {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
-  tournaments  Tournament[]
+  tournaments  Tournament[] 
   clubFundings ClubFunding[]
   clubBalances ClubBalance[]
 
@@ -37,6 +37,8 @@ model Tournament {
   id         String   @id @default(uuid())
   name       String
   year       Int
+  startDate  DateTime
+  endDate    DateTime
   totalGames Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt @default(now())
@@ -53,7 +55,7 @@ model Tournament {
   totalCost Float @default(0) // Total Cost for this Tournament
 
   clubId String
-  club   Club   @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
   rateId String
   rate   Rate   @relation(fields: [rateId], references: [id])
@@ -83,14 +85,19 @@ model RefereeAssignment {
   countB Int @default(0)
   countC Int @default(0)
 
+  // Games as aRef
+  countARef Int @default(0)
+  countBRef Int @default(0)
+  countCRef Int @default(0)
+
   // Cost
   totalCost Float @default(0)
 
   tournamentId String
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 
   refereeId String
-  referee   Referee @relation(fields: [refereeId], references: [id])
+  referee   Referee @relation(fields: [refereeId], references: [id], onDelete: Cascade)
 
   @@map("referee_assignment")
 }
@@ -101,7 +108,7 @@ model ClubFunding {
   id String @id @default(cuid())
 
   clubId String
-  club   Club   @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
   year   Int
   amount Float @default(300.00)
@@ -122,7 +129,7 @@ model ClubBalance {
   id String @id @default(cuid())
 
   clubId String
-  club   Club   @relation(fields: [clubId], references: [id])
+  club   Club   @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
   year Int
 

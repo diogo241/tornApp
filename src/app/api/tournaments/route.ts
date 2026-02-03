@@ -5,19 +5,15 @@ import {
   HttpStatusCode,
   validateQueryParams,
 } from '@lib/api';
-import {
-  filtersQuerySchema,
-  insertRate,
-  paginationQuerySchema,
-} from '@lib/validators';
+import { filtersQuerySchema, paginationQuerySchema } from '@lib/validators';
 import { getSession } from '@lib/auth';
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
-import { z } from 'better-auth';
+import { createTournament } from '@lib/services/tournament';
 
 /**
- * GET /api/rates
- * Retrieves a paginated list of rates
+ * GET /api/tournaments
+ * Retrieves a paginated list of tournaments
  *
  * Query parameters:
  * - page: Page number (default: 1, must be positive integer)
@@ -55,7 +51,7 @@ export const GET = async (request: NextRequest) => {
     }
 
     // Build where clause
-    const where: Prisma.RateWhereInput = {};
+    const where: Prisma.TournamentWhereInput = {};
     if (validationFilters?.name) {
       where.name = {
         contains: validationFilters.name,
@@ -64,18 +60,20 @@ export const GET = async (request: NextRequest) => {
     }
 
     // Fetch data with pagination
-    const [total, rates] = await prisma.$transaction([
-      prisma.rate.count(),
-      prisma.rate.findMany({
+    const [total, tournaments] = await prisma.$transaction([
+      prisma.tournament.count(),
+      prisma.tournament.findMany({
         skip: (page - 1) * pageSize,
         take: pageSize,
         where,
         select: {
           id: true,
           name: true,
-          players: true,
-          refRate: true,
-          aRate: true,
+          startDate: true,
+          endDate: true,
+          totalGames: true,
+          club: true,
+          rate: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -86,7 +84,7 @@ export const GET = async (request: NextRequest) => {
     ]);
 
     // Build response
-    const response = apiListSuccess(rates, total);
+    const response = apiListSuccess(tournaments, total);
 
     return response;
   } catch (error) {
@@ -95,29 +93,21 @@ export const GET = async (request: NextRequest) => {
 };
 
 /**
- * POST /api/rates
+ * POST /api/tournaments
  * Creates a new rate
  */
 export const POST = async (request: NextRequest) => {
   try {
     // Validate session
-    const session = await getSession();
-    if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
-    }
+    // const session = await getSession();
+    // if (!session) {
+    //   return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+    // }
 
-    // Validate request body
-    const data = await request.json();
+    // Create service
+    const result = await createTournament(prisma, request);
 
-    // Create rate
-    const rate = await prisma.rate.create({
-      data,
-    });
-    if (!rate) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
-    }
-
-    return NextResponse.json(rate);
+    return result;
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
