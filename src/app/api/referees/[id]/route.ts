@@ -2,7 +2,6 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
-import type { Referee } from '@lib/types';
 
 /**
  * GET /api/referees/:id
