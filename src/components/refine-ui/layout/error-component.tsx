@@ -46,7 +46,8 @@ export function ErrorComponent() {
         "items-center",
         "justify-center",
         "bg-background",
-        "my-auto"
+        "my-auto",
+        "h-screen"
       )}
     >
       <div className={cn("text-center", "space-y-8")}>

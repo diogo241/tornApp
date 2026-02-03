@@ -41,6 +41,16 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 },
               },
               {
+                name: 'rates',
+                list: '/rates',
+                create: '/rates/create',
+                edit: '/rates/edit/:id',
+                show: '/rates/show/:id',
+                meta: {
+                  canDelete: true,
+                },
+              },
+              {
                 name: 'clubs',
                 list: '/clubs',
                 create: '/clubs/create',

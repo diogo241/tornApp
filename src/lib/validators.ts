@@ -64,7 +64,6 @@ export const insertUser = z
     path: ['confirmPassword'],
   });
 
-
 // Referee validators
 export const insertReferee = z.object({
   id: z.string().uuid().optional(),
@@ -78,3 +77,27 @@ export const insertReferee = z.object({
     .default(() => new Date())
     .optional(),
 });
+
+// Rate validators
+export const insertRate = z
+  .object({
+    id: z.string().uuid().optional(),
+    name: z.string().min(3).max(100).trim(),
+    players: z.coerce.number().min(1).max(11),
+    refRate: z.coerce.number().min(0).max(100),
+    aRate: z.coerce.number().min(0).max(100).optional(),
+    createdAt: z.coerce
+      .date()
+      .default(() => new Date())
+      .optional(),
+    updatedAt: z.coerce
+      .date()
+      .default(() => new Date())
+      .optional(),
+  })
+  .transform((data) => {
+    if (data.players !== 11) {
+      data.aRate = 0;
+    }
+    return data;
+  });
