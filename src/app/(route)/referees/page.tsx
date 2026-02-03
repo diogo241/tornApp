@@ -13,10 +13,10 @@ import type { Referee } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
-import React, { useState } from 'react';
+import  { useMemo, useState } from 'react';
 
 export default function RefereeList() {
-  const columns = React.useMemo(() => {
+  const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Referee>();
 
     return [

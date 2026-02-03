@@ -12,11 +12,11 @@ import type { Club } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 
 export default function ClubListPage() {
-  const columns = React.useMemo(() => {
+  const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Club>();
 
     return [
