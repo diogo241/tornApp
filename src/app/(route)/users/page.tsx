@@ -60,7 +60,7 @@ export default function UserListPage() {
           </div>
         ),
         enableSorting: false,
-        size: 250,
+        size: 150,
       }),
     ];
   }, []);
