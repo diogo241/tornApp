@@ -14,7 +14,6 @@ import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { DataTableFilterDropdownText } from '@/components/refine-ui/data-table/data-table-filter';
 
 export default function ClubListPage() {
   const columns = useMemo(() => {
@@ -45,6 +44,7 @@ export default function ClubListPage() {
           </div>
         ),
         enableSorting: false,
+        size: 100,
       }),
     ];
   }, []);

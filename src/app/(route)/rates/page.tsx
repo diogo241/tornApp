@@ -71,7 +71,7 @@ export default function RateList() {
           </div>
         ),
         enableSorting: false,
-        size: 290,
+        size: 150,
       }),
     ];
   }, []);

@@ -24,6 +24,7 @@ export default function RefereeList() {
         id: 'name',
         header: 'Name',
         enableSorting: true,
+        size: 200,
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
@@ -44,7 +45,7 @@ export default function RefereeList() {
           </div>
         ),
         enableSorting: false,
-        size: 290,
+        size: 100,
       }),
     ];
   }, []);

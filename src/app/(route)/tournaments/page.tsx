@@ -10,7 +10,7 @@ import {
 } from '@/components/refine-ui/views/list-view';
 import { Input } from '@components/ui/input';
 import type { Tournament } from '@lib/types';
-import { formatDateTime } from '@lib/utils';
+import { formatCurrency, formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
@@ -23,32 +23,46 @@ export default function TournamentList() {
       columnHelper.accessor('name', {
         id: 'name',
         header: 'Name',
+        size: 150,
       }),
       columnHelper.accessor('club.name', {
         id: 'club.name',
         header: 'Club',
+        size: 100,
       }),
       columnHelper.accessor('rate.name', {
         id: 'rate.name',
         header: 'Type',
+        size: 100,
       }),
       columnHelper.accessor('totalGames', {
         id: 'totalGames',
         header: 'Total games',
+        size: 100,
       }),
       columnHelper.accessor('startDate', {
         id: 'startDate',
         header: 'Started at',
         cell: ({ row }) => {
-          return formatDateTime(row.original.createdAt as Date).dateOnly;
+          return formatDateTime(row.original.startDate as Date).dateOnly;
         },
+        size: 120,
       }),
       columnHelper.accessor('endDate', {
         id: 'endDate',
         header: 'Ended at',
         cell: ({ row }) => {
-          return formatDateTime(row.original.createdAt as Date).dateOnly;
+          return formatDateTime(row.original.endDate as Date).dateOnly;
         },
+        size: 120,
+      }),
+      columnHelper.accessor('totalCost', {
+        id: 'totalCost',
+        header: 'Total Cost',
+        cell: ({ row }) => {
+          return formatCurrency(row.original.totalCost as number);
+        },
+        size: 150,
       }),
       columnHelper.display({
         id: 'actions',
@@ -61,7 +75,6 @@ export default function TournamentList() {
           </div>
         ),
         enableSorting: false,
-        size: 290,
       }),
     ];
   }, []);
