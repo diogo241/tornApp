@@ -11,7 +11,7 @@ import type { Referee } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 
-export default function RefereesShow() {
+export default function RefereeShow() {
   const { result: record, query } = useShow({});
   const { isLoading, error } = query;
 
@@ -26,10 +26,6 @@ export default function RefereesShow() {
         </Alert>
       </ShowView>
     );
-  }
-
-  if (isLoading) {
-    return <ShowView>Loading...</ShowView>;
   }
 
   const referee = record as Referee;

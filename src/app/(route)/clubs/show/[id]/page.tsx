@@ -28,9 +28,6 @@ export default function ClubShowPage() {
     );
   }
 
-  if (isLoading) {
-    return <ShowView>Loading...</ShowView>;
-  }
 
   const club = record as Club;
 

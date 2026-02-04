@@ -3,7 +3,7 @@ import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import { convertToPlainObject } from '@lib/utils';
-import { updateTournamentCost } from '@lib/services/tournament';
+import { updateTournamentCost } from '@lib/services/tournaments/tournament.cost';
 import { insertTournament } from '@lib/validators';
 
 /**

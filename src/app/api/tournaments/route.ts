@@ -13,7 +13,7 @@ import {
 import { getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
-import { updateTournamentCost } from '@lib/services/tournament';
+import { updateTournamentCost } from '@lib/services/tournaments/tournament.cost';
 
 /**
  * GET /api/tournaments

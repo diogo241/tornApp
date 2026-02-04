@@ -75,3 +75,5 @@ export const updateTournamentCost = async (tournament: Tournament) => {
 
   return totalCost;
 };
+
+
