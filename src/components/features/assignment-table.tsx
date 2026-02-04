@@ -7,11 +7,10 @@ import { formatCurrency } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo } from 'react';
-import { CreateButton } from '@components/refine-ui/buttons/create';
-import { useRouter } from 'next/navigation';
 import { Button } from '@components/ui/button';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { Card, CardContent } from '@components/ui/card';
 
 interface TournamentView {
   tournamentId: string;
@@ -36,6 +35,7 @@ export default function AssignmentTable({
       value: tournamentId ?? refereeId,
     },
   ];
+  console.log("filters", filters);
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<RefereeAssignment>();
@@ -64,8 +64,8 @@ export default function AssignmentTable({
       columnHelper.accessor('totalCost', {
         id: 'totalCost',
         header: 'Total Cost',
-        cell: ({ row }) => {
-          return formatCurrency(row.original.totalCost as number);
+        cell: ({ row, getValue }) => {
+          return formatCurrency(getValue() as number);
         },
         size: 120,
       }),
@@ -75,7 +75,6 @@ export default function AssignmentTable({
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton recordItemId={row.original.id} size="sm" />
-            <ShowButton recordItemId={row.original.id} size="sm" />
             <DeleteButton recordItemId={row.original.id} size="sm" />
           </div>
         ),
@@ -99,24 +98,30 @@ export default function AssignmentTable({
   });
 
   return (
-    <div className="flex flex-col gap-4 mt-4">
-      <div className="flex flex-col md:flex-row md:justify-between gap-4">
-        <h2 className="font-bold text-lg">Referee Assignments</h2>
-        <Button asChild>
-          <Link
-            className="flex items-center gap-2 font-semibold"
-            href={
-              tournamentId
-                ? `/assignemts/create?tournamentId=${tournamentId}`
-                : `/assignemts/create?refereeId=${refereeId}`
-            }
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create</span>
-          </Link>
-        </Button>
-      </div>
-      <DataTable table={table} />
-    </div>
+    <Card>
+      <CardContent>
+        <div className="flex flex-col gap-4 mt-4">
+          <div className="flex flex-col md:flex-row md:justify-between gap-4">
+            <h2 className="font-bold text-lg">Referee Assignments</h2>
+            {tournamentId && (
+              <Button asChild>
+                <Link
+                  className="flex items-center gap-2 font-semibold"
+                  href={
+                    tournamentId
+                      ? `/assignemts/create?tournamentId=${tournamentId}`
+                      : `/assignemts/create?refereeId=${refereeId}`
+                  }
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create</span>
+                </Link>
+              </Button>
+            )}
+          </div>
+          <DataTable table={table} />
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -64,6 +64,7 @@ export const GET = async (request: NextRequest) => {
         mode: 'insensitive',
       };
     }
+    
 
     // Fetch data with pagination
     const [total, assignemts] = await prisma.$transaction([
@@ -97,6 +98,7 @@ export const GET = async (request: NextRequest) => {
         },
       }),
     ]);
+
 
     // Build response
     const response = apiListSuccess(assignemts, total);

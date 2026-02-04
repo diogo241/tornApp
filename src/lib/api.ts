@@ -92,6 +92,8 @@ export function validateQueryParams<T extends z.ZodTypeAny>(
       pageSize: params.size,
       name: params.name,
       club: params.clubName,
+      refereeId: params.refereeId,
+      tournamentId: params.tournamentId,
     };
     return schema.parse(pageValues);
   } catch (error) {

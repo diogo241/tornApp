@@ -33,6 +33,7 @@ export default function TournamentShow() {
   }
 
   const tournament = record as Tournament;
+  if (!tournament) return null;
 
   return (
     <ShowView>

@@ -10,6 +10,7 @@ import { useShow } from '@refinedev/core';
 import type { Referee } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
+import AssignmentTable from '@components/features/assignment-table';
 
 export default function RefereeShow() {
   const { result: record, query } = useShow({});
@@ -29,6 +30,7 @@ export default function RefereeShow() {
   }
 
   const referee = record as Referee;
+  if (!referee) return null;
 
   return (
     <ShowView>
@@ -50,6 +52,8 @@ export default function RefereeShow() {
             </div>
           </CardContent>
         </Card>
+
+        <AssignmentTable refereeId={referee.id as string} />
       </LoadingOverlay>
     </ShowView>
   );
