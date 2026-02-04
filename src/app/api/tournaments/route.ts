@@ -13,7 +13,7 @@ import {
 import { getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
-import { tournamentTotalCost } from '@lib/services/tournament';
+import { updateTournamentCost } from '@lib/services/tournament';
 
 /**
  * GET /api/tournaments
@@ -123,7 +123,7 @@ export const POST = async (request: NextRequest) => {
     const validatedData = insertTournament.parse(data);
 
     // Calculate total cost
-    const totalCost = await tournamentTotalCost(validatedData);
+    const totalCost = await updateTournamentCost(validatedData);
 
     if (!totalCost) {
       return apiError('Total cost error', HttpStatusCode.BAD_REQUEST);

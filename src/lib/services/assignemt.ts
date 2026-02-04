@@ -20,7 +20,7 @@ const createAssignment = async (
     }
 
     // Calculate total cost
-    const totalCost = await tournamentTotalCost(tournamentData);
+    const totalCost = await updateTournamentCost(tournamentData);
 
     if (!totalCost) {
       return apiError('Total cost error', HttpStatusCode.BAD_REQUEST);

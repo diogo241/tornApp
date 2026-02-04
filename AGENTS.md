@@ -22,7 +22,11 @@ npm run lint         # Run ESLint
 ```
 
 ### Testing
-This project does not have tests configured. When adding tests, use a testing framework compatible with Next.js (e.g., Vitest, Jest with @testing-library/react).
+This project does not have tests configured yet. When adding tests:
+- Use Vitest or Jest with @testing-library/react for Next.js compatibility
+- Run single test: `npm test -- path/to/test.test.ts`
+- Run tests in watch mode: `npm test -- --watch`
+- Run tests matching pattern: `npm test -- --testNamePattern="test name"`
 
 ### Database
 ```bash
@@ -44,7 +48,6 @@ Use these path aliases for imports:
 1. Group imports: React/Next.js → Third-party → Internal (@/...)
 2. Use `import type` for type-only imports when possible
 3. Named exports: `export const Button = ({ ... }) => { ... };`
-4. Client components must include `'use client';` at the very top
 
 ### Component Structure
 
@@ -52,6 +55,8 @@ Use these path aliases for imports:
 2. Destructure props at function signature: `function Button({ className, variant, ...props }: Props) {`
 3. Use `React.ComponentProps<"button">` for extending native element props
 4. Set `displayName` on exported components: `Header.displayName = "Header";`
+5. Use `React.forwardRef` for composable components that need ref forwarding
+6. Client components must include `'use client';` at the very top
 
 ### TypeScript
 
@@ -99,8 +104,8 @@ Use these path aliases for imports:
 2. Always validate sessions with `getSession()` from `@/lib/auth`
 3. Use Prisma transactions for atomic operations: `prisma.$transaction([...])`
 4. Return meaningful HTTP status codes via `HttpStatusCode` enum
-5. Log errors in API routes for debugging (use proper logging in production)
-6. **WARNING**: `validateQueryParams` has hardcoded field mappings (page, size, name, clubName) - extend if needed
+5. **WARNING**: `validateQueryParams` has hardcoded field mappings (page, size, name, clubName) - extend if needed
+6. Always wrap handlers in try/catch: `apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR)` on errors
 
 ### Validation (Zod)
 
@@ -111,32 +116,9 @@ Use these path aliases for imports:
 5. Use `.transform()` for data mutations during validation
 6. Use `.superRefine()` for complex conditional validation with multiple fields
 7. Example patterns:
-    ```tsx
-    // Simple refine
-    .refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords don't match",
-      path: ['confirmPassword'],
-    });
-
-    // Transform
-    .transform((data) => {
-      if (data.players !== 11) {
-        data.aRate = 0;
-      }
-      return data;
-    });
-
-    // SuperRefine for complex logic
-    .superRefine((data, ctx) => {
-      if (data.countB > 0 && !data.durationB) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Duration B is required when Count B is provided',
-          path: ['durationB'],
-        });
-      }
-    });
-    ```
+   - `.refine((data) => data.password === data.confirmPassword, { message: "Passwords don't match", path: ['confirmPassword'] })`
+   - `.transform((data) => data.players !== 11 ? { ...data, aRate: 0 } : data)`
+   - `.superRefine((data, ctx) => { if (data.countB > 0 && !data.durationB) { ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Duration B required', path: ['durationB'] }); } })`
 
 ### Authentication (better-auth)
 
@@ -158,3 +140,5 @@ Use these path aliases for imports:
 2. Prefer `async/await` over Promise chains
 3. Use template literals for string interpolation
 4. Utility functions from `@/lib/utils`: `formatCurrency()`, `formatNumber()`, `formatDateTime()`, `round2()`, `convertToPlainObject()`
+5. All formatting uses `pt-PT` locale (EUR currency, Portuguese date/number formats)
+6. Icons from `lucide-react` (e.g., `<Eye className="h-4 w-4" />`)

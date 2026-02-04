@@ -1,7 +1,34 @@
 import type { Tournament } from '@lib/types';
 import { prisma } from '@lib/prisma';
 
-export const tournamentTotalCost = async (tournament: Tournament) => {
+// Update tournaments total cost on rate update
+export const updateTournamentAfterRateUpdate = async (rateId: string) => {
+  return await prisma.$transaction(async (tx) => {
+    const tournaments = await tx.tournament.findMany({
+      where: { rateId },
+    });
+
+    if (tournaments.length === 0) return [];
+
+    const updatePromises = tournaments.map(async (tournament) => {
+      const totalCost = await updateTournamentCost(tournament);
+
+      if (totalCost === undefined || totalCost === null) {
+        throw new Error(`Error updating cost for tournament ${tournament.id}`);
+      }
+
+      return tx.tournament.update({
+        where: { id: tournament.id },
+        data: { totalCost },
+      });
+    });
+
+    return Promise.all(updatePromises);
+  });
+};
+
+// Update tournament total cost
+export const updateTournamentCost = async (tournament: Tournament) => {
   const { rateId, countA, durationA, countB, durationB, countC, durationC } =
     tournament;
 

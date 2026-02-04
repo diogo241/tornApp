@@ -3,7 +3,7 @@ import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import { convertToPlainObject } from '@lib/utils';
-import { tournamentTotalCost } from '@lib/services/tournament';
+import { updateTournamentCost } from '@lib/services/tournament';
 import { insertTournament } from '@lib/validators';
 
 /**
@@ -83,7 +83,7 @@ export const PUT = async (
     const validatedData = insertTournament.parse(data);
 
     // Update tournament value
-    const totalCost = await tournamentTotalCost(validatedData);
+    const totalCost = await updateTournamentCost(validatedData);
 
     if (!totalCost) {
       return apiError('Total cost error', HttpStatusCode.BAD_REQUEST);

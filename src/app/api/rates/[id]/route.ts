@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
+import { updateTournamentAfterRateUpdate } from '@lib/services/tournament';
 
 /**
  * GET /api/rates/:id
@@ -71,11 +72,15 @@ export const PUT = async (
     const rate = await prisma.rate.update({
       where: { id },
       data,
-    });
-
+    }); 
+      
     if (!rate) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
+
+    // Update tournaments that use this rate (update total cost)
+    await updateTournamentAfterRateUpdate(id);
+    console.log("success");
 
     return NextResponse.json(rate);
   } catch (error) {
