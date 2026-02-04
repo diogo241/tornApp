@@ -28,6 +28,12 @@ This project does not have tests configured yet. When adding tests:
 - Run tests in watch mode: `npm test -- --watch`
 - Run tests matching pattern: `npm test -- --testNamePattern="test name"`
 
+### Security
+- Next.js configured with security headers (HSTS, XSS protection, frame options)
+- API routes protected by middleware (except /api/auth/*)
+- Session cookie: `better-auth.session_token`
+- Always validate user sessions with `getSession()` in API routes
+
 ### Database
 ```bash
 npx prisma generate  # Generate Prisma client (outputs to ./generated/prisma)
@@ -57,6 +63,7 @@ Use these path aliases for imports:
 4. Set `displayName` on exported components: `Header.displayName = "Header";`
 5. Use `React.forwardRef` for composable components that need ref forwarding
 6. Client components must include `'use client';` at the very top
+7. Define props types inline or above component: `type Props = { ... };`
 
 ### TypeScript
 
@@ -65,12 +72,8 @@ Use these path aliases for imports:
    - `forceConsistentCasingInFileNames: true`
    - Proper type imports with `import type`
 
-2. Define types inline for component-specific props, or use utility types:
-   ```tsx
-   type Category = { id: string; title: string; };
-   ```
-
-3. Use `Readonly` for immutable props (Next.js default)
+2. Use `Readonly` for immutable props (Next.js default)
+3. Use utility types for component props: `type Props = Readonly<{ ... }>;`
 
 ### Styling
 
@@ -120,6 +123,14 @@ Use these path aliases for imports:
    - `.transform((data) => data.players !== 11 ? { ...data, aRate: 0 } : data)`
    - `.superRefine((data, ctx) => { if (data.countB > 0 && !data.durationB) { ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Duration B required', path: ['durationB'] }); } })`
 
+### Error Handling
+
+1. Always wrap API handlers in try/catch blocks
+2. Use `apiError()` for standardized error responses (automatically logs 5xx errors)
+3. Use `HttpStatusCode` enum for status codes
+4. Use `handleValidationError()` for Zod validation errors
+5. Log errors with `console.error()` for debugging (use proper logging in production)
+
 ### Authentication (better-auth)
 
 1. Auth utilities in `@/lib/auth`, middleware protects `/api/*` (except `/api/auth/*`)
@@ -133,6 +144,13 @@ Use these path aliases for imports:
 1. Use Refine hooks: `useTable`, `useLogout`, `useRefineOptions`, `useActiveAuthProvider`
 2. Use `createColumnHelper` from `@tanstack/react-table` for table columns
 3. Pre-built components in `@/components/refine-ui/`: `ListView`, `CreateView`, `EditView`, `ShowView`, `EditButton`, `ShowButton`, `DeleteButton`, `CreateButton`, `Header`, `Sidebar`, `UserAvatar`
+
+### React Patterns
+
+1. Use `PropsWithChildren` from React for components that accept children
+2. Use `type Props = Readonly<...>` pattern for component props
+3. Export both component and sub-components: `export { ListView, ListViewHeader };`
+4. Use `asChild` pattern for compositional components (Radix UI pattern)
 
 ### General Conventions
 

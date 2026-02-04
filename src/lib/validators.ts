@@ -27,6 +27,8 @@ export const paginationQuerySchema = z.object({
 export const filtersQuerySchema = z.object({
   name: z.string().optional(),
   club: z.string().optional(),
+  refereeId: z.string().optional(),
+  tournamentId: z.string().optional(),
 });
 
 // Club validators
@@ -105,19 +107,14 @@ export const insertRate = z
 
 // Referee Assignment validators
 export const insertRefereeAssignment = z.object({
-  id: z.string().uuid().optional(),
   countA: z.coerce.number().min(0),
   countB: z.coerce.number().min(0).optional(),
   countC: z.coerce.number().min(0).optional(),
-  refereeId: z.string().uuid(),
-  createdAt: z.coerce
-    .date()
-    .default(() => new Date())
-    .optional(),
-  updatedAt: z.coerce
-    .date()
-    .default(() => new Date())
-    .optional(),
+  countARef: z.coerce.number().min(0).optional(),
+  countBRef: z.coerce.number().min(0).optional(),
+  countCRef: z.coerce.number().min(0).optional(),
+  refereeId: z.string().min(1, { message: 'Referee is required' }),
+  tournamentId: z.string().min(1, { message: 'Tournament is required' }),
 });
 
 // Tournament validators

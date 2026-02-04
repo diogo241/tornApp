@@ -21,9 +21,12 @@ type Session = {
 };
 
 export type RefereeAssignment = z.infer<typeof insertRefereeAssignment> & {
+  id?: string;
   tournament?: Tournament;
   referee?: Referee;
   totalCost?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type Club = z.infer<typeof insertClub>;

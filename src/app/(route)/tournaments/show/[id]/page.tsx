@@ -13,6 +13,7 @@ import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 import { formatCurrency } from '../../../../../lib/utils';
 import { getCostPerGame } from '@lib/services/tournaments/tournament.utils';
 import { Separator } from '@components/ui/separator';
+import AssignmentTable from '@components/features/assignment-table';
 
 export default function TournamentShow() {
   const { result: record, query } = useShow({});
@@ -179,6 +180,7 @@ export default function TournamentShow() {
             </div>
           </CardContent>
         </Card>
+        <AssignmentTable tournamentId={tournament?.id as string} />
       </LoadingOverlay>
     </ShowView>
   );

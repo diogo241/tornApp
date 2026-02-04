@@ -95,6 +95,18 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                   icon: <BrickWallIcon />,
                 },
               },
+              {
+                name: 'assignemts',
+                list: '/assignemts',
+                create: '/assignemts/create',
+                edit: '/assignemts/edit/:id',
+                meta: {
+                  canDelete: true,
+                  canShow: false,
+                  hide: true,
+                  label: 'Referee Assignements',
+                },
+              },
             ]}
             options={{
               syncWithLocation: true,

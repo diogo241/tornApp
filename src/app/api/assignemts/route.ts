@@ -8,6 +8,7 @@ import {
 import { filtersQuerySchema, paginationQuerySchema } from '@lib/validators';
 import { getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
+import type { Prisma } from '../../../../generated/prisma/client';
 
 /**
  * GET /api/assignemts
@@ -38,9 +39,10 @@ export const GET = async (request: NextRequest) => {
     }
     const { page = 1, pageSize = 10 } = validationPages;
 
+    // Validate filters
     let validationFilters;
     // Validate query parameters
-    if (searchParams.get('name')) {
+    if (searchParams.get('tournamentId') || searchParams.get('refereeId')) {
       validationFilters = validateQueryParams(searchParams, filtersQuerySchema);
 
       if (validationFilters instanceof Response) {
@@ -49,6 +51,19 @@ export const GET = async (request: NextRequest) => {
     }
 
     // Build where clause
+    let where: Prisma.RefereeAssignmentWhereInput = {};
+    if (validationFilters?.refereeId) {
+      where.refereeId = {
+        equals: validationFilters.refereeId,
+        mode: 'insensitive',
+      };
+    }
+    if (validationFilters?.tournamentId) {
+      where.tournamentId = {
+        equals: validationFilters.tournamentId,
+        mode: 'insensitive',
+      };
+    }
 
     // Fetch data with pagination
     const [total, assignemts] = await prisma.$transaction([
@@ -56,6 +71,7 @@ export const GET = async (request: NextRequest) => {
       prisma.refereeAssignment.findMany({
         skip: (page - 1) * pageSize,
         take: pageSize,
+        where,
         select: {
           countA: true,
           countB: true,
@@ -76,7 +92,6 @@ export const GET = async (request: NextRequest) => {
             },
           },
         },
-
         orderBy: {
           createdAt: 'desc',
         },
