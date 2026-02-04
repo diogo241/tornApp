@@ -42,4 +42,6 @@ export type Tournament = z.infer<typeof insertTournament> & {
   rate?: Rate;
   totalCost?: number;
   assignments?: RefereeAssignment[];
+  createdAt?: Date;
+  updatedAt?: Date;
 };

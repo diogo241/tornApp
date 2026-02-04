@@ -59,7 +59,25 @@ export function formatNumber(value: number | string | null) {
 }
 
 // Format date and times
-export const formatDateTime = (dateString: Date) => {
+export const formatDateTime = (dateString: Date | string | null | undefined) => {
+  if (!dateString) {
+    return {
+      dateTime: '',
+      dateOnly: '',
+      timeOnly: '',
+    };
+  }
+
+  const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+
+  if (isNaN(date.getTime())) {
+    return {
+      dateTime: '',
+      dateOnly: '',
+      timeOnly: '',
+    };
+  }
+
   const dateTimeOptions: Intl.DateTimeFormatOptions = {
     month: 'short', // abbreviated month name (e.g., 'Oct')
     year: 'numeric', // abbreviated month name (e.g., 'Oct')
@@ -71,7 +89,7 @@ export const formatDateTime = (dateString: Date) => {
   const dateOptions: Intl.DateTimeFormatOptions = {
     weekday: 'short', // abbreviated weekday name (e.g., 'Mon')
     month: 'short', // abbreviated month name (e.g., 'Oct')
-    year: 'numeric', // numeric year (e.g., '2023')
+    year: 'numeric', // abbreviated year (e.g., '2023')
     day: 'numeric', // numeric day of the month (e.g., '25')
   };
   const timeOptions: Intl.DateTimeFormatOptions = {
@@ -80,15 +98,15 @@ export const formatDateTime = (dateString: Date) => {
     hour12: false, // use 12-hour clock (true) or 24-hour clock (false)
   };
 
-  const formattedDateTime: string = new Date(dateString).toLocaleString(
+  const formattedDateTime: string = date.toLocaleString(
     'pt-PT',
     dateTimeOptions,
   );
-  const formattedDate: string = new Date(dateString).toLocaleString(
+  const formattedDate: string = date.toLocaleString(
     'pt-PT',
     dateOptions,
   );
-  const formattedTime: string = new Date(dateString).toLocaleString(
+  const formattedTime: string = date.toLocaleString(
     'pt-PT',
     timeOptions,
   );

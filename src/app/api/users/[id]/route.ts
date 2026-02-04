@@ -74,7 +74,6 @@ export const PUT = async (
     // Validate request body
     const data = await request.json();
     const { email, name, password } = data;
-    console.log('password', password);
 
     const user = await prisma.user.findFirst({
       where: { id },
@@ -130,7 +129,6 @@ export const DELETE = async (
 
     // Delete user
     const user = await deleteUser(id);
-    console.log('DEleted user', user);
 
     if (!user) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);

@@ -14,19 +14,10 @@ This file contains instructions for agentic coding assistants working in this re
 
 ## Commands
 
-### Development
 ```bash
 npm run dev          # Start development server
-```
-
-### Build & Production
-```bash
 npm run build        # Build for production
 npm run start        # Start production server
-```
-
-### Code Quality
-```bash
 npm run lint         # Run ESLint
 ```
 
@@ -58,12 +49,9 @@ Use these path aliases for imports:
 ### Component Structure
 
 1. Use function components with named exports
-2. Destructure props at the function signature:
-   ```tsx
-   function Button({ className, variant, size, asChild = false, ...props }: Props) {
-   ```
+2. Destructure props at function signature: `function Button({ className, variant, ...props }: Props) {`
 3. Use `React.ComponentProps<"button">` for extending native element props
-4. Set `displayName` on exported components for debugging: `Header.displayName = "Header";`
+4. Set `displayName` on exported components: `Header.displayName = "Header";`
 
 ### TypeScript
 
@@ -77,14 +65,14 @@ Use these path aliases for imports:
    type Category = { id: string; title: string; };
    ```
 
-3. Use `Readonly` for immutable props (Next.js default):
+3. Use `Readonly` for immutable props (Next.js default)
 
 ### Styling
 
-1. Use `cn()` utility from `@/lib/utils` for conditional className merging (combines `clsx` + `tailwind-merge`)
+1. Use `cn()` utility from `@/lib/utils` for className merging (`clsx` + `tailwind-merge`)
 2. Prefer shadcn/ui components and extend them via variants
 3. Use class-variance-authority (cva) for component variants
-4. Tailwind classes: use lowercase, hyphenated utility classes
+4. Use lowercase, hyphenated Tailwind utility classes
 
 ### File Naming
 
@@ -104,56 +92,69 @@ Use these path aliases for imports:
 ### API Routes
 
 1. Use standardized API utilities from `@/lib/api`:
-   - `apiError(error, status, message?, details?)` for error responses
-   - `apiListSuccess(data, total, status?)` for paginated list responses
-   - `validateQueryParams(searchParams, schema)` for query validation
-   - `handleValidationError(error)` for Zod error formatting
+   - `apiError(error, status, message?, details?)` - error responses
+   - `apiListSuccess(data, total, status?)` - paginated list responses
+   - `validateQueryParams(searchParams, schema)` - query validation
+   - `handleValidationError(error)` - Zod error formatting
 2. Always validate sessions with `getSession()` from `@/lib/auth`
 3. Use Prisma transactions for atomic operations: `prisma.$transaction([...])`
 4. Return meaningful HTTP status codes via `HttpStatusCode` enum
 5. Log errors in API routes for debugging (use proper logging in production)
+6. **WARNING**: `validateQueryParams` has hardcoded field mappings (page, size, name, clubName) - extend if needed
 
 ### Validation (Zod)
 
 1. All validators are in `@/lib/validators.ts`
 2. Use `z.coerce` for query params (strings to numbers/dates)
 3. Use `z.preprocess` for complex type transformations (e.g., string with comma to float)
-4. Use `.refine()` for cross-field validation
-5. Example pattern:
-   ```tsx
-   export const insertUser = z.object({
-     name: z.string().min(3).max(50).trim(),
-     email: z.string().email().min(3).max(50).trim(),
-   }).refine((data) => data.password === data.confirmPassword, {
-     message: "Passwords don't match",
-     path: ['confirmPassword'],
-   });
-   ```
+4. Use `.refine()` for simple cross-field validation
+5. Use `.transform()` for data mutations during validation
+6. Use `.superRefine()` for complex conditional validation with multiple fields
+7. Example patterns:
+    ```tsx
+    // Simple refine
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ['confirmPassword'],
+    });
+
+    // Transform
+    .transform((data) => {
+      if (data.players !== 11) {
+        data.aRate = 0;
+      }
+      return data;
+    });
+
+    // SuperRefine for complex logic
+    .superRefine((data, ctx) => {
+      if (data.countB > 0 && !data.durationB) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Duration B is required when Count B is provided',
+          path: ['durationB'],
+        });
+      }
+    });
+    ```
 
 ### Authentication (better-auth)
 
-1. Auth utilities are in `@/lib/auth`
-2. Middleware protects API routes at `/api/*` (except `/api/auth/*`)
-3. Check session using `getSession()` from `@/lib/auth`
-4. Session cookie: `better-auth.session_token`
+1. Auth utilities in `@/lib/auth`, middleware protects `/api/*` (except `/api/auth/*`)
+2. Check sessions with `getSession()` from `@/lib/auth`
+3. Session cookie: `better-auth.session_token`
+4. Available auth functions: `updateUser`, `updateUserPassword`, `createUser`, `deleteUser`
+5. Admin plugin enabled with default role 'admin'
 
 ### Refine-Specific Patterns
 
 1. Use Refine hooks: `useTable`, `useLogout`, `useRefineOptions`, `useActiveAuthProvider`
 2. Use `createColumnHelper` from `@tanstack/react-table` for table columns
-3. Pre-built components in `@/components/refine-ui/`:
-   - Views: `ListView`, `CreateView`, `EditView`, `ShowView`
-   - Buttons: `EditButton`, `ShowButton`, `DeleteButton`, `CreateButton`
-   - Layout: `Header`, `Sidebar`, `UserAvatar`
+3. Pre-built components in `@/components/refine-ui/`: `ListView`, `CreateView`, `EditView`, `ShowView`, `EditButton`, `ShowButton`, `DeleteButton`, `CreateButton`, `Header`, `Sidebar`, `UserAvatar`
 
 ### General Conventions
 
 1. Use `const` by default, `let` only when reassignment is needed
 2. Prefer `async/await` over Promise chains
 3. Use template literals for string interpolation
-4. Utility functions from `@/lib/utils`:
-   - `formatCurrency(value)` - Format as EUR (pt-PT locale)
-   - `formatNumber(value)` - Format numbers (pt-PT locale)
-   - `formatDateTime(date)` - Returns `{ dateTime, dateOnly, timeOnly }`
-   - `round2(value)` - Round to 2 decimal places
-   - `convertToPlainObject(value)` - Convert Prisma objects to plain JS objects
+4. Utility functions from `@/lib/utils`: `formatCurrency()`, `formatNumber()`, `formatDateTime()`, `round2()`, `convertToPlainObject()`

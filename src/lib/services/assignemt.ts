@@ -26,8 +26,6 @@ const createAssignment = async (
       return apiError('Total cost error', HttpStatusCode.BAD_REQUEST);
     }
 
-    console.log(assignments);
-
     // Create tournament and assignment
     const result = await prisma.$transaction(async (tx) => {
       const tournament = await tx.tournament.create({

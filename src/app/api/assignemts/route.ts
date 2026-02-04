@@ -6,13 +6,12 @@ import {
   validateQueryParams,
 } from '@lib/api';
 import { filtersQuerySchema, paginationQuerySchema } from '@lib/validators';
-import { createUser, getSession } from '@lib/auth';
+import { getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
-import type { Prisma } from '../../../../generated/prisma/client';
 
 /**
- * GET /api/users
- * Retrieves a paginated list of users
+ * GET /api/assignemts
+ * Retrieves a paginated list of assignemts
  *
  * Query parameters:
  * - page: Page number (default: 1, must be positive integer)
@@ -50,29 +49,34 @@ export const GET = async (request: NextRequest) => {
     }
 
     // Build where clause
-    const where: Prisma.UserWhereInput = {};
-    if (validationFilters?.name) {
-      where.name = {
-        contains: validationFilters.name,
-        mode: 'insensitive',
-      };
-    }
 
     // Fetch data with pagination
-    const [total, users] = await prisma.$transaction([
-      prisma.user.count(),
-      prisma.user.findMany({
+    const [total, assignemts] = await prisma.$transaction([
+      prisma.refereeAssignment.count(),
+      prisma.refereeAssignment.findMany({
         skip: (page - 1) * pageSize,
         take: pageSize,
-        where,
         select: {
-          id: true,
-          name: true,
-          email: true,
+          countA: true,
+          countB: true,
+          countC: true,
+          countARef: true,
+          countBRef: true,
+          countCRef: true,
           createdAt: true,
           updatedAt: true,
-          sessions: true,
+          referee: {
+            select: {
+              name: true,
+            },
+          },
+          tournament: {
+            select: {
+              name: true,
+            },
+          },
         },
+
         orderBy: {
           createdAt: 'desc',
         },
@@ -80,7 +84,7 @@ export const GET = async (request: NextRequest) => {
     ]);
 
     // Build response
-    const response = apiListSuccess(users, total);
+    const response = apiListSuccess(assignemts, total);
 
     return response;
   } catch (error) {
@@ -89,8 +93,8 @@ export const GET = async (request: NextRequest) => {
 };
 
 /**
- * POST /api/clubs
- * Creates a new club
+ * POST /api/assignemts
+ * Creates a new refereeAssignment
  */
 export const POST = async (request: NextRequest) => {
   try {
@@ -102,17 +106,17 @@ export const POST = async (request: NextRequest) => {
 
     // Validate request body
     const data = await request.json();
-    const { email, name, password } = data;
 
-    const user = await createUser({
-      email,
-      name,
-      password,
+    // Create refereeAssignment
+    const refereeAssignment = await prisma.refereeAssignment.create({
+      data,
     });
+    if (!refereeAssignment) {
+      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+    }
 
-    return NextResponse.json(user);
+    return NextResponse.json(refereeAssignment);
   } catch (error) {
-    console.log(error);
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };

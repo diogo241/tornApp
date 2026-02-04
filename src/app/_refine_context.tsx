@@ -12,6 +12,15 @@ import { authProviderClient } from '@providers/auth-provider/auth-provider.clien
 import { dataProvider } from '@providers/data-provider';
 import { DevtoolsPanel, DevtoolsProvider } from '@refinedev/devtools';
 import Image from 'next/image';
+import {
+  BrickWallIcon,
+  Dice4,
+  HandCoinsIcon,
+  ShieldBan,
+  ShieldBanIcon,
+  UserIcon,
+  WarehouseIcon,
+} from 'lucide-react';
 
 type RefineContextProps = {
   children: React.ReactNode;
@@ -31,13 +40,26 @@ export const RefineContext = ({ children }: RefineContextProps) => {
             routerProvider={routerProvider}
             resources={[
               {
+                name: 'tournaments',
+                list: '/tournaments',
+                create: '/tournaments/create',
+                edit: '/tournaments/edit/:id',
+                show: '/tournaments/show/:id',
+                meta: {
+                  canDelete: true,
+                  icon: <Dice4 />,
+                },
+              },
+              {
                 name: 'referees',
                 list: '/referees',
                 create: '/referees/create',
                 edit: '/referees/edit/:id',
                 show: '/referees/show/:id',
+
                 meta: {
                   canDelete: true,
+                  icon: <UserIcon />,
                 },
               },
               {
@@ -48,6 +70,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 show: '/rates/show/:id',
                 meta: {
                   canDelete: true,
+                  icon: <HandCoinsIcon />,
                 },
               },
               {
@@ -58,6 +81,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 show: '/clubs/show/:id',
                 meta: {
                   canDelete: true,
+                  icon: <ShieldBanIcon />,
                 },
               },
               {
@@ -68,6 +92,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 show: '/users/show/:id',
                 meta: {
                   canDelete: true,
+                  icon: <BrickWallIcon />,
                 },
               },
             ]}

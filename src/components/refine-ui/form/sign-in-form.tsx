@@ -27,7 +27,6 @@ export const SignInForm = () => {
   const [password, setPassword] = useState('');
 
   const { title } = useRefineOptions();
-  console.log('title', title);
 
   const { mutate: login, isPending } = useLogin();
 

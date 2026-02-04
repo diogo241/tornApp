@@ -5,11 +5,15 @@ import {
   HttpStatusCode,
   validateQueryParams,
 } from '@lib/api';
-import { filtersQuerySchema, paginationQuerySchema } from '@lib/validators';
+import {
+  filtersQuerySchema,
+  insertTournament,
+  paginationQuerySchema,
+} from '@lib/validators';
 import { getSession } from '@lib/auth';
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
-import { createTournament } from '@lib/services/tournament';
+import { tournamentTotalCost } from '@lib/services/tournament';
 
 /**
  * GET /api/tournaments
@@ -42,7 +46,7 @@ export const GET = async (request: NextRequest) => {
 
     let validationFilters;
     // Validate query parameters
-    if (searchParams.get('name')) {
+    if (searchParams.get('name') || searchParams.get('clubName')) {
       validationFilters = validateQueryParams(searchParams, filtersQuerySchema);
 
       if (validationFilters instanceof Response) {
@@ -56,6 +60,14 @@ export const GET = async (request: NextRequest) => {
       where.name = {
         contains: validationFilters.name,
         mode: 'insensitive',
+      };
+    }
+    if (validationFilters?.club) {
+      where.club = {
+        name: {
+          contains: validationFilters.club,
+          mode: 'insensitive',
+        },
       };
     }
 
@@ -88,6 +100,7 @@ export const GET = async (request: NextRequest) => {
 
     return response;
   } catch (error) {
+    console.log(error);
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };
@@ -99,16 +112,36 @@ export const GET = async (request: NextRequest) => {
 export const POST = async (request: NextRequest) => {
   try {
     // Validate session
-    // const session = await getSession();
-    // if (!session) {
-    //   return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
-    // }
+    const session = await getSession();
+    if (!session) {
+      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+    }
 
-    // Create service
-    const result = await createTournament(prisma, request);
+    // Validate request body
+    const data = await request.json();
+    const validatedData = insertTournament.parse(data);
 
-    return result;
+    // Calculate total cost
+    const totalCost = await tournamentTotalCost(validatedData);
+
+    if (!totalCost) {
+      return apiError('Total cost error', HttpStatusCode.BAD_REQUEST);
+    }
+
+    const tournament = await prisma.tournament.create({
+      data: {
+        ...validatedData,
+        totalCost,
+      },
+    });
+
+    if (!tournament) {
+      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+    }
+
+    return NextResponse.json(tournament);
   } catch (error) {
+
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };

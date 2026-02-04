@@ -16,12 +16,12 @@ import {
   SelectContent,
   SelectItem,
   SelectValue,
+  SelectTrigger,
 } from '@components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NUMBER_PLAYERS } from '@lib/constants';
 import type { Rate } from '@lib/types';
 import { insertRate } from '@lib/validators';
-import { SelectTrigger } from '@radix-ui/react-select';
 import type { BaseRecord, HttpError } from '@refinedev/core';
 import { useForm } from '@refinedev/react-hook-form';
 import { useRouter } from 'next/navigation';

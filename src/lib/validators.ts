@@ -26,6 +26,7 @@ export const paginationQuerySchema = z.object({
 // Filters validators
 export const filtersQuerySchema = z.object({
   name: z.string().optional(),
+  club: z.string().optional(),
 });
 
 // Club validators
@@ -122,30 +123,34 @@ export const insertRefereeAssignment = z.object({
 // Tournament validators
 export const insertTournament = z
   .object({
-    id: z.string().uuid().optional(),
     name: z.string().min(3).max(100).trim(),
-    startDate: z.coerce.date().default(() => new Date()),
-    endDate: z.coerce.date().default(() => new Date()),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
     year: z.coerce.number().min(0),
     totalGames: z.coerce.number().min(0),
     countA: z.coerce.number().min(1),
     durationA: z.coerce.number().min(1),
-    countB: z.coerce.number().min(1).optional(),
-    durationB: z.coerce.number().min(1).optional(),
-    countC: z.coerce.number().min(1).optional(),
-    durationC: z.coerce.number().min(1).optional(),
-    clubId: z.string(),
-    rateId: z.string(),
-    createdAt: z.coerce
-      .date()
-      .default(() => new Date())
-      .optional(),
-    updatedAt: z.coerce
-      .date()
-      .default(() => new Date())
-      .optional(),
+    countB: z.coerce.number().min(0).optional(),
+    durationB: z.coerce.number().min(0).optional(),
+    countC: z.coerce.number().min(0).optional(),
+    durationC: z.coerce.number().min(0).optional(),
+    clubId: z.string().min(1, { message: 'Club is required' }),
+    rateId: z.string().min(1, { message: 'Rate is required' }),
   })
   .superRefine((data, ctx) => {
+    // Check if countA + countB + countC is equal to totalGames
+    if (
+      data.countA + (data.countB ?? 0) + (data.countC ?? 0) !==
+      data.totalGames
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          'Total games must be equal to Games with main duration + Games with B duration + Games with C duration',
+        path: ['totalGames'],
+      });
+    }
+
     // Check B Batch
     if (data.countB !== undefined && data.countB > 0 && !data.durationB) {
       ctx.addIssue({

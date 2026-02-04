@@ -2,9 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
+import { convertToPlainObject } from '@lib/utils';
 
 /**
- * GET /api/rates/:id
+ * GET /api/tournaments/:id
  * Retrieves a single club by ID
  */
 export const GET = async (
@@ -22,31 +23,39 @@ export const GET = async (
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
     }
 
-    const rate = await prisma.rate.findFirst({
+    const tournament = await prisma.tournament.findFirst({
       where: { id },
       select: {
         id: true,
         name: true,
-        players: true,
-        refRate: true,
-        aRate: true,
+        startDate: true,
+        endDate: true,
+        totalGames: true,
+        durationA: true,
+        countA: true,
+        countB: true,
+        durationB: true,
+        countC: true,
+        durationC: true,
+        clubId: true,
+        rateId: true,
         createdAt: true,
         updatedAt: true,
       },
     });
 
-    if (!rate) {
+    if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(rate);
+    return NextResponse.json(convertToPlainObject(tournament));
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };
 
 /**
- * PUT /api/rates/:id
+ * PUT /api/tournaments/:id
  * Updates a single club by ID
  */
 export const PUT = async (
@@ -67,24 +76,24 @@ export const PUT = async (
     // Validate request body
     const data = await request.json();
 
-    // Update rate
-    const rate = await prisma.rate.update({
+    // Update tournament
+    const tournament = await prisma.tournament.update({
       where: { id },
       data,
     });
 
-    if (!rate) {
+    if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(rate);
+    return NextResponse.json(tournament);
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };
 
 /**
- * DELETE /api/rates/:id
+ * DELETE /api/tournaments/:id
  * Deletes a single club by ID
  */
 export const DELETE = async (
@@ -102,16 +111,16 @@ export const DELETE = async (
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
     }
 
-    // Delete rate
-    const rate = await prisma.rate.delete({
+    // Delete tournament
+    const tournament = await prisma.tournament.delete({
       where: { id },
     });
 
-    if (!rate) {
+    if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(rate);
+    return NextResponse.json(tournament);
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }

@@ -1,46 +1,7 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { PrismaClient } from '../../../generated/prisma/client';
-import type { RefereeAssignment, Tournament } from '@lib/types';
-import { apiError, HttpStatusCode } from '@lib/api';
+import type { Tournament } from '@lib/types';
 import { prisma } from '@lib/prisma';
-import { insertTournament } from '@lib/validators';
-import type { Prisma } from '../../../generated/prisma/browser';
 
-export const createTournament = async (
-  prisma: PrismaClient,
-  request: NextRequest,
-) => {
-  try {
-    // Validate request body
-    const data = await request.json();
-    const validatedData = insertTournament.parse(data);
-
-    // Calculate total cost
-    const totalCost = await tournamentTotalCost(validatedData);
-
-    if (!totalCost) {
-      return apiError('Total cost error', HttpStatusCode.BAD_REQUEST);
-    }
-
-    const tournament = await prisma.tournament.create({
-      data: {
-        ...validatedData,
-        totalCost,
-      },
-    });
-
-    if (!tournament) {
-      throw new Error('Error creating tournament');
-    }
-
-    return NextResponse.json(tournament);
-  } catch (error) {
-    console.error(error);
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
-  }
-};
-
-const tournamentTotalCost = async (tournament: Tournament) => {
+export const tournamentTotalCost = async (tournament: Tournament) => {
   const { rateId, countA, durationA, countB, durationB, countC, durationC } =
     tournament;
 

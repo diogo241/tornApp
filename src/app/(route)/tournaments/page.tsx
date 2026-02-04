@@ -8,30 +8,46 @@ import {
   ListView,
   ListViewHeader,
 } from '@/components/refine-ui/views/list-view';
-import type { Club } from '@lib/types';
+import { Input } from '@components/ui/input';
+import type { Tournament } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { DataTableFilterDropdownText } from '@/components/refine-ui/data-table/data-table-filter';
 
-export default function ClubListPage() {
+export default function TournamentList() {
   const columns = useMemo(() => {
-    const columnHelper = createColumnHelper<Club>();
+    const columnHelper = createColumnHelper<Tournament>();
 
     return [
       columnHelper.accessor('name', {
         id: 'name',
         header: 'Name',
-        enableSorting: true,
       }),
-      columnHelper.accessor('createdAt', {
-        id: 'createdAt',
-        header: 'Created at',
-        enableSorting: true,
+      columnHelper.accessor('club.name', {
+        id: 'club.name',
+        header: 'Club',
+      }),
+      columnHelper.accessor('rate.name', {
+        id: 'rate.name',
+        header: 'Type',
+      }),
+      columnHelper.accessor('totalGames', {
+        id: 'totalGames',
+        header: 'Total games',
+      }),
+      columnHelper.accessor('startDate', {
+        id: 'startDate',
+        header: 'Started at',
         cell: ({ row }) => {
-          return formatDateTime(row.original.createdAt as Date).dateTime;
+          return formatDateTime(row.original.createdAt as Date).dateOnly;
+        },
+      }),
+      columnHelper.accessor('endDate', {
+        id: 'endDate',
+        header: 'Ended at',
+        cell: ({ row }) => {
+          return formatDateTime(row.original.createdAt as Date).dateOnly;
         },
       }),
       columnHelper.display({
@@ -45,11 +61,13 @@ export default function ClubListPage() {
           </div>
         ),
         enableSorting: false,
+        size: 290,
       }),
     ];
   }, []);
 
   const [searchName, setSearchName] = useState('');
+  const [searchClub, setSearchClub] = useState('');
 
   const table = useTable({
     columns,
@@ -66,13 +84,21 @@ export default function ClubListPage() {
             operator: 'contains',
             value: searchName,
           },
+          {
+            field: 'clubName',
+            operator: 'contains',
+            value: searchClub,
+          },
         ],
       },
     },
   });
 
-  const handleSearchChange = (value: string) => {
+  const handleSearchNameChange = (value: string) => {
     setSearchName(value);
+  };
+  const handleSearchClubChange = (value: string) => {
+    setSearchClub(value);
   };
 
   return (
@@ -83,7 +109,14 @@ export default function ClubListPage() {
           type="text"
           placeholder="Filter by name..."
           value={searchName}
-          onChange={(e) => handleSearchChange(e.target.value)}
+          onChange={(e) => handleSearchNameChange(e.target.value)}
+          className="max-w-sm"
+        />
+        <Input
+          type="text"
+          placeholder="Filter by club..."
+          value={searchClub}
+          onChange={(e) => handleSearchClubChange(e.target.value)}
           className="max-w-sm"
         />
       </div>
