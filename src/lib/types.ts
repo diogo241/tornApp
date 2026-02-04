@@ -44,4 +44,5 @@ export type Tournament = z.infer<typeof insertTournament> & {
   assignments?: RefereeAssignment[];
   createdAt?: Date;
   updatedAt?: Date;
+  id?: string;
 };

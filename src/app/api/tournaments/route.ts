@@ -44,8 +44,8 @@ export const GET = async (request: NextRequest) => {
     }
     const { page = 1, pageSize = 10 } = validationPages;
 
-    let validationFilters;
     // Validate query parameters
+    let validationFilters;
     if (searchParams.get('name') || searchParams.get('clubName')) {
       validationFilters = validateQueryParams(searchParams, filtersQuerySchema);
 
@@ -84,6 +84,7 @@ export const GET = async (request: NextRequest) => {
           startDate: true,
           endDate: true,
           totalGames: true,
+          totalCost: true,
           club: true,
           rate: true,
           createdAt: true,
