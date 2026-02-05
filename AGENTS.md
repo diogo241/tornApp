@@ -15,10 +15,11 @@ This file contains instructions for agentic coding assistants working in this re
 ## Commands
 
 ```bash
-npm run dev          # Start development server
+npm run dev          # Start development server (uses refine dev with 4GB heap)
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
+npm run refine       # Run refine CLI commands
 ```
 
 ### Testing
@@ -54,6 +55,7 @@ Use these path aliases for imports:
 1. Group imports: React/Next.js → Third-party → Internal (@/...)
 2. Use `import type` for type-only imports when possible
 3. Named exports: `export const Button = ({ ... }) => { ... };`
+4. For internal imports, use `@/lib/...` for components, `@lib/...` for API routes
 
 ### Component Structure
 
@@ -64,6 +66,8 @@ Use these path aliases for imports:
 5. Use `React.forwardRef` for composable components that need ref forwarding
 6. Client components must include `'use client';` at the very top
 7. Define props types inline or above component: `type Props = { ... };`
+8. For forwardRef components, use `React.ComponentRef<typeof Component>` for ref types
+9. Add JSDoc comments for complex props with descriptions and default values
 
 ### TypeScript
 
@@ -74,6 +78,7 @@ Use these path aliases for imports:
 
 2. Use `Readonly` for immutable props (Next.js default)
 3. Use utility types for component props: `type Props = Readonly<{ ... }>;`
+4. For extending component props with additional properties, use intersection types: `& React.ComponentProps<typeof Button>`
 
 ### Styling
 
@@ -96,6 +101,7 @@ Use these path aliases for imports:
 3. Custom table names use `@@map("table_name")`
 4. Always use `await` when calling Prisma methods
 5. Use `convertToPlainObject()` from `@/lib/utils` when passing Prisma objects to client components
+6. Import prisma client: `import { prisma } from '@lib/prisma';`
 
 ### API Routes
 
@@ -129,7 +135,7 @@ Use these path aliases for imports:
 2. Use `apiError()` for standardized error responses (automatically logs 5xx errors)
 3. Use `HttpStatusCode` enum for status codes
 4. Use `handleValidationError()` for Zod validation errors
-5. Log errors with `console.error()` for debugging (use proper logging in production)
+5. Use `console.error()` for error logging (not `console.log()`)
 
 ### Authentication (better-auth)
 

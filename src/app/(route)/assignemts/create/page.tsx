@@ -47,7 +47,7 @@ export default function AssigmentCreatePage() {
       action: 'create',
       redirect: false,
       onMutationSuccess: () => {
-        router.back();
+        router.push(`/tournaments/show/${tournamentId}`);
       },
     },
     defaultValues: {
@@ -257,7 +257,7 @@ export default function AssigmentCreatePage() {
               {isElevenPlayers && durationC && (
                 <FormField
                   control={form.control}
-                  name="countBRef"
+                  name="countCRef"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Assistent Referee C duration</FormLabel>

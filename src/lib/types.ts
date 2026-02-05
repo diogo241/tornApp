@@ -36,7 +36,9 @@ export type User = z.infer<typeof insertUser> & {
   sessions?: Session[];
 };
 
-export type Referee = z.infer<typeof insertReferee>;
+export type Referee = z.infer<typeof insertReferee> & {
+  totalCost?: number;
+};
 
 export type Rate = z.infer<typeof insertRate>;
 

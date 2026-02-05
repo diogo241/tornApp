@@ -1,15 +1,5 @@
 import type { Tournament } from '@lib/types';
-import { formatCurrency } from '../../utils';
-
-// Calculate cost per game
-export const getCostPerGame = (
-  refRate: number,
-  aRate: number,
-  minutes: number,
-) => {
-  const refValue = refRate + aRate;
-  return formatCurrency(refValue * minutes);
-};
+import { formatCurrency } from '@lib/utils';
 
 // Check if the Tournament has Assistent Referee
 export const hasAssistentReferee = (tournament: Tournament) => {
@@ -24,9 +14,20 @@ export const hasDurationB = (tournament: Tournament) => {
   if (tournament.countB >= 1) return true;
   return false;
 };
+
 export const hasDurationC = (tournament: Tournament) => {
   if (!tournament) return false;
   if (!tournament.countC || tournament.countC === undefined) return false;
   if (tournament.countC >= 1) return true;
   return false;
+};
+
+// Calculate cost per game
+export const getCostPerGame = (
+  refRate: number,
+  aRate: number,
+  minutes: number,
+) => {
+  const refValue = refRate + aRate;
+  return formatCurrency(refValue * minutes);
 };

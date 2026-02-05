@@ -123,16 +123,16 @@ export const POST = async (request: NextRequest) => {
     const validatedData = insertTournament.parse(data);
 
     // Calculate total cost
-    const totalCost = await updateTournamentCost(validatedData);
+    const tournamentCost = await updateTournamentCost(validatedData);
 
-    if (!totalCost) {
-      return apiError('Total cost error', HttpStatusCode.BAD_REQUEST);
+    if (!tournamentCost.success) {
+      return apiError(tournamentCost.message ?? 'Error calculating total cost', HttpStatusCode.INTERNAL_SERVER_ERROR);
     }
 
     const tournament = await prisma.tournament.create({
       data: {
         ...validatedData,
-        totalCost,
+        totalCost: tournamentCost.totalCost,
       },
     });
 

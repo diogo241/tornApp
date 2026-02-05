@@ -4,10 +4,11 @@ import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import { convertToPlainObject } from '@lib/utils';
 import { updateTournamentCost } from '@lib/services/tournaments/tournament.cost';
-import { insertTournament } from '@lib/validators';
+import { insertRefereeAssignment, insertTournament } from '@lib/validators';
+import { decrementRefereeCost } from '@lib/services/referee';
 
 /**
- * GET /api/tournaments/:id
+ * GET /api/assignemts/:id
  * Retrieves a single club by ID
  */
 export const GET = async (
@@ -25,42 +26,43 @@ export const GET = async (
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
     }
 
-    const tournament = await prisma.tournament.findFirst({
+    const assignment = await prisma.refereeAssignment.findFirst({
       where: { id },
       select: {
         id: true,
-        name: true,
-        startDate: true,
-        endDate: true,
-        totalGames: true,
-        totalCost: true,
-        durationA: true,
         countA: true,
         countB: true,
-        durationB: true,
         countC: true,
-        durationC: true,
-        club: true,
-        rate: true,
-        clubId: true,
-        rateId: true,
+        countARef: true,
+        countBRef: true,
+        countCRef: true,
         createdAt: true,
         updatedAt: true,
+        referee: {
+          select: {
+            name: true,
+          },
+        },
+        tournament: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
-    if (!tournament) {
+    if (!assignment) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(convertToPlainObject(tournament));
+    return NextResponse.json(convertToPlainObject(assignment));
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };
 
 /**
- * PUT /api/tournaments/:id
+ * PUT /api/assignments/:id
  * Updates a single club by ID
  */
 export const PUT = async (
@@ -80,39 +82,28 @@ export const PUT = async (
 
     // Validate request body
     const data = await request.json();
-    const validatedData = insertTournament.parse(data);
+    const validatedData = insertRefereeAssignment.parse(data);
 
-    // Update tournament value
-    const tournamentCost = await updateTournamentCost(validatedData);
-
-    if (!tournamentCost.success) {
-      return apiError(
-        tournamentCost.message ?? 'Error calculating total cost',
-        HttpStatusCode.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    // Update tournament
-    const tournament = await prisma.tournament.update({
+    // Update assignment
+    const assignment = await prisma.refereeAssignment.update({
       where: { id },
       data: {
         ...validatedData,
-        totalCost: tournamentCost.totalCost,
       },
     });
 
-    if (!tournament) {
+    if (!assignment) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(tournament);
+    return NextResponse.json(assignment);
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };
 
 /**
- * DELETE /api/tournaments/:id
+ * DELETE /api/assignments/:id
  * Deletes a single club by ID
  */
 export const DELETE = async (
@@ -130,16 +121,19 @@ export const DELETE = async (
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
     }
 
-    // Delete tournament
-    const tournament = await prisma.tournament.delete({
+    // Delete assignment
+    const assignment = await prisma.refereeAssignment.delete({
       where: { id },
     });
 
-    if (!tournament) {
+    // Update referee total cost
+    await decrementRefereeCost(assignment.refereeId, assignment.totalCost!);
+
+    if (!assignment) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(tournament);
+    return NextResponse.json(assignment);
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }

@@ -106,16 +106,42 @@ export const insertRate = z
   });
 
 // Referee Assignment validators
-export const insertRefereeAssignment = z.object({
-  countA: z.coerce.number().min(0),
-  countB: z.coerce.number().min(0).optional(),
-  countC: z.coerce.number().min(0).optional(),
-  countARef: z.coerce.number().min(0).optional(),
-  countBRef: z.coerce.number().min(0).optional(),
-  countCRef: z.coerce.number().min(0).optional(),
-  refereeId: z.string().min(1, { message: 'Referee is required' }),
-  tournamentId: z.string().min(1, { message: 'Tournament is required' }),
-});
+export const insertRefereeAssignment = z
+  .object({
+    countA: z.coerce.number().min(0).optional(),
+    countB: z.coerce.number().min(0).optional(),
+    countC: z.coerce.number().min(0).optional(),
+    countARef: z.coerce.number().min(0).optional(),
+    countBRef: z.coerce.number().min(0).optional(),
+    countCRef: z.coerce.number().min(0).optional(),
+    refereeId: z.string().min(1, { message: 'Referee is required' }),
+    tournamentId: z.string().min(1, { message: 'Tournament is required' }),
+  })
+  .superRefine((data, ctx) => {
+    // Check if sum of games is greater then zero
+    if (
+        (data.countA ?? 0) +
+        (data.countB ?? 0) +
+        (data.countC ?? 0) +
+        (data.countARef ?? 0) +
+        (data.countBRef ?? 0) +
+        (data.countCRef ?? 0) ===
+      0
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Sum of games is zero',
+        path: [
+          'countA',
+          'countB',
+          'countC',
+          'countARef',
+          'countBRef',
+          'countCRef',
+        ],
+      });
+    }
+  });
 
 // Tournament validators
 export const insertTournament = z

@@ -68,6 +68,7 @@ export const GET = async (request: NextRequest) => {
         select: {
           id: true,
           name: true,
+          totalCost: true,
           createdAt: true,
           updatedAt: true,
         },

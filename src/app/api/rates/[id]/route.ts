@@ -79,8 +79,11 @@ export const PUT = async (
     }
 
     // Update tournaments that use this rate (update total cost)
-    await updateTournamentAfterRateUpdate(id);
-    console.log('success');
+    const updateTournaments = await updateTournamentAfterRateUpdate(id);
+    
+    if (!updateTournaments.success) {
+      return apiError(updateTournaments.message ?? 'Error updating tournaments', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    }
 
     return NextResponse.json(rate);
   } catch (error) {

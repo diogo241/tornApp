@@ -1,6 +1,5 @@
 import { DeleteButton } from '@components/refine-ui/buttons/delete';
 import { EditButton } from '@components/refine-ui/buttons/edit';
-import { ShowButton } from '@components/refine-ui/buttons/show';
 import { DataTable } from '@components/refine-ui/data-table/data-table';
 import type { RefereeAssignment } from '@lib/types';
 import { formatCurrency } from '@lib/utils';
@@ -35,30 +34,61 @@ export default function AssignmentTable({
       value: tournamentId ?? refereeId,
     },
   ];
-  console.log("filters", filters);
+  console.log('filters', filters);
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<RefereeAssignment>();
 
-    return [
+    let columns = [
       columnHelper.accessor('referee.name', {
         id: 'referee.name',
         header: 'Name',
         size: 150,
       }),
+    ];
+
+    // Add Tournament column if the tournamentId is not provided
+    if (!tournamentId) {
+      columns = [
+        ...columns,
+        columnHelper.accessor('tournament.name', {
+          id: 'tournament.name',
+          header: 'Tournament',
+          size: 150,
+        }),
+      ];
+    }
+
+    return [
+      ...columns,
       columnHelper.accessor('countA', {
         id: 'countA',
-        header: 'Games Main',
+        header: 'Ref',
         size: 100,
       }),
       columnHelper.accessor('countB', {
         id: 'countB',
-        header: 'Games B',
+        header: 'Ref B',
         size: 100,
       }),
       columnHelper.accessor('countC', {
         id: 'countC',
-        header: 'Games C',
+        header: 'Ref C',
+        size: 100,
+      }),
+      columnHelper.accessor('countARef', {
+        id: 'countARef',
+        header: 'ARef',
+        size: 100,
+      }),
+      columnHelper.accessor('countBRef', {
+        id: 'countBRef',
+        header: 'ARef B',
+        size: 100,
+      }),
+      columnHelper.accessor('countCRef', {
+        id: 'countCRef',
+        header: 'ARef C',
         size: 100,
       }),
       columnHelper.accessor('totalCost', {
@@ -74,8 +104,16 @@ export default function AssignmentTable({
         header: 'Actions',
         cell: ({ row }) => (
           <div className="flex gap-2">
-            <EditButton recordItemId={row.original.id} size="sm" />
-            <DeleteButton recordItemId={row.original.id} size="sm" />
+            <EditButton
+              resource="assignemts"
+              recordItemId={row.original.id}
+              size="sm"
+            />
+            <DeleteButton
+              resource="assignemts"
+              recordItemId={row.original.id}
+              size="sm"
+            />
           </div>
         ),
         enableSorting: false,

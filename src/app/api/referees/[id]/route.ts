@@ -27,6 +27,7 @@ export const GET = async (
       select: {
         id: true,
         name: true,
+        totalCost: true,
         createdAt: true,
         updatedAt: true,
       },

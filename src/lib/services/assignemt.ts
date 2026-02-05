@@ -1,106 +1,174 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { PrismaClient } from '../../../generated/prisma/client';
-import type { RefereeAssignment, Tournament } from '@lib/types';
-import { apiError, HttpStatusCode } from '@lib/api';
-import { prisma } from '@lib/prisma';
-import { insertRefereeAssignment, insertTournament } from '@lib/validators';
-import type { Prisma } from '../../../generated/prisma/browser';
+import type { Rate, RefereeAssignment, Tournament } from '@lib/types';
 
-const createAssignment = async (
-  prisma: PrismaClient,
-  request: NextRequest,
+// Validate if games are valid for the tournament
+export const checkNumberOfGames = async (
+  assignment: RefereeAssignment,
+  tournament: Tournament,
+) => {
+  // Extract data from the assignment
+  const { countA, countB, countC, countARef, countBRef, countCRef } =
+    assignment;
+
+  // Check if total games is less than tournament.totalGames
+  const sumAssignedGames =
+    (countA ?? 0) +
+    (countB ?? 0) +
+    (countC ?? 0) +
+    (countARef ?? 0) +
+    (countBRef ?? 0) +
+    (countCRef ?? 0);
+
+  if (sumAssignedGames > tournament.totalGames)
+    return {
+      success: false,
+      message: 'Total Games is greater then tournament total games',
+    };
+
+  const validators = [
+    {
+      label: 'countA',
+      value: (countA ?? 0) + (countARef ?? 0),
+      max: tournament.countA ?? 0,
+    },
+    {
+      label: 'countB',
+      value: (countB ?? 0) + (countBRef ?? 0),
+      max: tournament.countB ?? 0,
+    },
+    {
+      label: 'countC',
+      value: (countC ?? 0) + (countCRef ?? 0),
+      max: tournament.countC ?? 0,
+    },
+  ];
+
+  const validation = validateGamesCount(validators);
+  if (validation.success === false) {
+    return validation;
+  }
+
+  return { success: true };
+};
+
+// Validate if games assigned are less or equal to the remaining games
+export const validateAssignedGames = (
+  assignment: RefereeAssignment,
+  remainingGames: { [key: string]: number },
+) => {
+  // Extract data from the assignment
+  const { countA, countB, countC, countARef, countBRef, countCRef } =
+    assignment;
+
+  const validator = [
+    {
+      label: 'countA',
+      value: countA ?? 0,
+      max: remainingGames.countA ?? 0,
+    },
+    {
+      label: 'countB',
+      value: countB ?? 0,
+      max: remainingGames.countB ?? 0,
+    },
+    {
+      label: 'countC',
+      value: countC ?? 0,
+      max: remainingGames.countC ?? 0,
+    },
+    {
+      label: 'countARef',
+      value: countARef ?? 0,
+      max: remainingGames.countARef ?? 0,
+    },
+    {
+      label: 'countBRef',
+      value: countBRef ?? 0,
+      max: remainingGames.countBRef ?? 0,
+    },
+    {
+      label: 'countCRef',
+      value: countCRef ?? 0,
+      max: remainingGames.countCRef ?? 0,
+    },
+  ];
+
+  const validation = validateGamesCount(validator);
+
+  if (validation.success === false) {
+    return validation;
+  }
+
+  return { success: true };
+};
+
+// Calculate total cost of the assignment
+export const getAssignmentTotalCost = async (
+  assignment: RefereeAssignment,
+  rate: Rate,
 ) => {
   try {
-    // Validate request body
-    const data = await request.json();
-    const assignments = insertRefereeAssignment.parse(data);
+    if (!rate.refRate)
+      return { success: false, message: 'Ref Rate is required' };
 
-    if (!assignments) {
-      return apiError('Assignments not found', HttpStatusCode.NOT_FOUND);
+    const { countA, countB, countC, countARef, countBRef, countCRef } =
+      assignment;
+
+    const refGames = (countA ?? 0) + (countB ?? 0) + (countC ?? 0);
+    const aGames = (countARef ?? 0) + (countBRef ?? 0) + (countCRef ?? 0);
+
+    console.log(aGames);
+
+    if (aGames > 0 && (rate.aRate === 0 || !rate.aRate)) {
+      return { success: false, message: 'ARef Rate is required' };
     }
 
     // Calculate total cost
-    const totalCost = await updateTournamentCost(tournamentData);
+    let totalCost = 0;
+    totalCost += refGames * rate.refRate;
+    totalCost += aGames * (rate.aRate ?? 0);
 
-    if (!totalCost) {
-      return apiError('Total cost error', HttpStatusCode.BAD_REQUEST);
+    return { success: true, totalCost };
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+};
+
+// Check if the referee is already assigned to the tournament
+export const isRefereeUnassigned = async (
+  assignment: RefereeAssignment,
+  tournamentAssignments: RefereeAssignment[],
+) => {
+  try {
+    const { refereeId, tournamentId } = assignment;
+
+    // Check if the referee is already assigned
+    const assigned = tournamentAssignments.filter(
+      (ass) => ass.refereeId === refereeId && ass.tournamentId === tournamentId,
+    );
+
+    if (assigned.length > 0) {
+      return {
+        success: false,
+        message: 'Referee is already assigned to this tournament',
+      };
     }
 
-    // Create tournament and assignment
-    const result = await prisma.$transaction(async (tx) => {
-      const tournament = await tx.tournament.create({
-        data: {
-          ...tournamentData,
-          totalCost,
-        },
-      });
-
-      if (!tournament) {
-        throw new Error('Error creating tournament');
-      }
-
-      // Create referee assignments
-      await Promise.all(
-        assignments.map(async (assignment: RefereeAssignment) => {
-          if (!assignment.refereeId) {
-            throw new Error('Referee ID is not valid');
-          }
-          if (!assignment.countA && !assignment.countB && !assignment.countC) {
-            throw new Error('Count is not valid');
-          }
-          const validateGames =
-            assignment.countA +
-              (assignment.countB ?? 0) +
-              (assignment.countC ?? 0) ===
-            0;
-          if (validateGames) {
-            throw new Error('Number of games is not valid');
-          }
-
-          return tx.refereeAssignment.create({
-            data: {
-              countA: assignment.countA ?? 0,
-              countB: assignment.countB ?? 0,
-              countC: assignment.countC ?? 0,
-              tournamentId: tournament.id,
-              refereeId: assignment.refereeId,
-            },
-          });
-        }),
-      );
-
-      return tournament;
-    });
-
-    return NextResponse.json(result);
+    return { success: true };
   } catch (error) {
-    console.error(error);
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return { success: false, message: (error as Error).message };
   }
 };
 
-const createRefereeAssignment = async (
-  tx: Prisma.TransactionClient,
-  tournamentId: string,
-  assignments: RefereeAssignment,
+const validateGamesCount = (
+  validators: { label: string; value: number; max: number }[],
 ) => {
-  if (!assignments.refereeId) {
-    throw new Error('Referee ID is not valid');
+  for (const validator of validators) {
+    if (validator.value > validator.max)
+      return {
+        success: false,
+        message: `Invalid ${validator.label}: is greater then tournament ${validator.label} or ARef ${validator.label} `,
+      };
   }
 
-  const totalGames =
-    assignments.countA + (assignments.countB ?? 0) + (assignments.countC ?? 0);
-  if (totalGames === 0) {
-    throw new Error('Number of games is not valid');
-  }
-};
-
-const calculateRefereeAssignmentCost = async (assigment: RefereeAssignment) => {
-  const { countA, countB, countC, refereeId } = assigment;
-
-  const costA = countA * 0.42;
-  const costB = countB * 0.4;
-  const costC = countC * 0.4;
-
-  return costA + costB + costC;
+  return { success: true };
 };
