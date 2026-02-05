@@ -28,10 +28,6 @@ export default function UserShowPage() {
     );
   }
 
-  if (isLoading) {
-    return <ShowView>Loading...</ShowView>;
-  }
-
   const user = record as User;
 
   return (

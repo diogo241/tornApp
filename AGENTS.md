@@ -14,24 +14,26 @@ This file contains instructions for agentic coding assistants working in this re
 
 ## Commands
 
-### Development
 ```bash
-npm run dev          # Start development server
-```
-
-### Build & Production
-```bash
+npm run dev          # Start development server (uses refine dev with 4GB heap)
 npm run build        # Build for production
 npm run start        # Start production server
-```
-
-### Code Quality
-```bash
 npm run lint         # Run ESLint
+npm run refine       # Run refine CLI commands
 ```
 
 ### Testing
-This project does not have tests configured. When adding tests, use a testing framework compatible with Next.js (e.g., Vitest, Jest with @testing-library/react).
+This project does not have tests configured yet. When adding tests:
+- Use Vitest or Jest with @testing-library/react for Next.js compatibility
+- Run single test: `npm test -- path/to/test.test.ts`
+- Run tests in watch mode: `npm test -- --watch`
+- Run tests matching pattern: `npm test -- --testNamePattern="test name"`
+
+### Security
+- Next.js configured with security headers (HSTS, XSS protection, frame options)
+- API routes protected by middleware (except /api/auth/*)
+- Session cookie: `better-auth.session_token`
+- Always validate user sessions with `getSession()` in API routes
 
 ### Database
 ```bash
@@ -50,37 +52,22 @@ Use these path aliases for imports:
 
 ### Imports
 
-1. Group imports in this order:
-   - React/Next.js imports
-   - Third-party library imports (@refinedev, @radix-ui, etc.)
-   - Internal imports (@/...)
-   - Type-only imports use `import type` when possible
-
-2. Use named exports for components and utilities:
-   ```tsx
-   export const Button = ({ ... }) => { ... };
-   export { Button, buttonVariants };
-   ```
-
-3. Client components must include `"use client";` at the very top:
-   ```tsx
-   "use client";
-
-   import React from "react";
-   ```
+1. Group imports: React/Next.js → Third-party → Internal (@/...)
+2. Use `import type` for type-only imports when possible
+3. Named exports: `export const Button = ({ ... }) => { ... };`
+4. For internal imports, use `@/lib/...` for components, `@lib/...` for API routes
 
 ### Component Structure
 
 1. Use function components with named exports
-2. Destructure props at the function signature:
-   ```tsx
-   function Button({ className, variant, size, asChild = false, ...props }: Props) {
-   ```
+2. Destructure props at function signature: `function Button({ className, variant, ...props }: Props) {`
 3. Use `React.ComponentProps<"button">` for extending native element props
-4. Set `displayName` on exported components for debugging:
-   ```tsx
-   Header.displayName = "Header";
-   ```
+4. Set `displayName` on exported components: `Header.displayName = "Header";`
+5. Use `React.forwardRef` for composable components that need ref forwarding
+6. Client components must include `'use client';` at the very top
+7. Define props types inline or above component: `type Props = { ... };`
+8. For forwardRef components, use `React.ComponentRef<typeof Component>` for ref types
+9. Add JSDoc comments for complex props with descriptions and default values
 
 ### TypeScript
 
@@ -89,22 +76,16 @@ Use these path aliases for imports:
    - `forceConsistentCasingInFileNames: true`
    - Proper type imports with `import type`
 
-2. Define types inline for component-specific props, or use utility types:
-   ```tsx
-   type Category = { id: string; title: string; };
-   ```
-
-3. Use `Readonly` for immutable props (Next.js default):
-   ```tsx
-   export default async function Layout({ children }: Readonly<{ children: React.ReactNode; }>)
-   ```
+2. Use `Readonly` for immutable props (Next.js default)
+3. Use utility types for component props: `type Props = Readonly<{ ... }>;`
+4. For extending component props with additional properties, use intersection types: `& React.ComponentProps<typeof Button>`
 
 ### Styling
 
-1. Use `cn()` utility from `@/lib/utils` for conditional className merging (combines `clsx` + `tailwind-merge`)
+1. Use `cn()` utility from `@/lib/utils` for className merging (`clsx` + `tailwind-merge`)
 2. Prefer shadcn/ui components and extend them via variants
 3. Use class-variance-authority (cva) for component variants
-4. Tailwind classes: use lowercase, hyphenated utility classes
+4. Use lowercase, hyphenated Tailwind utility classes
 
 ### File Naming
 
@@ -113,12 +94,6 @@ Use these path aliases for imports:
 - Pages: `lowercase.tsx` in app/ directory (Next.js convention)
 - Server vs Client: suffix with `.server.ts` or `.client.ts` when module needs distinction
 
-### Error Handling
-
-1. Use try/catch for async operations
-2. Return meaningful error objects for API routes
-3. Validate environment variables and required configuration at module load time
-
 ### Database (Prisma)
 
 1. Schema is in `prisma/schema.prisma`
@@ -126,28 +101,68 @@ Use these path aliases for imports:
 3. Custom table names use `@@map("table_name")`
 4. Always use `await` when calling Prisma methods
 5. Use `convertToPlainObject()` from `@/lib/utils` when passing Prisma objects to client components
+6. Import prisma client: `import { prisma } from '@lib/prisma';`
+
+### API Routes
+
+1. Use standardized API utilities from `@/lib/api`:
+   - `apiError(error, status, message?, details?)` - error responses
+   - `apiListSuccess(data, total, status?)` - paginated list responses
+   - `validateQueryParams(searchParams, schema)` - query validation
+   - `handleValidationError(error)` - Zod error formatting
+2. Always validate sessions with `getSession()` from `@/lib/auth`
+3. Use Prisma transactions for atomic operations: `prisma.$transaction([...])`
+4. Return meaningful HTTP status codes via `HttpStatusCode` enum
+5. **WARNING**: `validateQueryParams` has hardcoded field mappings (page, size, name, clubName) - extend if needed
+6. Always wrap handlers in try/catch: `apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR)` on errors
+
+### Validation (Zod)
+
+1. All validators are in `@/lib/validators.ts`
+2. Use `z.coerce` for query params (strings to numbers/dates)
+3. Use `z.preprocess` for complex type transformations (e.g., string with comma to float)
+4. Use `.refine()` for simple cross-field validation
+5. Use `.transform()` for data mutations during validation
+6. Use `.superRefine()` for complex conditional validation with multiple fields
+7. Example patterns:
+   - `.refine((data) => data.password === data.confirmPassword, { message: "Passwords don't match", path: ['confirmPassword'] })`
+   - `.transform((data) => data.players !== 11 ? { ...data, aRate: 0 } : data)`
+   - `.superRefine((data, ctx) => { if (data.countB > 0 && !data.durationB) { ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Duration B required', path: ['durationB'] }); } })`
+
+### Error Handling
+
+1. Always wrap API handlers in try/catch blocks
+2. Use `apiError()` for standardized error responses (automatically logs 5xx errors)
+3. Use `HttpStatusCode` enum for status codes
+4. Use `handleValidationError()` for Zod validation errors
+5. Use `console.error()` for error logging (not `console.log()`)
 
 ### Authentication (better-auth)
 
-1. Auth utilities are in `@/lib/auth`
-2. Middleware protects API routes at `/api/*` (except `/api/auth/*`)
-3. Check session using `getSession()` from `@/lib/auth`
-4. Session cookie: `better-auth.session_token`
+1. Auth utilities in `@/lib/auth`, middleware protects `/api/*` (except `/api/auth/*`)
+2. Check sessions with `getSession()` from `@/lib/auth`
+3. Session cookie: `better-auth.session_token`
+4. Available auth functions: `updateUser`, `updateUserPassword`, `createUser`, `deleteUser`
+5. Admin plugin enabled with default role 'admin'
 
 ### Refine-Specific Patterns
 
 1. Use Refine hooks: `useTable`, `useLogout`, `useRefineOptions`, `useActiveAuthProvider`
 2. Use `createColumnHelper` from `@tanstack/react-table` for table columns
-3. Pre-built components in `@/components/refine-ui/`:
-   - Views: `ListView`, `CreateView`, `EditView`, `ShowView`
-   - Buttons: `EditButton`, `ShowButton`, `DeleteButton`, `CreateButton`
-   - Layout: `Header`, `Sidebar`, `UserAvatar`
+3. Pre-built components in `@/components/refine-ui/`: `ListView`, `CreateView`, `EditView`, `ShowView`, `EditButton`, `ShowButton`, `DeleteButton`, `CreateButton`, `Header`, `Sidebar`, `UserAvatar`
+
+### React Patterns
+
+1. Use `PropsWithChildren` from React for components that accept children
+2. Use `type Props = Readonly<...>` pattern for component props
+3. Export both component and sub-components: `export { ListView, ListViewHeader };`
+4. Use `asChild` pattern for compositional components (Radix UI pattern)
 
 ### General Conventions
 
 1. Use `const` by default, `let` only when reassignment is needed
 2. Prefer `async/await` over Promise chains
 3. Use template literals for string interpolation
-4. Currency formatting: `formatCurrency()` from `@/lib/utils` (EUR, pt-PT locale)
-5. Date formatting: `formatDateTime()` from `@/lib/utils` (returns dateTime, dateOnly, timeOnly)
-6. Use `Intl.NumberFormat` for number formatting (pt-PT locale)
+4. Utility functions from `@/lib/utils`: `formatCurrency()`, `formatNumber()`, `formatDateTime()`, `round2()`, `convertToPlainObject()`
+5. All formatting uses `pt-PT` locale (EUR currency, Portuguese date/number formats)
+6. Icons from `lucide-react` (e.g., `<Eye className="h-4 w-4" />`)

@@ -9,8 +9,6 @@ import type {
 } from '@refinedev/core';
 import { ApiErrorResponse } from '@lib/api';
 
-// API returns entities directly, not wrapped in a data property
-type ApiResponse<T = unknown> = T;
 
 const options: CreateDataProviderOptions = {
   getList: {
@@ -75,6 +73,14 @@ const options: CreateDataProviderOptions = {
     mapResponse: async (response) => {
       const payload = await response.json();
       return payload as BaseRecord;
+    },
+    transformError: async (response) => {
+      const error = (await response.json()) as ApiErrorResponse;
+
+      return {
+        message: error.error || 'Update failed',
+        statusCode: response.status,
+      };
     },
   },
   deleteOne: {

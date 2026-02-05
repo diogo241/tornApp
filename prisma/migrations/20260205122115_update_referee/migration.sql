@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "referee" ADD COLUMN     "totalCost" DOUBLE PRECISION NOT NULL DEFAULT 0;

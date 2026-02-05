@@ -26,6 +26,9 @@ export const paginationQuerySchema = z.object({
 // Filters validators
 export const filtersQuerySchema = z.object({
   name: z.string().optional(),
+  club: z.string().optional(),
+  refereeId: z.string().optional(),
+  tournamentId: z.string().optional(),
 });
 
 // Club validators
@@ -62,4 +65,142 @@ export const insertUser = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ['confirmPassword'],
+  });
+
+// Referee validators
+export const insertReferee = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(3).max(250).trim(),
+  createdAt: z.coerce
+    .date()
+    .default(() => new Date())
+    .optional(),
+  updatedAt: z.coerce
+    .date()
+    .default(() => new Date())
+    .optional(),
+});
+
+// Rate validators
+export const insertRate = z
+  .object({
+    id: z.string().uuid().optional(),
+    name: z.string().min(3).max(100).trim(),
+    players: z.coerce.number().min(1).max(11),
+    refRate: z.coerce.number().min(0).max(100),
+    aRate: z.coerce.number().min(0).max(100).optional(),
+    createdAt: z.coerce
+      .date()
+      .default(() => new Date())
+      .optional(),
+    updatedAt: z.coerce
+      .date()
+      .default(() => new Date())
+      .optional(),
+  })
+  .transform((data) => {
+    if (data.players !== 11) {
+      data.aRate = 0;
+    }
+    return data;
+  });
+
+// Referee Assignment validators
+export const insertRefereeAssignment = z
+  .object({
+    countA: z.coerce.number().min(0).optional(),
+    countB: z.coerce.number().min(0).optional(),
+    countC: z.coerce.number().min(0).optional(),
+    countARef: z.coerce.number().min(0).optional(),
+    countBRef: z.coerce.number().min(0).optional(),
+    countCRef: z.coerce.number().min(0).optional(),
+    refereeId: z.string().min(1, { message: 'Referee is required' }),
+    tournamentId: z.string().min(1, { message: 'Tournament is required' }),
+  })
+  .superRefine((data, ctx) => {
+    // Check if sum of games is greater then zero
+    if (
+      (data.countA ?? 0) +
+        (data.countB ?? 0) +
+        (data.countC ?? 0) +
+        (data.countARef ?? 0) +
+        (data.countBRef ?? 0) +
+        (data.countCRef ?? 0) ===
+      0
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Sum of games is zero',
+        path: [
+          'countA',
+          'countB',
+          'countC',
+          'countARef',
+          'countBRef',
+          'countCRef',
+        ],
+      });
+    }
+  });
+
+// Tournament validators
+export const insertTournament = z
+  .object({
+    name: z.string().min(3).max(100).trim(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
+    year: z.coerce.number().min(0),
+    totalGames: z.coerce.number().min(0),
+    countA: z.coerce.number().min(1),
+    durationA: z.coerce.number().min(1),
+    countB: z.coerce.number().min(0).optional(),
+    durationB: z.coerce.number().min(0).optional(),
+    countC: z.coerce.number().min(0).optional(),
+    durationC: z.coerce.number().min(0).optional(),
+    clubId: z.string().min(1, { message: 'Club is required' }),
+    rateId: z.string().min(1, { message: 'Rate is required' }),
+  })
+  .superRefine((data, ctx) => {
+    // Check if countA + countB + countC is equal to totalGames
+    if (
+      data.countA + (data.countB ?? 0) + (data.countC ?? 0) !==
+      data.totalGames
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          'Total games must be equal to Games with main duration + Games with B duration + Games with C duration',
+        path: ['totalGames'],
+      });
+    }
+
+    // Check B Batch
+    if (data.countB !== undefined && data.countB > 0 && !data.durationB) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Duration B is required when Count B is provided',
+        path: ['durationB'],
+      });
+    }
+
+    // Check C Batch
+    if (data.countC !== undefined && data.countC > 0 && !data.durationC) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Duration C is required when Count C is provided',
+        path: ['durationC'],
+      });
+    }
+
+    // Set countC to 0 if countB is 0
+    if (data.countB === 0 && data.countC !== undefined && data?.countC > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Cannot set Count C when Count B is 0',
+        path: ['countB'],
+      });
+    }
+
+    // Set durationC to 0 if countC is 0
+    if (data.countC === 0) data.durationC = 0;
   });

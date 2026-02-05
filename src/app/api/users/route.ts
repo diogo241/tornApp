@@ -103,7 +103,6 @@ export const POST = async (request: NextRequest) => {
     // Validate request body
     const data = await request.json();
     const { email, name, password } = data;
-    console.log(data);
 
     const user = await createUser({
       email,

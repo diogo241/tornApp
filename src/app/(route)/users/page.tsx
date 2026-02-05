@@ -13,10 +13,10 @@ import type { User } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function UserListPage() {
-  const columns = React.useMemo(() => {
+  const columns = useMemo(() => {
     const columnHelper = createColumnHelper<User>();
 
     return [
@@ -36,7 +36,9 @@ export default function UserListPage() {
         enableSorting: true,
         cell: ({ row }) => {
           const lastSession = row.original?.sessions?.at(-1);
-          return lastSession ? formatDateTime(lastSession!.createdAt as Date).dateTime : '-';
+          return lastSession
+            ? formatDateTime(lastSession!.createdAt as Date).dateTime
+            : '-';
         },
       }),
       columnHelper.accessor('createdAt', {
@@ -58,7 +60,7 @@ export default function UserListPage() {
           </div>
         ),
         enableSorting: false,
-        size: 250,
+        size: 150,
       }),
     ];
   }, []);

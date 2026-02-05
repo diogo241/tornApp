@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { insertClub, type insertUser } from './validators';
-
-export type Club = z.infer<typeof insertClub>;
-
-export type User = z.infer<typeof insertUser> & {
-  role?: string;
-  sessions?: Session[];
-};
+import {
+  insertClub,
+  insertReferee,
+  insertUser,
+  insertRate,
+  type insertTournament,
+  type insertRefereeAssignment,
+} from './validators';
 
 type Session = {
   id: string;
@@ -18,4 +18,36 @@ type Session = {
   userAgent: string;
   userId: string;
   user: User;
+};
+
+export type RefereeAssignment = z.infer<typeof insertRefereeAssignment> & {
+  id?: string;
+  tournament?: Tournament;
+  referee?: Referee;
+  totalCost?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type Club = z.infer<typeof insertClub>;
+
+export type User = z.infer<typeof insertUser> & {
+  role?: string;
+  sessions?: Session[];
+};
+
+export type Referee = z.infer<typeof insertReferee> & {
+  totalCost?: number;
+};
+
+export type Rate = z.infer<typeof insertRate>;
+
+export type Tournament = z.infer<typeof insertTournament> & {
+  club?: Club;
+  rate?: Rate;
+  totalCost?: number;
+  assignments?: RefereeAssignment[];
+  createdAt?: Date;
+  updatedAt?: Date;
+  id?: string;
 };

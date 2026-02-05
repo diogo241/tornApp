@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Club } from '@lib/types';
 import { insertClub } from '@lib/validators';
@@ -22,7 +23,7 @@ export default function ClubCreatePage() {
   const router = useRouter();
 
   const {
-    refineCore: { onFinish },
+    refineCore: { onFinish, formLoading },
     ...form
   } = useForm<BaseRecord, HttpError, Club>({
     resolver: zodResolver(insertClub),
@@ -39,41 +40,43 @@ export default function ClubCreatePage() {
   }
 
   return (
-    <CreateView>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="Enter a name" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <LoadingOverlay loading={formLoading}>
+      <CreateView>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter a name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="flex gap-2">
-            <Button
-              type="submit"
-              {...form.saveButtonProps}
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? 'Creating...' : 'Create'}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-            >
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </CreateView>
+            <div className="flex gap-2">
+              <Button
+                type="submit"
+                {...form.saveButtonProps}
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? 'Creating...' : 'Create'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CreateView>
+    </LoadingOverlay>
   );
 }
