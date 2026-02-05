@@ -1,64 +1,96 @@
-import type { Tournament } from '@lib/types';
+import type { Rate, RefereeAssignment, Tournament } from '@lib/types';
 import { prisma } from '@lib/prisma';
+import { getAssignmentTotalCost } from '../assignemt';
+import { updateRefereeCost } from '../referee';
 
 // Update tournaments total cost on rate update
-export const updateTournamentAfterRateUpdate = async (rateId: string) => {
+export const updateTournamentAfterRateUpdate = async (
+  tournaments: Tournament[],
+  rate: Rate,
+) => {
   try {
-    await prisma.$transaction(async (tx) => {
-      const tournaments = await tx.tournament.findMany({
-        where: { rateId },
-      });
+    await prisma.$transaction(
+      async (tx) => {
+        for (const tournament of tournaments) {
+          // Update tournament cost
+          const tournamentCost = await updateTournamentCost(tournament, rate);
 
-      if (tournaments.length === 0) return [];
+          if (!tournamentCost.success) {
+            throw new Error(
+              `Error updating cost for tournament ${tournament.id}`,
+            );
+          }
 
-      const updatePromises = tournaments.map(async (tournament) => {
-        const tournamentCost = await updateTournamentCost(tournament);
+          await tx.tournament.update({
+            where: { id: tournament.id },
+            data: { totalCost: tournamentCost.totalCost },
+          });
 
-        if (!tournamentCost.success) {
-          throw new Error(
-            `Error updating cost for tournament ${tournament.id}`,
-          );
+          // Get the assignments
+          const assignments = await tx.refereeAssignment.findMany({
+            where: { tournamentId: tournament.id },
+          });
+
+          for (const assignment of assignments) {
+            const newAssignmentCost = await getAssignmentTotalCost(
+              assignment,
+              rate,
+            );
+
+            if (
+              !newAssignmentCost.success ||
+              newAssignmentCost.totalCost === undefined
+            ) {
+              throw new Error(
+                `Error updating cost for assignment ${assignment.id}`,
+              );
+            }
+
+            // Calculate Delta
+            const costDelta =
+              newAssignmentCost.totalCost - assignment.totalCost;
+
+            // Update the assignment
+            await tx.refereeAssignment.update({
+              where: { id: assignment.id },
+              data: { totalCost: newAssignmentCost.totalCost },
+            });
+
+            // Update the referee total cost by the DIFFERENCE
+            await tx.referee.update({
+              where: { id: assignment.refereeId },
+              data: {
+                totalCost: {
+                  increment: costDelta, 
+                },
+              },
+            });
+          }
         }
-
-        return tx.tournament.update({
-          where: { id: tournament.id },
-          data: { totalCost: tournamentCost.totalCost },
-        });
-      });
-
-      return Promise.all(updatePromises);
-    });
+      },
+      {
+        timeout: 10000, 
+      },
+    );
 
     return { success: true };
   } catch (error) {
+    console.error('Transaction failed:', error);
     return { success: false, message: (error as Error).message };
   }
 };
 
 // Update tournament total cost
-export const updateTournamentCost = async (tournament: Tournament) => {
+export const updateTournamentCost = async (
+  tournament: Tournament,
+  rate: Rate,
+) => {
   try {
-    const { rateId, countA, durationA, countB, durationB, countC, durationC } =
+    const { countA, durationA, countB, durationB, countC, durationC } =
       tournament;
 
     if (!countA || countA <= 0) {
       throw new Error('Count A is not valid');
-    }
-
-    // Get rate
-    const rate = await prisma.rate.findFirst({
-      where: {
-        id: rateId,
-      },
-      select: {
-        refRate: true,
-        aRate: true,
-        players: true,
-      },
-    });
-
-    if (!rate) {
-      throw new Error('Rate not found');
     }
 
     // Calculate cost per minute
@@ -66,7 +98,7 @@ export const updateTournamentCost = async (tournament: Tournament) => {
 
     // Use  aRate if players is 11
     rate?.players === 11
-      ? (costPerMinute = rate.aRate + rate.refRate)
+      ? (costPerMinute = (rate.aRate ?? 0) + rate.refRate)
       : (costPerMinute = rate.refRate);
 
     // Calculate total cost, validate if B and C are not null

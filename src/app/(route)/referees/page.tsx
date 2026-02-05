@@ -10,7 +10,7 @@ import {
 } from '@/components/refine-ui/views/list-view';
 import { Input } from '@components/ui/input';
 import type { Referee } from '@lib/types';
-import { formatDateTime } from '@lib/utils';
+import { formatCurrency, formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import  { useMemo, useState } from 'react';
@@ -24,7 +24,16 @@ export default function RefereeList() {
         id: 'name',
         header: 'Name',
         enableSorting: true,
-        size: 200,
+        size: 300,
+      }),
+      columnHelper.accessor('totalCost', {
+        id: 'totalCost',
+        header: 'Total Cost',
+        enableSorting: true,
+        cell: ({ row }) => {
+          return formatCurrency(row.original.totalCost as number);
+        },
+        size: 80,
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
@@ -33,6 +42,7 @@ export default function RefereeList() {
         cell: ({ row }) => {
           return formatDateTime(row.original.createdAt as Date).dateTime;
         },
+        size: 80,
       }),
       columnHelper.display({
         id: 'actions',

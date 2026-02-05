@@ -34,33 +34,28 @@ export default function AssignmentTable({
       value: tournamentId ?? refereeId,
     },
   ];
-  console.log('filters', filters);
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<RefereeAssignment>();
 
-    let columns = [
-      columnHelper.accessor('referee.name', {
-        id: 'referee.name',
-        header: 'Name',
-        size: 150,
-      }),
-    ];
-
-    // Add Tournament column if the tournamentId is not provided
-    if (!tournamentId) {
-      columns = [
-        ...columns,
-        columnHelper.accessor('tournament.name', {
-          id: 'tournament.name',
-          header: 'Tournament',
-          size: 150,
-        }),
-      ];
-    }
+    let defColumns = !tournamentId
+      ? [
+          columnHelper.accessor('tournament.name', {
+            id: 'tournament.name',
+            header: 'Tournament',
+            size: 150,
+          }),
+        ]
+      : [
+          columnHelper.accessor('referee.name', {
+            id: 'referee.name',
+            header: 'Name',
+            size: 150,
+          }),
+        ];
 
     return [
-      ...columns,
+      ...defColumns,
       columnHelper.accessor('countA', {
         id: 'countA',
         header: 'Ref',

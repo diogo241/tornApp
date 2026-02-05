@@ -116,7 +116,6 @@ export const getAssignmentTotalCost = async (
     const refGames = (countA ?? 0) + (countB ?? 0) + (countC ?? 0);
     const aGames = (countARef ?? 0) + (countBRef ?? 0) + (countCRef ?? 0);
 
-    console.log(aGames);
 
     if (aGames > 0 && (rate.aRate === 0 || !rate.aRate)) {
       return { success: false, message: 'ARef Rate is required' };
@@ -166,7 +165,7 @@ const validateGamesCount = (
     if (validator.value > validator.max)
       return {
         success: false,
-        message: `Invalid ${validator.label}: is greater then tournament ${validator.label} or ARef ${validator.label} `,
+        message: `Invalid ${validator.label}: is greater then tournament ${validator.label} or ARef ${validator.label}`,
       };
   }
 

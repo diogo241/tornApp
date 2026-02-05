@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { CreateView } from '@/components/refine-ui/views/create-view';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +12,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
-import { FormRelationSelect } from '@components/shared/form-relation-select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   hasAssistentReferee,
@@ -22,93 +20,77 @@ import {
 } from '@lib/services/tournaments/tournament.utils';
 import type { RefereeAssignment, Tournament } from '@lib/types';
 import { insertRefereeAssignment } from '@lib/validators';
-import {
-  useOne,
-  useParsed,
-  useSelect,
-  type BaseRecord,
-  type HttpError,
-} from '@refinedev/core';
+import { type BaseRecord, type HttpError } from '@refinedev/core';
 import { useForm } from '@refinedev/react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Separator } from '@components/ui/separator';
 
-export default function AssigmentCreatePage() {
+export default function AssigmentEditPage() {
   const router = useRouter();
-  const { params } = useParsed();
-  const tournamentId = params?.tournamentId as string;
-
   const {
-    refineCore: { onFinish, formLoading },
+    refineCore: { onFinish, formLoading, query },
     ...form
   } = useForm<BaseRecord, HttpError, RefereeAssignment>({
     resolver: zodResolver(insertRefereeAssignment),
     refineCoreProps: {
-      action: 'create',
+      action: 'edit',
       redirect: false,
-      onMutationSuccess: () => {
-        router.back() ?? router.push(`/tournaments/show/${tournamentId}`);
+      onMutationSuccess: (data) => {
+        router.back() ?? router.push(`/tournaments/show/${tournament?.id}`);
       },
     },
-    defaultValues: {
-      tournamentId: tournamentId || '',
-    },
   });
-
-  useEffect(() => {
-    if (tournamentId) {
-      form.setValue('tournamentId', tournamentId);
-    }
-  }, [tournamentId, form]);
 
   function onSubmit(data: RefereeAssignment) {
     onFinish(data);
   }
 
-  // Get the Tournament
-  const {
-    result: tournament,
-    query: { isLoading: isTournamentLoading },
-  } = useOne<Tournament>({
-    resource: 'tournaments',
-    id: tournamentId,
-  });
-
-  if (!isTournamentLoading && !tournament) {
-    router.push('/404');
-  }
-
-  // Validations
-  // Check the Tournament durations
-  const durationB = hasDurationB(tournament as Tournament);
-  const durationC = hasDurationC(tournament as Tournament);
-  // Check if the Tournament has Assistent Referee
-  const isElevenPlayers = hasAssistentReferee(tournament as Tournament);
-
-  // Fecth referees
-  const { options: refereeOptions } = useSelect({
-    resource: 'referees',
-    optionLabel: 'name',
-    optionValue: 'id',
-  });
+  const tournament = query?.data?.data?.tournament as Tournament | undefined;
+  console.log(query);
+  const isLoading = formLoading || query?.isPending;
+  let durationB = tournament ? hasDurationB(tournament) : false;
+  let durationC = tournament ? hasDurationC(tournament) : false;
+  let isElevenPlayers = tournament ? hasAssistentReferee(tournament) : false;
 
   return (
-    <LoadingOverlay loading={formLoading || isTournamentLoading}>
+    <LoadingOverlay loading={isLoading}>
       <CreateView>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Referee Name Field */}
-              <FormRelationSelect
+              {/* Referee Field */}
+              <FormField
+                control={form.control}
+                name="referee.name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Referee</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        readOnly
+                        disabled
+                        className="bg-muted"
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="refereeId"
-                label="Referee"
-                options={refereeOptions}
+                render={({ field }) => {
+                  const refereeId = form.watch('referee.id');
+                  return <input type="hidden" {...field} value={refereeId} />;
+                }}
               />
 
               {/* Tournament Field */}
               <FormField
                 control={form.control}
-                name="tournamentId"
+                name="tournament.name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Tournament</FormLabel>
@@ -118,17 +100,22 @@ export default function AssigmentCreatePage() {
                         readOnly
                         disabled
                         className="bg-muted"
-                        value={tournament?.name ?? ''}
+                        value={field.value ?? ''}
                       />
                     </FormControl>
-                    <input
-                      type="hidden"
-                      {...field}
-                      value={field.value || ''}
-                    />
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+              <FormField
+                control={form.control}
+                name="tournamentId"
+                render={({ field }) => {
+                  const tournamentId = form.watch('tournament.id');
+                  return (
+                    <input type="hidden" {...field} value={tournamentId} />
+                  );
+                }}
               />
             </div>
             <Separator className="md:my-4 my-8" />
@@ -290,7 +277,7 @@ export default function AssigmentCreatePage() {
                 {...form.saveButtonProps}
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Creating...' : 'Create'}
+                {form.formState.isSubmitting ? 'Updating...' : 'Update'}
               </Button>
               <Button
                 type="button"

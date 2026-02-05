@@ -51,11 +51,6 @@ export function apiError(
   if (message) response.message = message;
   if (details) response.details = details;
 
-  // Log error for debugging (in production, use proper logging service)
-  if (status >= 500) {
-    console.error(`API Error [${status}]:`, error, details);
-  }
-
   return NextResponse.json(response, { status });
 }
 

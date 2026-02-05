@@ -22,7 +22,7 @@ import {
 import { getRemainingGames } from '@lib/services/tournaments/tournament.games';
 import type { Tournament } from '@lib/types';
 import { getTournamentById } from '@lib/services/tournaments/tournament.helpers';
-import { incrementRefereeCost } from '@lib/services/referee';
+import { updateRefereeCost } from '@lib/services/referee';
 
 /**
  * GET /api/assignemts
@@ -200,8 +200,8 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
-    // Update referee total cost
-    await incrementRefereeCost(
+    // Increment referee total cost
+    await updateRefereeCost(
       refereeAssignment.refereeId,
       assigmentTotalCost.totalCost!,
     );

@@ -55,6 +55,7 @@ export default function TournamentEditPage() {
     refineCoreProps: {
       resource: 'tournaments',
       action: 'edit',
+      redirect: 'show',
       id: id as string,
     },
   });
