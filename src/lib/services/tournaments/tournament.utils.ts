@@ -3,7 +3,6 @@ import { formatCurrency } from '@lib/utils';
 
 // Check if the Tournament has Assistent Referee
 export const hasAssistentReferee = (tournament: Tournament) => {
-  console.log("has", tournament);
   return tournament?.rate?.players === 11 ? true : false;
 };
 

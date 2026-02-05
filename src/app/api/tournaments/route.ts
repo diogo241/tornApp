@@ -101,7 +101,6 @@ export const GET = async (request: NextRequest) => {
 
     return response;
   } catch (error) {
-    console.log(error);
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };

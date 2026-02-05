@@ -82,7 +82,7 @@ export default function AssigmentEditPage() {
                 name="refereeId"
                 render={({ field }) => {
                   const refereeId = form.watch('referee.id');
-                  return <input type="hidden" {...field} value={refereeId} />;
+                  return <input type="hidden" {...field} value={refereeId ?? ""} />;
                 }}
               />
 
@@ -112,7 +112,7 @@ export default function AssigmentEditPage() {
                 render={({ field }) => {
                   const tournamentId = form.watch('tournament.id');
                   return (
-                    <input type="hidden" {...field} value={tournamentId} />
+                    <input type="hidden" {...field} value={tournamentId ?? ""} />
                   );
                 }}
               />

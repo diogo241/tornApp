@@ -10,6 +10,7 @@ import {
   checkNumberOfGames,
   getAssignmentTotalCost,
   validateAssignedGames,
+  validateChangedGameCount,
 } from '@lib/services/assignemt';
 import { getRemainingGames } from '@lib/services/tournaments/tournament.games';
 import type { Tournament } from '@lib/types';
@@ -70,8 +71,17 @@ export const PUT = async (
       return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
+
     if (!id) {
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+    }
+
+    // Get old assignment Data
+    const oldAssignment = await prisma.refereeAssignment.findFirst({
+      where: { id },
+    });
+    if (!oldAssignment) {
+      return apiError('Assignment not found', HttpStatusCode.NOT_FOUND);
     }
 
     // Validate request body
@@ -86,7 +96,6 @@ export const PUT = async (
 
     // Validate if games are valid for the tournament
     const validGames = await checkNumberOfGames(newAssignemtData, tournament);
-    console.log("validGames", validGames);
     if (validGames.success === false) {
       return apiError(
         validGames.message ?? 'Invalid games',
@@ -99,7 +108,6 @@ export const PUT = async (
       tournament.assignments,
       tournament as Tournament,
     );
-    console.log("remainingGames", remainingGames);
     if (!remainingGames.games) {
       return apiError(
         'Error getting remaining games',
@@ -114,11 +122,23 @@ export const PUT = async (
     }
 
     // Compare the remaining games with the new assignment, check if the games can be assigned
+    // Get the delta to pass the number of games
+    const delta = validateChangedGameCount(newAssignemtData, oldAssignment);
+    console.log(delta);
+
     const canBeAssigned = validateAssignedGames(
-      newAssignemtData,
+      {
+        ...newAssignemtData,
+        countA: delta.changes.countA,
+        countB: delta.changes.countB,
+        countC: delta.changes.countC,
+        countARef: delta.changes.countARef,
+        countBRef: delta.changes.countBRef,
+        countCRef: delta.changes.countCRef,
+      },
       remainingGames.games,
     );
-    console.log("canBe",canBeAssigned);
+    console.log('canBe', canBeAssigned);
     if (canBeAssigned.success === false) {
       return apiError(
         canBeAssigned.message ?? 'Invalid games',
@@ -138,14 +158,6 @@ export const PUT = async (
         assigmentTotalCost.message ?? 'Error calculating total cost',
         HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
-    }
-
-    // Get old assignment Data
-    const oldAssignment = await prisma.refereeAssignment.findFirst({
-      where: { id },
-    });
-    if (!oldAssignment) {
-      return apiError('Assignment not found', HttpStatusCode.NOT_FOUND);
     }
 
     const newTotalCost = assigmentTotalCost.totalCost!;

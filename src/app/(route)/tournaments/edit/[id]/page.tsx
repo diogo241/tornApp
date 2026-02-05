@@ -60,7 +60,6 @@ export default function TournamentEditPage() {
     },
   });
 
-  console.log(form.formState.errors);
 
   // Use watch to set max values for number of games
   const totalGames = form.watch('totalGames');

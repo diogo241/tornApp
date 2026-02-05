@@ -112,7 +112,6 @@ export const POST = async (request: NextRequest) => {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.log(error);
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };
