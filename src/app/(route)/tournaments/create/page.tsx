@@ -145,9 +145,9 @@ export default function TournamentCreatePage() {
                                 shouldDirty: true,
                               });
 
-                              // Set the year
                               if (range?.from) {
-                                const selectedYear = range.from.getFullYear();
+                                const fromDate = new Date(range.from);
+                                const selectedYear = fromDate.getFullYear();
                                 form.setValue('year', selectedYear, {
                                   shouldValidate: true,
                                   shouldDirty: true,

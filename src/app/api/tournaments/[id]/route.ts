@@ -5,6 +5,7 @@ import { getSession } from '@lib/auth';
 import { convertToPlainObject } from '@lib/utils';
 import { updateTournamentCost } from '@lib/services/tournaments/tournament.cost';
 import { insertTournament } from '@lib/validators';
+import { getTournamentById } from '@lib/services/tournaments/tournament.helpers';
 
 /**
  * GET /api/tournaments/:id
@@ -82,8 +83,13 @@ export const PUT = async (
     const data = await request.json();
     const validatedData = insertTournament.parse(data);
 
+    const tournament = await getTournamentById(id);
+    if (!tournament) {
+      return apiError('Tournament not found', HttpStatusCode.NOT_FOUND);
+    }
+
     // Update tournament value
-    const tournamentCost = await updateTournamentCost(validatedData);
+    const tournamentCost = await updateTournamentCost(validatedData, tournament.rate);
 
     if (!tournamentCost.success) {
       return apiError(
@@ -93,7 +99,7 @@ export const PUT = async (
     }
 
     // Update tournament
-    const tournament = await prisma.tournament.update({
+    await prisma.tournament.update({
       where: { id },
       data: {
         ...validatedData,

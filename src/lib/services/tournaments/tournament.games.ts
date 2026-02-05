@@ -46,7 +46,7 @@ export const getRemainingGames = async (
 const getAssignedTotalGames = (assignments: RefereeAssignment[]) => {
   const games = assignments.reduce(
     (acc, assignment) => {
-      acc.countA += assignment.countA;
+      acc.countA += assignment.countA ?? 0;
       acc.countB += assignment.countB ?? 0;
       acc.countC += assignment.countC ?? 0;
       acc.countARef += assignment.countARef ?? 0;

@@ -182,7 +182,8 @@ export const POST = async (request: NextRequest) => {
     // Calculate total cost
     const assigmentTotalCost = await getAssignmentTotalCost(
       assignemt,
-      tournament.rate,
+      tournament.rate, 
+      tournament,
     );
 
     if (!assigmentTotalCost.success) {

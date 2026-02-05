@@ -73,7 +73,7 @@ export const GET = async (request: NextRequest) => {
           updatedAt: true,
         },
         orderBy: {
-          createdAt: 'desc',
+          name: 'asc',
         },
       }),
     ]);

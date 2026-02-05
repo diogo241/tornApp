@@ -50,7 +50,7 @@ export default function AssignmentTable({
           columnHelper.accessor('referee.name', {
             id: 'referee.name',
             header: 'Name',
-            size: 150,
+            size: 240,
           }),
         ];
 

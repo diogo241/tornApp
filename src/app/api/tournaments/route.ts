@@ -121,6 +121,7 @@ export const POST = async (request: NextRequest) => {
     // Validate request body
     const data = await request.json();
     const validatedData = insertTournament.parse(data);
+    
 
     // Calculate total cost
     const tournamentCost = await updateTournamentCost(validatedData);

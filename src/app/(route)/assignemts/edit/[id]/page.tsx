@@ -46,7 +46,6 @@ export default function AssigmentEditPage() {
   }
 
   const tournament = query?.data?.data?.tournament as Tournament | undefined;
-  console.log(query);
   const isLoading = formLoading || query?.isPending;
   let durationB = tournament ? hasDurationB(tournament) : false;
   let durationC = tournament ? hasDurationC(tournament) : false;

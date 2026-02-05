@@ -35,6 +35,7 @@ export const updateTournamentAfterRateUpdate = async (
             const newAssignmentCost = await getAssignmentTotalCost(
               assignment,
               rate,
+              tournament,
             );
 
             if (
@@ -61,7 +62,7 @@ export const updateTournamentAfterRateUpdate = async (
               where: { id: assignment.refereeId },
               data: {
                 totalCost: {
-                  increment: costDelta, 
+                  increment: costDelta,
                 },
               },
             });
@@ -69,7 +70,7 @@ export const updateTournamentAfterRateUpdate = async (
         }
       },
       {
-        timeout: 10000, 
+        timeout: 10000,
       },
     );
 
@@ -83,23 +84,36 @@ export const updateTournamentAfterRateUpdate = async (
 // Update tournament total cost
 export const updateTournamentCost = async (
   tournament: Tournament,
-  rate: Rate,
+  rate?: Rate,
 ) => {
   try {
-    const { countA, durationA, countB, durationB, countC, durationC } =
+    const { countA, durationA, countB, durationB, countC, durationC, rateId } =
       tournament;
 
     if (!countA || countA <= 0) {
       throw new Error('Count A is not valid');
     }
 
+    // If no rate is provided, get the rate from the tournament
+    let activeRate = rate;
+    if (!activeRate) {
+      if (!rateId) throw new Error('No Rate ID associated with tournament');
+
+      activeRate =
+        (await prisma.rate.findFirst({
+          where: { id: rateId },
+        })) ?? undefined;
+
+      if (!activeRate) throw new Error('Rate not found');
+    }
+
     // Calculate cost per minute
     let costPerMinute;
 
     // Use  aRate if players is 11
-    rate?.players === 11
-      ? (costPerMinute = (rate.aRate ?? 0) + rate.refRate)
-      : (costPerMinute = rate.refRate);
+    activeRate?.players === 11
+      ? (costPerMinute = (activeRate.aRate ?? 0) + activeRate.refRate)
+      : (costPerMinute = activeRate.refRate);
 
     // Calculate total cost, validate if B and C are not null
     let totalCost = durationA * costPerMinute * countA;

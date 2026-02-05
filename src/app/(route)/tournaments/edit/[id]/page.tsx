@@ -60,6 +60,8 @@ export default function TournamentEditPage() {
     },
   });
 
+  console.log(form.formState.errors);
+
   // Use watch to set max values for number of games
   const totalGames = form.watch('totalGames');
   const countA = form.watch('countA');
@@ -75,29 +77,16 @@ export default function TournamentEditPage() {
   }
 
   // Fix to get correct endDate
-  const endDate = form.watch('endDate');
-
-  // Fix to get correct endDate and Year on form load
+  const tournament = query?.data?.data as Tournament | undefined;
+  const endDate = new Date(tournament?.endDate ?? '');
   useEffect(() => {
-    const data = query?.data?.data;
-
-    if (data) {
-      const start = data.startDate ? new Date(data.startDate) : null;
-      const end = data.endDate ? new Date(data.endDate) : null;
-
-      if (end) {
-        form.setValue('endDate', end, { shouldDirty: false });
-      }
-
-      if (start && !isNaN(start.getTime())) {
-        const selectedYear = start.getFullYear();
-        form.setValue('year', selectedYear, {
-          shouldValidate: true,
-          shouldDirty: false,
-        });
-      }
+    if (endDate) {
+      form.setValue('endDate', endDate, { shouldDirty: false });
+      form.setValue('year', endDate.getFullYear(), { shouldDirty: false });
     }
-  }, [query?.data?.data, form.setValue]);
+  }, [query]);
+
+  const isLoading = formLoading || query?.isPending;
 
   // Fecth rates
   const { options: rateOptions } = useSelect({
@@ -113,10 +102,9 @@ export default function TournamentEditPage() {
     optionValue: 'id',
   });
 
-
   return (
     <EditView>
-      <LoadingOverlay loading={formLoading}>
+      <LoadingOverlay loading={isLoading}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Name */}
@@ -151,7 +139,8 @@ export default function TournamentEditPage() {
                           >
                             {field.value
                               ? `${formatDateTime(field.value).dateOnly} - ${
-                                  formatDateTime(endDate).dateOnly
+                                  formatDateTime(form.getValues('endDate'))
+                                    .dateOnly
                                 }`
                               : 'Pick a date'}
                             <ChevronDownIcon />
@@ -164,10 +153,8 @@ export default function TournamentEditPage() {
                           <Calendar
                             mode="range"
                             selected={{
-                              from: field.value
-                                ? new Date(field.value)
-                                : undefined,
-                              to: endDate ? new Date(endDate) : undefined,
+                              from: field.value,
+                              to: form.getValues('endDate'),
                             }}
                             onSelect={(range) => {
                               field.onChange(range?.from);
@@ -177,9 +164,9 @@ export default function TournamentEditPage() {
                                 shouldDirty: true,
                               });
 
-                              // Set the year
                               if (range?.from) {
-                                const selectedYear = range.from.getFullYear();
+                                const fromDate = new Date(range.from);
+                                const selectedYear = fromDate.getFullYear();
                                 form.setValue('year', selectedYear, {
                                   shouldValidate: true,
                                   shouldDirty: true,
@@ -213,15 +200,15 @@ export default function TournamentEditPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Total Games</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      required
-                      placeholder="Enter a total games"
-                      {...field}
-                      value={field.value ?? ''}
-                    />
-                  </FormControl>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        required
+                        placeholder="Enter a total games"
+                        {...field}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -335,7 +322,7 @@ export default function TournamentEditPage() {
                   />
                   {/* Duration C Field */}
                   {/* Count C Field */}
-                  {countB !== undefined && countB > 0 && remainGamesC > 0 && (
+                  {countB !== undefined && remainGamesC > 0 && (
                     <>
                       <FormField
                         control={form.control}
@@ -344,15 +331,15 @@ export default function TournamentEditPage() {
                           <FormItem>
                             <FormLabel>Duration (min) C</FormLabel>
                             <FormControl>
-                          <Input
-                            type="number"
-                            required
-                            min={0}
-                            max={90}
-                            placeholder="Duration of games"
-                            {...field}
-                            value={field.value ?? ''}
-                          />
+                              <Input
+                                type="number"
+                                required
+                                min={0}
+                                max={90}
+                                placeholder="Duration of games"
+                                {...field}
+                                value={field.value ?? ''}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -365,15 +352,15 @@ export default function TournamentEditPage() {
                           <FormItem>
                             <FormLabel>Games with C duration</FormLabel>
                             <FormControl>
-                          <Input
-                            type="number"
-                            required
-                            min={0}
-                            max={isNaN(remainGamesC) ? 0 : remainGamesC}
-                            placeholder="Number of games with C duration"
-                            {...field}
-                            value={field.value ?? ''}
-                          />
+                              <Input
+                                type="number"
+                                required
+                                min={0}
+                                max={isNaN(remainGamesC) ? 0 : remainGamesC}
+                                placeholder="Number of games with C duration"
+                                {...field}
+                                value={field.value ?? ''}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -401,6 +388,18 @@ export default function TournamentEditPage() {
                 Cancel
               </Button>
             </div>
+            {form.formState.errors.root && (
+              <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 rounded-md">
+                {form.formState.errors.root.message}
+              </div>
+            )}
+
+            {/* Or if the error is on a specific path but you want to highlight it specifically */}
+            {form.formState.errors.countA && (
+              <p className="text-red-500">
+                {form.formState.errors.countA.message}
+              </p>
+            )}
           </form>
         </Form>
       </LoadingOverlay>

@@ -130,6 +130,7 @@ export const PUT = async (
     const assigmentTotalCost = await getAssignmentTotalCost(
       newAssignemtData,
       tournament.rate,
+      tournament,
     );
 
     if (!assigmentTotalCost.success) {

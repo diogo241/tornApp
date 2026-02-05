@@ -120,7 +120,7 @@ export const insertRefereeAssignment = z
   .superRefine((data, ctx) => {
     // Check if sum of games is greater then zero
     if (
-        (data.countA ?? 0) +
+      (data.countA ?? 0) +
         (data.countB ?? 0) +
         (data.countC ?? 0) +
         (data.countARef ?? 0) +
@@ -191,4 +191,16 @@ export const insertTournament = z
         path: ['durationC'],
       });
     }
+
+    // Set countC to 0 if countB is 0
+    if (data.countB === 0 && data.countC !== undefined && data?.countC > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Cannot set Count C when Count B is 0',
+        path: ['countB'],
+      });
+    }
+
+    // Set durationC to 0 if countC is 0
+    if (data.countC === 0) data.durationC = 0;
   });

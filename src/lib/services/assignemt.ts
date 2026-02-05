@@ -105,26 +105,47 @@ export const validateAssignedGames = (
 export const getAssignmentTotalCost = async (
   assignment: RefereeAssignment,
   rate: Rate,
+  tournament: Tournament,
 ) => {
   try {
-    if (!rate.refRate)
-      return { success: false, message: 'Ref Rate is required' };
+    const { refRate, aRate = 0 } = rate;
+    if (!refRate) return { success: false, message: 'Ref Rate is required' };
 
-    const { countA, countB, countC, countARef, countBRef, countCRef } =
-      assignment;
+    const hasAssistantGames =
+      (assignment.countARef ?? 0) +
+        (assignment.countBRef ?? 0) +
+        (assignment.countCRef ?? 0) >
+      0;
 
-    const refGames = (countA ?? 0) + (countB ?? 0) + (countC ?? 0);
-    const aGames = (countARef ?? 0) + (countBRef ?? 0) + (countCRef ?? 0);
-
-
-    if (aGames > 0 && (rate.aRate === 0 || !rate.aRate)) {
-      return { success: false, message: 'ARef Rate is required' };
+    if (hasAssistantGames && !aRate && aRate === 0) {
+      return { success: false, message: 'Assistant Rate (aRate) is required' };
     }
 
-    // Calculate total cost
-    let totalCost = 0;
-    totalCost += refGames * rate.refRate;
-    totalCost += aGames * (rate.aRate ?? 0);
+    const categories = [
+      {
+        count: assignment.countA,
+        aCount: assignment.countARef,
+        duration: tournament.durationA,
+      },
+      {
+        count: assignment.countB,
+        aCount: assignment.countBRef,
+        duration: tournament.durationB,
+      },
+      {
+        count: assignment.countC,
+        aCount: assignment.countCRef,
+        duration: tournament.durationC,
+      },
+    ];
+
+    const totalCost = categories.reduce((acc, cat) => {
+      const duration = cat.duration ?? 0;
+      const mainCost = (cat.count ?? 0) * duration * refRate;
+      const assistantCost = (cat.aCount ?? 0) * duration * aRate;
+
+      return acc + mainCost + assistantCost;
+    }, 0);
 
     return { success: true, totalCost };
   } catch (error) {
