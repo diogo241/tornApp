@@ -103,7 +103,6 @@ export const PUT = async (
 
     return NextResponse.json(user);
   } catch (error) {
-    console.log(error);
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };

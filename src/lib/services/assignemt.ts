@@ -179,6 +179,62 @@ export const isRefereeUnassigned = async (
   }
 };
 
+// Compare the remaining games with the new assignment, check if the games can be assigned
+export const validateChangedGameCount = (
+  newAssignemtData: RefereeAssignment,
+  oldAssignment: RefereeAssignment,
+): { success: boolean; message?: string; changes: Record<string, number> } => {
+  // Extract data from the assignment
+  const { countA, countB, countC, countARef, countBRef, countCRef } =
+    newAssignemtData;
+
+  const old = {
+    countA: oldAssignment.countA,
+    countB: oldAssignment.countB,
+    countC: oldAssignment.countC,
+    countARef: oldAssignment.countARef,
+    countBRef: oldAssignment.countBRef,
+    countCRef: oldAssignment.countCRef,
+  };
+
+  const validators = [
+    {
+      key: 'countA',
+      new: countA ?? 0,
+      old: old.countA ?? 0,
+    },
+    {
+      key: 'countB',
+      new: countB ?? 0,
+      old: old.countB ?? 0,
+    },
+    {
+      key: 'countC',
+      new: countC ?? 0,
+      old: old.countC ?? 0,
+    },
+    {
+      key: 'countARef',
+      new: countARef ?? 0,
+      old: old.countARef ?? 0,
+    },
+    {
+      key: 'countBRef',
+      new: countBRef ?? 0,
+      old: old.countBRef ?? 0,
+    },
+    {
+      key: 'countCRef',
+      new: countCRef ?? 0,
+      old: old.countCRef ?? 0,
+    },
+  ];
+
+  const changes = difGamesCount(validators);
+
+  return { success: true, changes };
+};
+
 const validateGamesCount = (
   validators: { label: string; value: number; max: number }[],
 ) => {
@@ -191,4 +247,16 @@ const validateGamesCount = (
   }
 
   return { success: true };
+};
+
+const difGamesCount = (
+  validators: { key: string; new: number; old: number }[],
+) => {
+  let changes: Record<string, number> = {};
+  for (const validator of validators) {
+    changes[validator.key] = validator.new - validator.old;
+    if (changes[validator.key] < 0) changes[validator.key] = 0;
+  }
+
+  return changes;
 };

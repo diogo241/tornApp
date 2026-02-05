@@ -5,3 +5,5 @@ export const NUMBER_PLAYERS = [
   { value: 9, label: '9' },
   { value: 11, label: '11' },
 ];
+
+export const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL! as string;
