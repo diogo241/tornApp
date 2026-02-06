@@ -16,6 +16,7 @@ import {
   BrickWallIcon,
   Dice4,
   HandCoinsIcon,
+  LayoutDashboardIcon,
   ShieldBan,
   ShieldBanIcon,
   UserIcon,
@@ -39,6 +40,14 @@ export const RefineContext = ({ children }: RefineContextProps) => {
             authProvider={authProviderClient}
             routerProvider={routerProvider}
             resources={[
+              {
+                name: 'dashboard',
+                list: '/dashboard',
+                meta: {
+                  label: 'Dashboard',
+                  icon: <LayoutDashboardIcon />,
+                },
+              },
               {
                 name: 'tournaments',
                 list: '/tournaments',
