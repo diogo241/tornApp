@@ -3,9 +3,14 @@ import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import { convertToPlainObject } from '@lib/utils';
-import { updateTournamentCost } from '@lib/services/tournaments/tournament.cost';
+import { getTournamentCost } from '@lib/services/tournaments/tournament.cost';
 import { insertTournament } from '@lib/validators';
 import { getTournamentById } from '@lib/services/tournaments/tournament.helpers';
+import {
+  getClubBalanceByClubId,
+  updateClubBalance,
+} from '@lib/services/club-balance/club-balance';
+import type { ClubBalance } from '@lib/types';
 
 /**
  * GET /api/tournaments/:id
@@ -89,7 +94,10 @@ export const PUT = async (
     }
 
     // Update tournament value
-    const tournamentCost = await updateTournamentCost(validatedData, tournament.rate);
+    const tournamentCost = await getTournamentCost(
+      validatedData,
+      tournament.rate,
+    );
 
     if (!tournamentCost.success) {
       return apiError(
@@ -99,13 +107,32 @@ export const PUT = async (
     }
 
     // Update tournament
-    await prisma.tournament.update({
+    const updatedTournament = await prisma.tournament.update({
       where: { id },
       data: {
         ...validatedData,
         totalCost: tournamentCost.totalCost,
       },
     });
+
+    // Update Club Balance
+    // Get tournament delta total cost / increase or decrease
+    const tournamentDeltaCost =
+      updatedTournament.totalCost - tournament.totalCost;
+    const clubBalance = await getClubBalanceByClubId(tournament.clubId);
+
+    if (!clubBalance?.success) {
+      return apiError(
+        'Error getting club balance',
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    await updateClubBalance(
+      clubBalance.clubBalance as ClubBalance,
+      tournamentDeltaCost,
+      tournamentDeltaCost > 0 ? 'increment' : 'decrement',
+    );
 
     if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
@@ -140,6 +167,21 @@ export const DELETE = async (
     const tournament = await prisma.tournament.delete({
       where: { id },
     });
+
+    const clubBalance = await getClubBalanceByClubId(tournament.clubId);
+
+    if (!clubBalance?.success) {
+      return apiError(
+        'Error getting club balance',
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    await updateClubBalance(
+      clubBalance.clubBalance as ClubBalance,
+      tournament.totalCost,
+      'decrement',
+    );
 
     if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);

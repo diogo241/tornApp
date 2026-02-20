@@ -19,6 +19,7 @@ import {
   LayoutDashboardIcon,
   ShieldBan,
   ShieldBanIcon,
+  UniversityIcon,
   UserIcon,
   WarehouseIcon,
 } from 'lucide-react';
@@ -91,6 +92,18 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 meta: {
                   canDelete: true,
                   icon: <ShieldBanIcon />,
+                },
+              },
+              {
+                name: 'club-funding',
+                list: '/club-funding',
+                edit: '/club-funding/edit/:id',
+                meta: {
+                  canDelete: false,
+                  canShow: false,
+                  canCreate: false,
+                  icon: <UniversityIcon />,
+                  label: 'Municipal Funding',
                 },
               },
               {

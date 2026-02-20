@@ -108,10 +108,14 @@ export const POST = async (request: NextRequest) => {
 
     // Validate request body
     const data = await request.json();
+    const validatedData = insertRate.parse(data);
 
     // Create rate
     const rate = await prisma.rate.create({
-      data,
+      data: {
+        ...validatedData,
+        aRate: validatedData.aRate ?? 0,
+      },
     });
     if (!rate) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);

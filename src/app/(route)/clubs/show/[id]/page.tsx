@@ -10,6 +10,7 @@ import { useShow } from '@refinedev/core';
 import type { Club } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
+import TournamentTable from '@components/features/tournament-table';
 
 export default function ClubShowPage() {
   const { result: record, query } = useShow({});
@@ -51,6 +52,7 @@ export default function ClubShowPage() {
             </div>
           </CardContent>
         </Card>
+        <TournamentTable clubId={club?.id as string} />
       </LoadingOverlay>
     </ShowView>
   );

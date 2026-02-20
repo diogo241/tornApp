@@ -15,8 +15,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
 
 /**
- * GET /api/clubs
- * Retrieves a paginated list of clubs
+ * GET /api/club-funding
+ * Retrieves a paginated list of club-funding
  *
  * Query parameters:
  * - page: Page number (default: 1, must be positive integer)
@@ -43,35 +43,16 @@ export const GET = async (request: NextRequest) => {
     }
     const { page = 1, pageSize = 10 } = validationPages;
 
-    let validationFilters;
-    // Validate query parameters
-    if (searchParams.get('name')) {
-      validationFilters = validateQueryParams(searchParams, filtersQuerySchema);
-
-      if (validationFilters instanceof Response) {
-        return validationFilters;
-      }
-    }
-
-    // Build where clause
-    const where: Prisma.ClubWhereInput = {};
-    if (validationFilters?.name) {
-      where.name = {
-        contains: validationFilters.name,
-        mode: 'insensitive',
-      };
-    }
-
     // Fetch data with pagination
-    const [total, clubs] = await prisma.$transaction([
-      prisma.club.count(),
-      prisma.club.findMany({
+    const [total, clubFunding] = await prisma.$transaction([
+      prisma.clubFunding.count(),
+      prisma.clubFunding.findMany({
         skip: (page - 1) * pageSize,
         take: pageSize,
-        where,
         select: {
           id: true,
-          name: true,
+          amount: true,
+          year: true,
           createdAt: true,
           updatedAt: true,
           clubBalances: true,
@@ -83,39 +64,9 @@ export const GET = async (request: NextRequest) => {
     ]);
 
     // Build response
-    const response = apiListSuccess(clubs, total);
+    const response = apiListSuccess(clubFunding, total);
 
     return response;
-  } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
-  }
-};
-
-/**
- * POST /api/clubs
- * Creates a new club
- */
-export const POST = async (request: NextRequest) => {
-  try {
-    // Validate session
-    const session = await getSession();
-    if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
-    }
-
-    // Validate request body
-    const data = await request.json();
-    const validatedData = insertClub.parse(data);
-
-    // Create club
-    const club = await prisma.club.create({
-      data: validatedData,
-    });
-    if (!club) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
-    }
-
-    return NextResponse.json(club);
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }

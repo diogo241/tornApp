@@ -2,8 +2,9 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
-import { updateTournamentAfterRateUpdate } from '@lib/services/tournaments/tournament.cost';
+import { updateAfterRateUpdate } from '@lib/services/rates';
 import { compareRateValues } from '@lib/services/rates';
+import { insertRate } from '@lib/validators';
 
 /**
  * GET /api/rates/:id
@@ -76,11 +77,12 @@ export const PUT = async (
 
     // Validate request body
     const data = await request.json();
+    const validatedData = insertRate.parse(data);
 
     // Update rate
     const rate = await prisma.rate.update({
       where: { id },
-      data,
+      data: validatedData,
       include: {
         tournaments: true,
       },
@@ -95,19 +97,14 @@ export const PUT = async (
     // Check if the rate values are the same
     const equalRateValues = await compareRateValues(data, oldRate);
     if (!equalRateValues.success) {
-
       // Update tournaments that use this rate (update total cost)
-      const updateTournaments = await updateTournamentAfterRateUpdate(
-        tournaments,
-        rate
-      );
+      const updateTournaments = await updateAfterRateUpdate(tournaments, rate);
       if (!updateTournaments.success) {
         return apiError(
           updateTournaments.message ?? 'Error updating tournaments',
           HttpStatusCode.INTERNAL_SERVER_ERROR,
         );
       }
-
     }
 
     return NextResponse.json(rate);

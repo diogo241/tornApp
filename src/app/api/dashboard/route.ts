@@ -46,10 +46,10 @@ export const GET = async (request: NextRequest) => {
     const totalTournamentCost = costResult?._sum?.totalCost;
 
     if (
-      !totalTournaments ||
-      !totalReferees ||
-      !totalAssignments ||
-      !totalTournamentCost
+      (!totalTournaments && totalTournaments !== 0) ||
+      (!totalReferees && totalReferees !== 0) ||
+      (!totalAssignments && totalAssignments !== 0) ||
+      (!totalTournamentCost && totalTournamentCost !== 0)
     ) {
       return apiError('Erro fetching data', HttpStatusCode.NOT_FOUND);
     }

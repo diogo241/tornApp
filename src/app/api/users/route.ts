@@ -5,7 +5,11 @@ import {
   HttpStatusCode,
   validateQueryParams,
 } from '@lib/api';
-import { filtersQuerySchema, paginationQuerySchema } from '@lib/validators';
+import {
+  filtersQuerySchema,
+  insertUser,
+  paginationQuerySchema,
+} from '@lib/validators';
 import { createUser, getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
@@ -102,7 +106,7 @@ export const POST = async (request: NextRequest) => {
 
     // Validate request body
     const data = await request.json();
-    const { email, name, password } = data;
+    const { email, name, password } = insertUser.parse(data);
 
     const user = await createUser({
       email,
