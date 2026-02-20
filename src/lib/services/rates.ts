@@ -121,7 +121,6 @@ export const updateAfterRateUpdate = async (
 
     return { success: true };
   } catch (error) {
-    console.error('Transaction failed:', error);
     return { success: false, message: (error as Error).message };
   }
 };

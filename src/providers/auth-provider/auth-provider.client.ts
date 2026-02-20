@@ -1,16 +1,10 @@
 'use client';
 
 import type { AuthProvider } from '@refinedev/core';
-import { signIn, signOut, getSession, signUp } from '@/lib/auth-client';
+import { signIn, signOut, getSession } from '@/lib/auth-client';
 
 export const authProviderClient: AuthProvider = {
   login: async ({ email, password, remember }) => {
-    // const register = await signUp.email({
-    //   name: 'Diogo',
-    //   email,
-    //   password,
-    // });
-
     const result = await signIn.email({
       email,
       password,
