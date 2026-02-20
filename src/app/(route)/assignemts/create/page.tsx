@@ -90,6 +90,10 @@ export default function AssigmentCreatePage() {
     resource: 'referees',
     optionLabel: 'name',
     optionValue: 'id',
+    debounce: 500,
+    pagination: {
+      pageSize: 100,
+    },
   });
 
   return (

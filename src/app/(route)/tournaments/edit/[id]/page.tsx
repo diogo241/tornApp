@@ -62,7 +62,6 @@ export default function TournamentEditPage() {
     },
   });
 
-
   // Use watch to set max values for number of games
   const totalGames = form.watch('totalGames');
   const countA = form.watch('countA');
@@ -94,6 +93,10 @@ export default function TournamentEditPage() {
     resource: 'rates',
     optionLabel: 'name',
     optionValue: 'id',
+    debounce: 500,
+    pagination: {
+      pageSize: 100,
+    },
   });
 
   // Fecth clubs
@@ -101,6 +104,10 @@ export default function TournamentEditPage() {
     resource: 'clubs',
     optionLabel: 'name',
     optionValue: 'id',
+    debounce: 500,
+    pagination: {
+      pageSize: 100,
+    },
   });
 
   return (

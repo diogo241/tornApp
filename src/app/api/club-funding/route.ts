@@ -5,15 +5,10 @@ import {
   HttpStatusCode,
   validateQueryParams,
 } from '@lib/api';
-import {
-  filtersQuerySchema,
-  insertClub,
-  paginationQuerySchema,
-} from '@lib/validators';
+import { paginationQuerySchema } from '@lib/validators';
 import { getSession } from '@lib/auth';
-import { NextResponse, type NextRequest } from 'next/server';
-import type { Prisma } from '../../../../generated/prisma/client';
-import { getTotalFunding } from '@lib/services/club-funding';
+import { type NextRequest } from 'next/server';
+import { getClubFunding, getTotalFunding } from '@lib/services/club-funding';
 
 /**
  * GET /api/club-funding
@@ -44,31 +39,20 @@ export const GET = async (request: NextRequest) => {
     }
     const { page = 1, pageSize = 10 } = validationPages;
 
-    // Fetch data with pagination
-    const [total, clubFunding] = await prisma.$transaction([
-      prisma.clubFunding.count(),
-      prisma.clubFunding.findMany({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        select: {
-          id: true,
-          amount: true,
-          year: true,
-          createdAt: true,
-          updatedAt: true,
-          clubBalances: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      }),
-    ]);
+    // Fetch data
+    const total = await prisma.clubFunding.count();
+    const { success, clubFunding } = await getClubFunding();
+    if (!success && !clubFunding) {
+      return apiError('No club funding found', HttpStatusCode.NOT_FOUND);
+    }
 
-    const totalFundingCost = getTotalFunding(clubFunding);
-    const enrichedFunding = clubFunding.map((item) => ({
-      ...item,
-      totalFundingCost,
-    }));
+    const totalFundingCost = getTotalFunding(clubFunding!);
+    const enrichedFunding = [
+      {
+        ...clubFunding,
+        totalFundingCost,
+      },
+    ];
 
     // Build response
     const response = apiListSuccess(enrichedFunding, total);

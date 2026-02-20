@@ -64,6 +64,9 @@ export const GET = async (request: NextRequest) => {
       }
     }
 
+    let skip: number | undefined = (page - 1) * pageSize;
+    let take: number | undefined = pageSize;
+
     // Build where clause
     let where: Prisma.RefereeAssignmentWhereInput = {};
     if (validationFilters?.refereeId) {
@@ -71,20 +74,26 @@ export const GET = async (request: NextRequest) => {
         equals: validationFilters.refereeId,
         mode: 'insensitive',
       };
+
+      skip = undefined;
+      take = undefined;
     }
     if (validationFilters?.tournamentId) {
       where.tournamentId = {
         equals: validationFilters.tournamentId,
         mode: 'insensitive',
       };
+
+      skip = undefined;
+      take = undefined;
     }
 
     // Fetch data with pagination
     const [total, assignemts] = await prisma.$transaction([
       prisma.refereeAssignment.count(),
       prisma.refereeAssignment.findMany({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip,
+        take,
         where,
         include: {
           tournament: true,
