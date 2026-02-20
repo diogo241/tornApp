@@ -102,7 +102,7 @@ export const DELETE = async (
     }
 
     const refereeAssignments = await getAssignmentsByRefereeId(id);
-    if (refereeAssignments) {
+    if (refereeAssignments && refereeAssignments?.length > 0) {
       return apiError(
         'Cannot delete referee with assignments',
         HttpStatusCode.BAD_REQUEST,

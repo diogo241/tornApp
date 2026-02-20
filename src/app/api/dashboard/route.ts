@@ -43,7 +43,7 @@ export const GET = async (request: NextRequest) => {
         }),
       ]);
 
-    const totalTournamentCost = costResult?._sum?.totalCost;
+    const totalTournamentCost = costResult?._sum?.totalCost ?? 0;
 
     if (
       (!totalTournaments && totalTournaments !== 0) ||

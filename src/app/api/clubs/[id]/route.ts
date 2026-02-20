@@ -112,7 +112,8 @@ export const DELETE = async (
         clubId: id,
       },
     });
-    if (tournaments) {
+  
+    if (tournaments && tournaments?.length > 0) {
       return apiError(
         'Cannot delete club with tournaments assigned',
         HttpStatusCode.BAD_REQUEST,

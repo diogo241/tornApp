@@ -13,6 +13,7 @@ import {
 import { getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
+import { getTotalFunding } from '@lib/services/club-funding';
 
 /**
  * GET /api/club-funding
@@ -63,8 +64,14 @@ export const GET = async (request: NextRequest) => {
       }),
     ]);
 
+    const totalFundingCost = getTotalFunding(clubFunding);
+    const enrichedFunding = clubFunding.map((item) => ({
+      ...item,
+      totalFundingCost,
+    }));
+
     // Build response
-    const response = apiListSuccess(clubFunding, total);
+    const response = apiListSuccess(enrichedFunding, total);
 
     return response;
   } catch (error) {

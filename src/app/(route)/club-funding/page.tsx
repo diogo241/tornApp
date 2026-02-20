@@ -30,6 +30,14 @@ export default function ClubFundingListPage() {
           return formatCurrency(row.original.amount as number);
         },
       }),
+      columnHelper.accessor('totalFundingCost', {
+        id: 'totalFundingCost',
+        header: 'Total Funding Cost',
+        enableSorting: true,
+        cell: ({ row }) => {
+          return formatCurrency(row.original.totalFundingCost as number);
+        },
+      }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
         header: 'Created at',

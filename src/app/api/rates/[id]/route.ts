@@ -137,7 +137,7 @@ export const DELETE = async (
 
     // Get tournaments that use this rate
     const tournaments = await getTournamentsByRateId(id);
-    if (tournaments) {
+    if (tournaments && tournaments?.length > 0) {
       return apiError(
         'Cannot delete rate with tournaments assigned',
         HttpStatusCode.BAD_REQUEST,
