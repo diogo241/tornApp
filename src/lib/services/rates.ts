@@ -39,7 +39,7 @@ export const compareRateValues = (newRate: Rate, oldRate: Rate) => {
   }
 };
 
-// Updateson rate update
+// Updates on rate update
 export const updateAfterRateUpdate = async (
   tournaments: Tournament[],
   rate: Rate,
@@ -123,5 +123,24 @@ export const updateAfterRateUpdate = async (
   } catch (error) {
     console.error('Transaction failed:', error);
     return { success: false, message: (error as Error).message };
+  }
+};
+
+// Get tournaments by rate id
+export const getTournamentsByRateId = async (rateId: string) => {
+  try {
+    const tournaments = await prisma.tournament.findMany({
+      where: {
+        rateId: rateId,
+      },
+    });
+
+    if (!tournaments) {
+      return null;
+    }
+
+    return tournaments;
+  } catch (error) {
+    throw new Error((error as Error).message);
   }
 };

@@ -21,3 +21,5 @@ export const getTournamentById = async (id: string) => {
     throw new Error((error as Error).message);
   }
 };
+
+

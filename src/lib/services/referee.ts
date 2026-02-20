@@ -1,7 +1,7 @@
 import { prisma } from '@lib/prisma';
-import type { Referee } from '@lib/types';
+import type { RefereeAssignment } from '@lib/types';
 
-// Increment referee total cost
+// Update referee total cost
 export const updateRefereeCost = async (refereeId: string, amount: number) => {
   try {
     const updatedReferee = await prisma.referee.update({
@@ -25,3 +25,21 @@ export const updateRefereeCost = async (refereeId: string, amount: number) => {
   }
 };
 
+
+// Get assignments by referee id
+export const getAssignmentsByRefereeId = async (refereeId: string): Promise<RefereeAssignment[] | null> => {
+  try {
+    const assignments = await prisma.refereeAssignment.findMany({
+      where: { refereeId },
+      include: { referee: true },
+    });
+
+    if (!assignments) {
+      return null;
+    }
+
+    return assignments;
+  } catch (error) {
+    return null;
+  }
+};

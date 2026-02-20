@@ -44,7 +44,10 @@ export type Referee = z.infer<typeof insertReferee> & {
   totalCost?: number;
 };
 
-export type Rate = z.infer<typeof insertRate>;
+export type Rate = z.infer<typeof insertRate> & {
+  id?: string;
+  createdAt?: Date;
+};
 
 export type Tournament = z.infer<typeof insertTournament> & {
   club?: Club;
@@ -58,8 +61,10 @@ export type Tournament = z.infer<typeof insertTournament> & {
 
 export type ClubFunding = z.infer<typeof insertClubFunding> & {
   id?: string;
+  totalFundingCost?: number;
   createdAt?: Date;
   updatedAt?: Date;
+  clubBalances?: ClubBalance[];
 };
 
 export type ClubBalance = {

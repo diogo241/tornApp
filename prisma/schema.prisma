@@ -13,11 +13,11 @@ model Club {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
+  clubBalance ClubBalance?
   tournaments  Tournament[]
-  clubBalances ClubBalance[]
 
   @@map("club")
-}
+} 
 
 model Rate {
   id          String       @id @default(uuid())
@@ -127,7 +127,7 @@ model ClubBalance {
   // The total amount the club owes to referees (Sum of tournament costs)
   totalCost Float @default(0)
 
-  clubId String
+  clubId String @unique
   club   Club   @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
   // The total amount received from Municipality (Sum of funding)

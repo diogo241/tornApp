@@ -74,7 +74,7 @@ export const GET = async (request: NextRequest) => {
           name: true,
           createdAt: true,
           updatedAt: true,
-          clubBalances: true,
+          clubBalance: true,
         },
         orderBy: {
           createdAt: 'desc',

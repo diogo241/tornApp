@@ -2,7 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
-import { updateAfterRateUpdate } from '@lib/services/rates';
+import {
+  getTournamentsByRateId,
+  updateAfterRateUpdate,
+} from '@lib/services/rates';
 import { compareRateValues } from '@lib/services/rates';
 import { insertRate } from '@lib/validators';
 
@@ -130,6 +133,15 @@ export const DELETE = async (
     const { id } = await params;
     if (!id) {
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+    }
+
+    // Get tournaments that use this rate
+    const tournaments = await getTournamentsByRateId(id);
+    if (tournaments && tournaments?.length > 0) {
+      return apiError(
+        'Cannot delete rate with tournaments assigned',
+        HttpStatusCode.BAD_REQUEST,
+      );
     }
 
     // Delete rate

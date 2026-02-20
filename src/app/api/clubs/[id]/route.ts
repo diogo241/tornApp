@@ -26,7 +26,7 @@ export const GET = async (
     const club = await prisma.club.findFirst({
       where: { id },
       include: {
-        clubBalances: true,
+        clubBalance: true,
       },
     });
 
@@ -34,15 +34,14 @@ export const GET = async (
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    const clubBalance = club.clubBalances[0];
 
     return NextResponse.json({
       id: club.id,
       name: club.name,
-      totalCost: clubBalance.totalCost,
+      totalCost: club.clubBalance?.totalCost ?? 0,
       createdAt: club.createdAt,
       updatedAt: club.updatedAt,
-      clubBalance,
+      clubBalance: club.clubBalance,
     });
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
@@ -105,6 +104,20 @@ export const DELETE = async (
     const { id } = await params;
     if (!id) {
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+    }
+
+    // Get tournaments that use this club
+    const tournaments = await prisma.tournament.findMany({
+      where: {
+        clubId: id,
+      },
+    });
+  
+    if (tournaments && tournaments?.length > 0) {
+      return apiError(
+        'Cannot delete club with tournaments assigned',
+        HttpStatusCode.BAD_REQUEST,
+      );
     }
 
     // Delete club

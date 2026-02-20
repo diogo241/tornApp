@@ -8,8 +8,8 @@ import {
   ListView,
   ListViewHeader,
 } from '@/components/refine-ui/views/list-view';
-import type { Club } from '@lib/types';
-import { formatDateTime } from '@lib/utils';
+import type { Club, ClubBalance } from '@lib/types';
+import { formatCurrency, formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
@@ -24,6 +24,31 @@ export default function ClubListPage() {
         id: 'name',
         header: 'Name',
         enableSorting: true,
+      }),
+      columnHelper.accessor('clubBalance.totalCost', {
+        id: 'clubBalance.totalCost',
+        header: 'Total Cost',
+        enableSorting: true,
+        cell: ({ row }) => {
+          const value = (row.original.clubBalance?.totalCost as number) ?? 0;
+          return formatCurrency(value);
+        },
+        size: 80,
+      }),
+      columnHelper.accessor('clubBalance.netBalance', {
+        id: 'clubBalance.netBalance',
+        header: 'Net Balance',
+        enableSorting: true,
+        cell: ({ row }) => {
+          const value = (row.original.clubBalance?.netBalance as number) ?? 0;
+          const colorClass = value >= 0 ? 'text-green-500' : 'text-red-500';
+          return (
+            <p className={`text-sm font-bold ${colorClass} opacity-70`}>
+              {formatCurrency(value)}
+            </p>
+          );
+        },
+        size: 80,
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
