@@ -1,12 +1,8 @@
 /**
  * PDF Templates Configuration
  *
- * Purpose: Define PDF layout, styling, and structure templates
- * Design: Consistent with project's Tailwind/shadcn styling approach
- * Security: All text is sanitized through formatters
  */
 
-import { jsPDF } from 'jspdf';
 import type { PDFTemplate } from './types';
 
 /**

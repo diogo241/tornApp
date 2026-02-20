@@ -76,7 +76,9 @@ export default function ClubFundingListPage() {
     <ListView>
       <ListViewHeader title="Municipal Funding" />
       <DataTable table={table} />
-      <ClubFundingExportButton />
+      <div className='flex'>
+        <ClubFundingExportButton />
+      </div>
     </ListView>
   );
 }

@@ -32,10 +32,6 @@ import type {
 /**
  * Add PDF Header with Logo and Title
  *
- * Purpose: Creates consistent header across all pages
- *
- * @param doc - jsPDF instance
- * @param config - Header configuration options
  */
 export async function addPDFHeader(
   doc: jsPDF,
@@ -92,20 +88,12 @@ export async function addPDFHeader(
   doc.setFont('helvetica', 'italic');
   doc.setTextColor(...PDF_COLORS.muted);
   const generatedDate = formatDateForPDF(config.generatedDate);
-  doc.text(
-    generatedDate,
-    PAGE_DIMENSIONS.width - margins.right,
-    currentY + 7,
-    { align: 'right' },
-  );
+  doc.text(generatedDate, PAGE_DIMENSIONS.width - margins.right, currentY + 7, {
+    align: 'right',
+  });
 }
 /**
  * Generate Club Funding Summary Table
- *
- *
- * @param doc - jsPDF instance
- * @param clubsData - Array of club funding data
- * @returns Final Y position after table
  */
 export function addClubFundingTable(
   doc: jsPDF,
@@ -114,7 +102,7 @@ export function addClubFundingTable(
   const { margins } = PDF_CONFIG;
   const yPositions = calculateYPositions();
 
-  // Prepare table data with proper formatting
+  // Prepare table data
   const tableData = clubsData.map((club) => [
     sanitizeTextForPDF(club.clubName),
     formatCurrencyForPDF(club.totalFunding),
@@ -122,52 +110,85 @@ export function addClubFundingTable(
     formatCurrencyForPDF(club.netBalance),
   ]);
 
-  // Configure table styles
-  const tableOptions: UserOptions = {
-    startY: yPositions.tableStart,
-    margin: { left: margins.left, right: margins.right },
-    head: [['Clube', 'Apoio Câmara Municipal', 'Custo Total', 'Suportado pelo Clube']],
-    body: tableData,
-    theme: 'grid',
-    styles: {
-      fontSize: TableStyles.body.fontSize,
-      cellPadding: TableStyles.body.cellPadding,
-      font: 'helvetica',
-      textColor: TableStyles.body.textColor as [number, number, number],
-      lineColor: TableStyles.borders.lineColor as [number, number, number],
-      lineWidth: TableStyles.borders.lineWidth,
-    },
-    headStyles: {
-      fillColor: TableStyles.header.fillColor as [number, number, number],
-      textColor: TableStyles.header.textColor,
-      fontStyle: TableStyles.header.fontStyle,
-      fontSize: TableStyles.header.fontSize,
-      halign: TableStyles.header.halign,
-      cellPadding: TableStyles.header.cellPadding,
-    },
-    columnStyles: {
-      0: { cellWidth: 'auto' },
-      1: { cellWidth: 50, halign: 'left' },
-      2: { cellWidth: 50, halign: 'left' },
-      3: { cellWidth: 50, halign: 'left' },
-    },
-    didParseCell: function (data: any) {
-      if (data.row.index === tableData.length - 1) {
-        data.cell.styles.fillColor = TableStyles.alternateRow.fillColor;
-        data.cell.styles.textColor = TableStyles.alternateRow.textColor;
-      }
-    },
-    tableWidth: 'auto',
-    rowPageBreak: 'auto',
-    pageBreak: 'auto',
-  };
+  // Helper to chunk array
+  function chunkArray<T>(array: T[], size: number): T[][] {
+    const result: T[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  }
 
-  // Generate the table
-  autoTable(doc, tableOptions);
+  const chunks = chunkArray(tableData, 11);
 
-  // Return the final Y position after the table
-  const finalY =
-    (doc as any).lastAutoTable.finalY || yPositions.tableStart + 10;
+  let finalY = yPositions.tableStart;
+
+  chunks.forEach((chunk, chunkIndex) => {
+    autoTable(doc, {
+      startY: chunkIndex === 0 ? yPositions.tableStart : yPositions.tableStart,
+      margin: { left: margins.left, right: margins.right },
+
+      head: [[
+        'Clube',
+        'Apoio Câmara Municipal',
+        'Custo Total',
+        'Suportado pelo Clube',
+      ]],
+
+      body: chunk,
+
+      theme: 'grid',
+
+      styles: {
+        fontSize: TableStyles.body.fontSize,
+        cellPadding: TableStyles.body.cellPadding,
+        font: 'helvetica',
+        textColor: TableStyles.body.textColor as [number, number, number],
+        lineColor: TableStyles.borders.lineColor as [number, number, number],
+        lineWidth: TableStyles.borders.lineWidth,
+      },
+
+      headStyles: {
+        fillColor: TableStyles.header.fillColor as [number, number, number],
+        textColor: TableStyles.header.textColor,
+        fontStyle: TableStyles.header.fontStyle,
+        fontSize: TableStyles.header.fontSize,
+        halign: TableStyles.header.halign,
+        cellPadding: TableStyles.header.cellPadding,
+      },
+
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { cellWidth: 50, halign: 'left' },
+        2: { cellWidth: 50, halign: 'left' },
+        3: { cellWidth: 50, halign: 'left' },
+      },
+
+      didParseCell: function (data: any) {
+        if (data.section === 'body') {
+          // Global row index across pages
+          const globalRowIndex = chunkIndex * 10 + data.row.index;
+
+          if (globalRowIndex % 2 === 0) {
+            data.cell.styles.fillColor =
+              TableStyles.alternateRow.fillColor;
+            data.cell.styles.textColor =
+              TableStyles.alternateRow.textColor;
+          }
+        }
+      },
+
+      tableWidth: 'auto',
+      pageBreak: 'avoid', // we control page breaks manually
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY;
+
+    // Add new page except after last chunk
+    if (chunkIndex < chunks.length - 1) {
+      doc.addPage();
+    }
+  });
 
   return finalY;
 }
@@ -175,12 +196,6 @@ export function addClubFundingTable(
 /**
  * Add Summary Statistics Section
  *
- * Purpose: Displays key statistics before the detailed table
- * Design: Clean, readable summary of important metrics
- *
- * @param doc - jsPDF instance
- * @param stats - Statistics object
- * @param startY - Y position to start rendering
  */
 export function addSummarySection(
   doc: jsPDF,
@@ -241,10 +256,6 @@ export function addSummarySection(
 /**
  * Generate Complete Club Funding PDF
  *
- * @param data - Complete club funding data
- * @param template - PDF template configuration
- * @returns PDF buffer as Uint8Array
- * @throws Error if PDF generation fails
  */
 export async function generateClubFundingPDF(
   data: CompleteClubFundingData,
@@ -279,14 +290,13 @@ export async function generateClubFundingPDF(
       totalFunding: data.totalFundingCost,
     };
 
-    addSummarySection(doc, stats, finalY + 10);
+    addSummarySection(doc, stats, finalY);
 
     // 4. Add Signature to Last Page
     const totalPages = doc.internal.pages.length;
     doc.setPage(totalPages);
 
     addSignatureFooter(doc);
-
 
     // Generate PDF buffer
     const pdfBuffer = doc.output('arraybuffer');
@@ -299,7 +309,6 @@ export async function generateClubFundingPDF(
 
 /**
  * Adds a signature field to the last page of the document
- * @param doc - jsPDF instance
  */
 export function addSignatureFooter(doc: jsPDF): void {
   const { margins } = PDF_CONFIG;
@@ -307,7 +316,7 @@ export function addSignatureFooter(doc: jsPDF): void {
   const pageHeight = doc.internal.pageSize.getHeight();
 
   // Position near the bottom, but above the margin
-  const signatureY = pageHeight - margins.bottom + 10;
+  const signatureY = pageHeight - margins.bottom + 15;
   const lineWidth = 60;
   const centerX = pageWidth / 2;
   const lineStartX = centerX - lineWidth / 2;

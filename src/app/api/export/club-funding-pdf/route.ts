@@ -64,58 +64,29 @@ export const GET = async (request: NextRequest) => {
     // Generate PDF buffer
     const pdfBuffer = await generateClubFundingPDF(pdfData);
 
-    // ========================================================================
-    // RESPONSE: Stream PDF to client with proper headers
-    // ========================================================================
-
     // Generate filename with timestamp
     const timestamp = generatePDFTimestamp();
     const year = new Date().getFullYear();
     const yearSuffix = year ? `_${year}` : '';
-    const filename = `club_funding_report${yearSuffix}_${timestamp}.pdf`;
+    const filename = `club_municipal_report${yearSuffix}.pdf`;
 
     // Create response with proper headers for PDF download
-    // Convert Uint8Array to Buffer for Next.js compatibility
     const response = new NextResponse(Buffer.from(pdfBuffer), {
       status: HttpStatusCode.OK,
       headers: {
-        // Content-Type tells browser this is a PDF
         'Content-Type': 'application/pdf',
-
-        // Content-Disposition triggers download with specified filename
         'Content-Disposition': `attachment; filename="${filename}"`,
-
-        // Content-Length helps with download progress
         'Content-Length': pdfBuffer.length.toString(),
-
-        // Cache control prevents caching of sensitive data
         'Cache-Control': 'no-cache, no-store, must-revalidate',
-
-        // Security headers
         'X-Content-Type-Options': 'nosniff',
       },
     });
 
     return response;
   } catch (error) {
-    // ========================================================================
-    // ERROR HANDLING: Graceful failure with security considerations
-    // ========================================================================
-
-    // Log detailed error for server-side debugging
-    console.error('PDF export error:', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString(),
-    });
-
-    // Return generic error to client
-    // Security: Don't expose sensitive system details or stack traces
     return apiError(
       'Failed to generate PDF report',
       HttpStatusCode.INTERNAL_SERVER_ERROR,
-      'An error occurred while generating the PDF. Please try again later.',
     );
   }
 };
-
