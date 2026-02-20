@@ -3,7 +3,10 @@ import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import { convertToPlainObject } from '@lib/utils';
-import { getTournamentCost, updateAssignmentTotalCost } from '@lib/services/tournaments/tournament.cost';
+import {
+  getTournamentCost,
+  updateAssignmentTotalCost,
+} from '@lib/services/tournaments/tournament.cost';
 import { insertTournament } from '@lib/validators';
 import { getTournamentById } from '@lib/services/tournaments/tournament.helpers';
 import {
@@ -13,6 +16,7 @@ import {
 import type { ClubBalance } from '@lib/types';
 import { getAssignmentTotalCost } from '@lib/services/assignments/assignemt.helpers';
 import { updateRefereeCost } from '@lib/services/referee';
+import { getAssignmentsByTournamentId } from '@lib/services/assignments/assignemt';
 
 /**
  * GET /api/tournaments/:id
@@ -144,7 +148,6 @@ export const PUT = async (
     // Update tournament assignemnts
     if (updatedTournament.assignments) {
       for (const assignemt of updatedTournament.assignments) {
-        // TODO: SEE FUNCTION TOURNAMENT.COST.TS
         await updateAssignmentTotalCost(assignemt, updatedTournament);
       }
     }
@@ -174,11 +177,26 @@ export const DELETE = async (
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
     }
 
+    // Update referee total cost, reducing assignments cost
+    const assignments = await getAssignmentsByTournamentId(id);
+    if (assignments) {
+      assignments.forEach(async (assig) => {
+        const referee = await updateRefereeCost(assig?.referee?.id as string, -assig.totalCost!);
+        if (!referee) {
+          return apiError(
+            'Error updating referee total cost',
+            HttpStatusCode.INTERNAL_SERVER_ERROR,
+          );
+        }
+      });
+    }
+
     // Delete tournament
     const tournament = await prisma.tournament.delete({
       where: { id },
     });
 
+    // Update Club Balance
     const clubBalance = await getClubBalanceByClubId(tournament.clubId);
 
     if (!clubBalance?.success) {
@@ -193,8 +211,6 @@ export const DELETE = async (
       -tournament.totalCost,
       'decrement',
     );
-
-    // TODO: UPDATE REFEREE TOTAL COST WHEN A REFEREE ASSIGNMENT IS DELETED FROM A TOURNAMENT
 
     if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);

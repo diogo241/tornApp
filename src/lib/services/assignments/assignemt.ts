@@ -8,6 +8,7 @@ export const getAssignmentsByTournamentId = async (
   try {
     const assignments = await prisma.refereeAssignment.findMany({
       where: { tournamentId },
+      include: { referee: true },
     });
 
     if (!assignments) {

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
+import { getAssignmentsByRefereeId } from '@lib/services/referee';
 
 /**
  * GET /api/referees/:id
@@ -98,6 +99,14 @@ export const DELETE = async (
     const { id } = await params;
     if (!id) {
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+    }
+
+    const refereeAssignments = await getAssignmentsByRefereeId(id);
+    if (refereeAssignments) {
+      return apiError(
+        'Cannot delete referee with assignments',
+        HttpStatusCode.BAD_REQUEST,
+      );
     }
 
     // Delete referee

@@ -36,7 +36,6 @@ export default function TournamentEditPage() {
 
   const {
     refineCore: { onFinish, formLoading, query },
-
     ...form
   } = useForm<BaseRecord, HttpError, Tournament>({
     resolver: zodResolver(insertTournament),
@@ -55,7 +54,10 @@ export default function TournamentEditPage() {
     refineCoreProps: {
       resource: 'tournaments',
       action: 'edit',
-      redirect: 'show',
+      redirect: false,
+      onMutationSuccess: () => {
+        router.back() ?? router.push(`/tournaments/show/${id}`);
+      },
       id: id as string,
     },
   });

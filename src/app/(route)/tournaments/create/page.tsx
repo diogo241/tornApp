@@ -46,7 +46,10 @@ export default function TournamentCreatePage() {
     resolver: zodResolver(insertTournament),
     refineCoreProps: {
       action: 'create',
-      redirect: 'list',
+      redirect: false,
+      onMutationSuccess: () => {
+        router.back() ?? router.push(`/tournaments/list`);
+      },
     },
     defaultValues: {
       name: '',
