@@ -10,6 +10,7 @@ import {
 } from '@lib/auth';
 import { authClient } from '@lib/auth-client';
 import { headers } from 'next/headers';
+import { insertUser } from '@lib/validators';
 
 /**
  * GET /api/users/:id
@@ -73,7 +74,7 @@ export const PUT = async (
 
     // Validate request body
     const data = await request.json();
-    const { email, name, password } = data;
+    const { email, name, password } = insertUser.parse(data);
 
     const user = await prisma.user.findFirst({
       where: { id },

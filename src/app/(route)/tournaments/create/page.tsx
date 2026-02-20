@@ -24,13 +24,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { Tournament } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { insertTournament } from '@lib/validators';
-import { useSelect, type BaseRecord, type HttpError } from '@refinedev/core';
+import {
+  useParsed,
+  useSelect,
+  type BaseRecord,
+  type HttpError,
+} from '@refinedev/core';
 import { useForm } from '@refinedev/react-hook-form';
 import { ChevronDownIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function TournamentCreatePage() {
   const router = useRouter();
+  const { params } = useParsed();
+  const clubId = params?.clubId as string;
 
   const {
     refineCore: { onFinish, formLoading },
@@ -50,7 +57,7 @@ export default function TournamentCreatePage() {
       durationB: 0,
       countC: 0,
       durationC: 0,
-      clubId: '',
+      clubId: clubId || '',
       rateId: '',
     },
   });
@@ -312,15 +319,15 @@ export default function TournamentCreatePage() {
                           <FormItem>
                             <FormLabel>Duration (min) C</FormLabel>
                             <FormControl>
-                          <Input
-                            type="number"
-                            required
-                            min={0}
-                            max={90}
-                            placeholder="Duration of games"
-                            {...field}
-                            value={field.value ?? ''}
-                          />
+                              <Input
+                                type="number"
+                                required
+                                min={0}
+                                max={90}
+                                placeholder="Duration of games"
+                                {...field}
+                                value={field.value ?? ''}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -333,15 +340,15 @@ export default function TournamentCreatePage() {
                           <FormItem>
                             <FormLabel>Games with C duration</FormLabel>
                             <FormControl>
-                          <Input
-                            type="number"
-                            required
-                            min={0}
-                            max={remainGamesC}
-                            placeholder="Number of games with C duration"
-                            {...field}
-                            value={field.value ?? ''}
-                          />
+                              <Input
+                                type="number"
+                                required
+                                min={0}
+                                max={remainGamesC}
+                                placeholder="Number of games with C duration"
+                                {...field}
+                                value={field.value ?? ''}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

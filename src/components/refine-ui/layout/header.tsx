@@ -1,5 +1,4 @@
 import { UserAvatar } from "@/components/refine-ui/layout/user-avatar";
-import { ThemeToggle } from "@/components/refine-ui/theme/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +39,6 @@ function DesktopHeader() {
         "z-40"
       )}
     >
-      <ThemeToggle />
       <UserDropdown />
     </header>
   );
@@ -95,7 +93,7 @@ function MobileHeader() {
           }
         )}
       >
-        <div>{title.icon}</div>
+        <div className='h-8 w-8'>{title.icon}</div>
         <h2
           className={cn(
             "text-sm",
@@ -111,8 +109,6 @@ function MobileHeader() {
           {title.text}
         </h2>
       </div>
-
-      <ThemeToggle className={cn("h-8", "w-8")} />
     </header>
   );
 }

@@ -1,88 +1,11 @@
 import type { Rate, RefereeAssignment, Tournament } from '@lib/types';
 import { prisma } from '@lib/prisma';
-import { getAssignmentTotalCost } from '../assignemt';
+import { getAssignmentTotalCost } from '../assignments/assignemt.helpers';
 import { updateRefereeCost } from '../referee';
+import { Referee } from '../../types';
 
-// Update tournaments total cost on rate update
-export const updateTournamentAfterRateUpdate = async (
-  tournaments: Tournament[],
-  rate: Rate,
-) => {
-  try {
-    await prisma.$transaction(
-      async (tx) => {
-        for (const tournament of tournaments) {
-          // Update tournament cost
-          const tournamentCost = await updateTournamentCost(tournament, rate);
-
-          if (!tournamentCost.success) {
-            throw new Error(
-              `Error updating cost for tournament ${tournament.id}`,
-            );
-          }
-
-          await tx.tournament.update({
-            where: { id: tournament.id },
-            data: { totalCost: tournamentCost.totalCost },
-          });
-
-          // Get the assignments
-          const assignments = await tx.refereeAssignment.findMany({
-            where: { tournamentId: tournament.id },
-          });
-
-          for (const assignment of assignments) {
-            const newAssignmentCost = await getAssignmentTotalCost(
-              assignment,
-              rate,
-              tournament,
-            );
-
-            if (
-              !newAssignmentCost.success ||
-              newAssignmentCost.totalCost === undefined
-            ) {
-              throw new Error(
-                `Error updating cost for assignment ${assignment.id}`,
-              );
-            }
-
-            // Calculate Delta
-            const costDelta =
-              newAssignmentCost.totalCost - assignment.totalCost;
-
-            // Update the assignment
-            await tx.refereeAssignment.update({
-              where: { id: assignment.id },
-              data: { totalCost: newAssignmentCost.totalCost },
-            });
-
-            // Update the referee total cost by the DIFFERENCE
-            await tx.referee.update({
-              where: { id: assignment.refereeId },
-              data: {
-                totalCost: {
-                  increment: costDelta,
-                },
-              },
-            });
-          }
-        }
-      },
-      {
-        timeout: 10000,
-      },
-    );
-
-    return { success: true };
-  } catch (error) {
-    console.error('Transaction failed:', error);
-    return { success: false, message: (error as Error).message };
-  }
-};
-
-// Update tournament total cost
-export const updateTournamentCost = async (
+// Get tournament total cost
+export const getTournamentCost = async (
   tournament: Tournament,
   rate?: Rate,
 ) => {
@@ -129,6 +52,79 @@ export const updateTournamentCost = async (
     }
 
     return { success: true, totalCost };
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+};
+
+// Update tournament total cost
+export const updateTournamentCost = async (
+  tournament: Tournament,
+  totalCost: number,
+) => {
+  try {
+    await prisma.tournament.update({
+      where: { id: tournament.id },
+      data: { totalCost },
+    });
+
+    return { success: true, totalCost };
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+};
+
+// Update Assignemnt total cost and referee total cost
+export const updateAssignmentTotalCost = async (
+  assignment: RefereeAssignment,
+  tournament: Tournament,
+) => {
+  try {
+    const { totalCost } = await getAssignmentTotalCost(
+      assignment,
+      tournament.rate!,
+      tournament,
+    );
+
+    if (!totalCost || totalCost === 0) {
+      return {
+        success: false,
+        message: 'Error getting total cost for assignment',
+      };
+    }
+
+    const updatedAssignment = await prisma.refereeAssignment.update({
+      where: { id: assignment.id },
+      data: {
+        totalCost,
+      },
+      include: {
+        referee: true,
+      },
+    });
+
+    if (!updatedAssignment) {
+      return {
+        success: false,
+        message: 'Error updating assignment total cost',
+      };
+    }
+
+    const costDelta = updatedAssignment.totalCost! - assignment.totalCost!;
+
+    // Update referee total cost
+    const referee = await updateRefereeCost(
+      updatedAssignment.refereeId,
+      costDelta,
+    );
+    if (!referee) {
+      return {
+        success: false,
+        message: 'Error updating referee total cost',
+      };
+    }
+
+    return { success: true };
   } catch (error) {
     return { success: false, message: (error as Error).message };
   }

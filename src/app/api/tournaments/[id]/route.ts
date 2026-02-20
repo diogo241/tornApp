@@ -3,9 +3,16 @@ import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import { convertToPlainObject } from '@lib/utils';
-import { updateTournamentCost } from '@lib/services/tournaments/tournament.cost';
+import { getTournamentCost, updateAssignmentTotalCost } from '@lib/services/tournaments/tournament.cost';
 import { insertTournament } from '@lib/validators';
 import { getTournamentById } from '@lib/services/tournaments/tournament.helpers';
+import {
+  getClubBalanceByClubId,
+  updateClubBalance,
+} from '@lib/services/club-balance/club-balance';
+import type { ClubBalance } from '@lib/types';
+import { getAssignmentTotalCost } from '@lib/services/assignments/assignemt.helpers';
+import { updateRefereeCost } from '@lib/services/referee';
 
 /**
  * GET /api/tournaments/:id
@@ -83,13 +90,16 @@ export const PUT = async (
     const data = await request.json();
     const validatedData = insertTournament.parse(data);
 
-    const tournament = await getTournamentById(id);
-    if (!tournament) {
+    const oldTournament = await getTournamentById(id);
+    if (!oldTournament) {
       return apiError('Tournament not found', HttpStatusCode.NOT_FOUND);
     }
 
     // Update tournament value
-    const tournamentCost = await updateTournamentCost(validatedData, tournament.rate);
+    const tournamentCost = await getTournamentCost(
+      validatedData,
+      oldTournament.rate,
+    );
 
     if (!tournamentCost.success) {
       return apiError(
@@ -107,11 +117,39 @@ export const PUT = async (
       },
     });
 
-    if (!tournament) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+    const updatedTournament = await getTournamentById(id);
+    if (!updatedTournament) {
+      return apiError('Updated Tournament not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(tournament);
+    // Update Club Balance
+    // Get tournament delta total cost / increase or decrease
+    const tournamentDeltaCost =
+      updatedTournament.totalCost - oldTournament.totalCost;
+    const clubBalance = await getClubBalanceByClubId(oldTournament.clubId);
+
+    if (!clubBalance?.success) {
+      return apiError(
+        'Error getting club balance',
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    await updateClubBalance(
+      clubBalance.clubBalance as ClubBalance,
+      tournamentDeltaCost,
+      tournamentDeltaCost > 0 ? 'increment' : 'decrement',
+    );
+
+    // Update tournament assignemnts
+    if (updatedTournament.assignments) {
+      for (const assignemt of updatedTournament.assignments) {
+        // TODO: SEE FUNCTION TOURNAMENT.COST.TS
+        await updateAssignmentTotalCost(assignemt, updatedTournament);
+      }
+    }
+
+    return NextResponse.json(updatedTournament);
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
@@ -140,6 +178,23 @@ export const DELETE = async (
     const tournament = await prisma.tournament.delete({
       where: { id },
     });
+
+    const clubBalance = await getClubBalanceByClubId(tournament.clubId);
+
+    if (!clubBalance?.success) {
+      return apiError(
+        'Error getting club balance',
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    await updateClubBalance(
+      clubBalance.clubBalance as ClubBalance,
+      -tournament.totalCost,
+      'decrement',
+    );
+
+    // TODO: UPDATE REFEREE TOTAL COST WHEN A REFEREE ASSIGNMENT IS DELETED FROM A TOURNAMENT
 
     if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);

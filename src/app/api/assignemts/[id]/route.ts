@@ -11,7 +11,7 @@ import {
   getAssignmentTotalCost,
   validateAssignedGames,
   validateChangedGameCount,
-} from '@lib/services/assignemt';
+} from '@lib/services/assignments/assignemt.helpers';
 import { getRemainingGames } from '@lib/services/tournaments/tournament.games';
 import type { Tournament } from '@lib/types';
 
@@ -124,7 +124,6 @@ export const PUT = async (
     // Compare the remaining games with the new assignment, check if the games can be assigned
     // Get the delta to pass the number of games
     const delta = validateChangedGameCount(newAssignemtData, oldAssignment);
-    console.log(delta);
 
     const canBeAssigned = validateAssignedGames(
       {
@@ -138,7 +137,6 @@ export const PUT = async (
       },
       remainingGames.games,
     );
-    console.log('canBe', canBeAssigned);
     if (canBeAssigned.success === false) {
       return apiError(
         canBeAssigned.message ?? 'Invalid games',

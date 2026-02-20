@@ -29,6 +29,7 @@ export const filtersQuerySchema = z.object({
   club: z.string().optional(),
   refereeId: z.string().optional(),
   tournamentId: z.string().optional(),
+  clubId: z.string().optional(),
 });
 
 // Club validators
@@ -89,14 +90,6 @@ export const insertRate = z
     players: z.coerce.number().min(1).max(11),
     refRate: z.coerce.number().min(0).max(100),
     aRate: z.coerce.number().min(0).max(100).optional(),
-    createdAt: z.coerce
-      .date()
-      .default(() => new Date())
-      .optional(),
-    updatedAt: z.coerce
-      .date()
-      .default(() => new Date())
-      .optional(),
   })
   .transform((data) => {
     if (data.players !== 11) {
@@ -204,3 +197,9 @@ export const insertTournament = z
     // Set durationC to 0 if countC is 0
     if (data.countC === 0) data.durationC = 0;
   });
+
+// Club Funding validators
+export const insertClubFunding = z.object({
+  year: z.coerce.number().min(0),
+  amount: z.coerce.number().min(0),
+});

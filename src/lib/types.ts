@@ -6,6 +6,7 @@ import {
   insertRate,
   type insertTournament,
   type insertRefereeAssignment,
+  type insertClubFunding,
 } from './validators';
 
 type Session = {
@@ -29,7 +30,10 @@ export type RefereeAssignment = z.infer<typeof insertRefereeAssignment> & {
   updatedAt?: Date;
 };
 
-export type Club = z.infer<typeof insertClub>;
+export type Club = z.infer<typeof insertClub> & {
+  totalCost?: number;
+  clubBalance?: ClubBalance;
+};
 
 export type User = z.infer<typeof insertUser> & {
   role?: string;
@@ -50,4 +54,21 @@ export type Tournament = z.infer<typeof insertTournament> & {
   createdAt?: Date;
   updatedAt?: Date;
   id?: string;
+};
+
+export type ClubFunding = z.infer<typeof insertClubFunding> & {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type ClubBalance = {
+  id: string;
+  clubId?: string;
+  club?: Club;
+  clubFunding?: ClubFunding;
+  netBalance?: number;
+  totalCost?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 };

@@ -18,7 +18,7 @@ import {
   getAssignmentTotalCost,
   isRefereeUnassigned,
   validateAssignedGames,
-} from '@lib/services/assignemt';
+} from '@lib/services/assignments/assignemt.helpers';
 import { getRemainingGames } from '@lib/services/tournaments/tournament.games';
 import type { Tournament } from '@lib/types';
 import { getTournamentById } from '@lib/services/tournaments/tournament.helpers';
@@ -182,7 +182,7 @@ export const POST = async (request: NextRequest) => {
     // Calculate total cost
     const assigmentTotalCost = await getAssignmentTotalCost(
       assignemt,
-      tournament.rate, 
+      tournament.rate,
       tournament,
     );
 

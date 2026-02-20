@@ -2,11 +2,13 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
-import { insertClub } from '@lib/validators';
+import { insertClubFunding } from '@lib/validators';
+import { getClubFundingById } from '@lib/services/club-funding';
+import { updateClubBalanceNetValue } from '@lib/services/club-balance/club-balance';
 
 /**
- * GET /api/clubs/:id
- * Retrieves a single club by ID
+ * GET /api/club-funding/:id
+ * Retrieves a single club funding by ID
  */
 export const GET = async (
   request: NextRequest,
@@ -23,34 +25,20 @@ export const GET = async (
       return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
     }
 
-    const club = await prisma.club.findFirst({
-      where: { id },
-      include: {
-        clubBalances: true,
-      },
-    });
+    const clubFunding = await getClubFundingById(id);
 
-    if (!club) {
+    if (!clubFunding?.success) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    const clubBalance = club.clubBalances[0];
-
-    return NextResponse.json({
-      id: club.id,
-      name: club.name,
-      totalCost: clubBalance.totalCost,
-      createdAt: club.createdAt,
-      updatedAt: club.updatedAt,
-      clubBalance,
-    });
+    return NextResponse.json(clubFunding.clubFunding);
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };
 
 /**
- * PUT /api/clubs/:id
+ * PUT /api/club-funding/:id
  * Updates a single club by ID
  */
 export const PUT = async (
@@ -70,53 +58,39 @@ export const PUT = async (
 
     // Validate request body
     const data = await request.json();
-    const validatedData = insertClub.parse(data);
+    const validatedData = insertClubFunding.parse(data);
 
-    // Update club
-    const club = await prisma.club.update({
+    // Get clubFunding latest value
+    const oldClubFunding = await getClubFundingById(id);
+    if (!oldClubFunding?.success) {
+      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+    }
+    // Get clubFunding delta
+    const deltaClubFunding =
+      oldClubFunding.clubFunding!.amount - validatedData.amount;
+
+    // Update Club Balances with delta
+    if (oldClubFunding.clubFunding!.clubBalances.length !== 0) {
+      for (const clubBalance of oldClubFunding.clubFunding!.clubBalances) {
+        await updateClubBalanceNetValue(
+          clubBalance,
+          deltaClubFunding,
+          deltaClubFunding > 0 ? 'increment' : 'decrement',
+        );
+      }
+    }
+
+    // Update clubFunding
+    const clubFunding = await prisma.clubFunding.update({
       where: { id },
       data: validatedData,
     });
 
-    if (!club) {
+    if (!clubFunding) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(club);
-  } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
-  }
-};
-
-/**
- * DELETE /api/clubs/:id
- * Deletes a single club by ID
- */
-export const DELETE = async (
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) => {
-  try {
-    // Validate session
-    const session = await getSession();
-    if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
-    }
-    const { id } = await params;
-    if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
-    }
-
-    // Delete club
-    const club = await prisma.club.delete({
-      where: { id },
-    });
-
-    if (!club) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
-    }
-
-    return NextResponse.json(club);
+    return NextResponse.json(clubFunding);
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }

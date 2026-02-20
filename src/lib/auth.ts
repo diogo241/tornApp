@@ -4,13 +4,12 @@ import { prisma } from './prisma';
 import { headers } from 'next/headers';
 import { admin } from 'better-auth/plugins';
 import type { User } from './types';
-import { BETTER_AUTH_URL } from './constants';
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-  baseURL: BETTER_AUTH_URL,
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_BASE_URL!,
   plugins: [
     admin({
       defaultRole: 'admin',

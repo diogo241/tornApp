@@ -13,7 +13,13 @@ import {
 import { getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
-import { updateTournamentCost } from '@lib/services/tournaments/tournament.cost';
+import { getTournamentCost } from '@lib/services/tournaments/tournament.cost';
+import {
+  createClubBalance,
+  getClubBalanceByClubId,
+  updateClubBalance,
+} from '@lib/services/club-balance/club-balance';
+import { ClubBalance } from '@lib/types';
 
 /**
  * GET /api/tournaments
@@ -46,7 +52,11 @@ export const GET = async (request: NextRequest) => {
 
     // Validate query parameters
     let validationFilters;
-    if (searchParams.get('name') || searchParams.get('clubName')) {
+    if (
+      searchParams.get('name') ||
+      searchParams.get('clubName') ||
+      searchParams.get('clubId')
+    ) {
       validationFilters = validateQueryParams(searchParams, filtersQuerySchema);
 
       if (validationFilters instanceof Response) {
@@ -68,6 +78,12 @@ export const GET = async (request: NextRequest) => {
           contains: validationFilters.club,
           mode: 'insensitive',
         },
+      };
+    }
+    if (validationFilters?.clubId) {
+      where.clubId = {
+        equals: validationFilters.clubId,
+        mode: 'insensitive',
       };
     }
 
@@ -120,13 +136,15 @@ export const POST = async (request: NextRequest) => {
     // Validate request body
     const data = await request.json();
     const validatedData = insertTournament.parse(data);
-    
 
     // Calculate total cost
-    const tournamentCost = await updateTournamentCost(validatedData);
+    const tournamentCost = await getTournamentCost(validatedData);
 
     if (!tournamentCost.success) {
-      return apiError(tournamentCost.message ?? 'Error calculating total cost', HttpStatusCode.INTERNAL_SERVER_ERROR);
+      return apiError(
+        tournamentCost.message ?? 'Error calculating total cost',
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+      );
     }
 
     const tournament = await prisma.tournament.create({
@@ -136,13 +154,30 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
+    const result = await getClubBalanceByClubId(validatedData.clubId);
+    if (!result?.success) {
+      // Create Club Balance
+      await createClubBalance(
+        validatedData.clubId,
+        validatedData.year,
+        tournamentCost.totalCost ?? 0,
+      );
+    } else {
+      // Update Club Balance
+      await updateClubBalance(
+        result.clubBalance as ClubBalance,
+        tournamentCost.totalCost as number,
+        'increment',
+      );
+    }
+
+
     if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(tournament);
   } catch (error) {
-
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };
