@@ -66,7 +66,6 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 create: '/referees/create',
                 edit: '/referees/edit/:id',
                 show: '/referees/show/:id',
-
                 meta: {
                   canDelete: true,
                   icon: <UserIcon />,
