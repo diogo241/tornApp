@@ -6,6 +6,7 @@ import {
   ListView,
   ListViewHeader,
 } from '@/components/refine-ui/views/list-view';
+import ClubFundingExportButton from '@components/features/club-funding-export-button';
 import type { ClubFunding } from '@lib/types';
 import { formatCurrency, formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
@@ -75,6 +76,7 @@ export default function ClubFundingListPage() {
     <ListView>
       <ListViewHeader title="Municipal Funding" />
       <DataTable table={table} />
+      <ClubFundingExportButton />
     </ListView>
   );
 }

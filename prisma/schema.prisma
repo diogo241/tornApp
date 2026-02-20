@@ -110,8 +110,6 @@ model ClubFunding {
   year   Int
   amount Float @default(300.00)
 
-  totalCost Float @default(0)
-
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @default(now()) @updatedAt
   clubBalances ClubBalance[]

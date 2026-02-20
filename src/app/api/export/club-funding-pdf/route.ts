@@ -1,0 +1,121 @@
+/**
+ * PDF Export API Route - Club Funding Report
+ *
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getSession } from '@lib/auth';
+import { apiError, HttpStatusCode } from '@lib/api';
+import { generateClubFundingPDF } from '@lib/pdf/generators';
+import { getAllClubsWithBalances } from '@lib/services/club-funding-export';
+import { generatePDFTimestamp } from '@lib/pdf/formatters';
+import { getClubFunding, getTotalFunding } from '@lib/services/club-funding';
+
+/**
+ * GET /api/export/club-funding-pdf
+ */
+export const GET = async (request: NextRequest) => {
+  try {
+    // Validate session
+    const session = await getSession();
+    if (!session) {
+      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+    }
+
+    // Get clubs data
+    const clubsData = await getAllClubsWithBalances();
+
+    // Check if data retrieval was successful
+    if (!clubsData.success || !clubsData.data) {
+      return apiError('Failed to retrieve data', HttpStatusCode.NOT_FOUND);
+    }
+
+    // Get total funding for municipality costs
+    const { success, clubFunding } = await getClubFunding();
+    if (!success && !clubFunding) {
+      return apiError('No club funding found', HttpStatusCode.NOT_FOUND);
+    }
+
+    const totalFundingCost = getTotalFunding(clubFunding!);
+
+    const totalCost = clubsData.data.reduce(
+      (sum, club) => sum + club.totalCost,
+      0,
+    );
+    const totalClubsCost = clubsData.data.reduce(
+      (sum, club) => sum + club.netBalance,
+      0,
+    );
+
+    // Create PDF from retrieved data
+    const pdfData = {
+      clubs: clubsData.data.map((club) => ({
+        name: club.name,
+        totalCost: club.totalCost,
+        netBalance: club.netBalance,
+        totalFunding: clubFunding?.amount ?? 0,
+      })),
+      totalFundingCost,
+      totalCost,
+      totalClubsCost,
+      generatedAt: new Date(),
+    };
+
+    // Generate PDF buffer
+    const pdfBuffer = await generateClubFundingPDF(pdfData);
+
+    // ========================================================================
+    // RESPONSE: Stream PDF to client with proper headers
+    // ========================================================================
+
+    // Generate filename with timestamp
+    const timestamp = generatePDFTimestamp();
+    const year = new Date().getFullYear();
+    const yearSuffix = year ? `_${year}` : '';
+    const filename = `club_funding_report${yearSuffix}_${timestamp}.pdf`;
+
+    // Create response with proper headers for PDF download
+    // Convert Uint8Array to Buffer for Next.js compatibility
+    const response = new NextResponse(Buffer.from(pdfBuffer), {
+      status: HttpStatusCode.OK,
+      headers: {
+        // Content-Type tells browser this is a PDF
+        'Content-Type': 'application/pdf',
+
+        // Content-Disposition triggers download with specified filename
+        'Content-Disposition': `attachment; filename="${filename}"`,
+
+        // Content-Length helps with download progress
+        'Content-Length': pdfBuffer.length.toString(),
+
+        // Cache control prevents caching of sensitive data
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+
+        // Security headers
+        'X-Content-Type-Options': 'nosniff',
+      },
+    });
+
+    return response;
+  } catch (error) {
+    // ========================================================================
+    // ERROR HANDLING: Graceful failure with security considerations
+    // ========================================================================
+
+    // Log detailed error for server-side debugging
+    console.error('PDF export error:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Return generic error to client
+    // Security: Don't expose sensitive system details or stack traces
+    return apiError(
+      'Failed to generate PDF report',
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+      'An error occurred while generating the PDF. Please try again later.',
+    );
+  }
+};
+
