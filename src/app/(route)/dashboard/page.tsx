@@ -34,7 +34,6 @@ export default function DashboardPage() {
     ...query?.data?.data,
     totalMunicipalFunding: result?.data[0]?.totalFundingCost ?? 0,
   } as DashboardStats;
-  console.log(data);
 
   return (
     <LoadingOverlay loading={query?.isPending}>
