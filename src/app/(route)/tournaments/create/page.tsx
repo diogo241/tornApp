@@ -84,6 +84,10 @@ export default function TournamentCreatePage() {
     resource: 'rates',
     optionLabel: 'name',
     optionValue: 'id',
+    debounce: 500,
+    pagination: {
+      pageSize: 100,
+    },
   });
 
   // Fecth clubs
@@ -91,6 +95,10 @@ export default function TournamentCreatePage() {
     resource: 'clubs',
     optionLabel: 'name',
     optionValue: 'id',
+    debounce: 500,
+    pagination: {
+      pageSize: 100,
+    },
   });
 
   return (

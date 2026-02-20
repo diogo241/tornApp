@@ -49,6 +49,9 @@ export const GET = async (request: NextRequest) => {
       }
     }
 
+    let skip: number | undefined = (page - 1) * pageSize;
+    let take: number | undefined = pageSize;
+
     // Build where clause
     const where: Prisma.RefereeWhereInput = {};
     if (validationFilters?.name) {
@@ -56,14 +59,17 @@ export const GET = async (request: NextRequest) => {
         contains: validationFilters.name,
         mode: 'insensitive',
       };
+
+      skip = undefined;
+      take = undefined;
     }
 
     // Fetch data with pagination
     const [total, referees] = await prisma.$transaction([
       prisma.referee.count(),
       prisma.referee.findMany({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip,
+        take,
         where,
         select: {
           id: true,

@@ -41,7 +41,7 @@ export const GET = async (request: NextRequest) => {
     if (validationPages instanceof Response) {
       return validationPages;
     }
-    const { page = 1, pageSize = 10 } = validationPages;
+    let { page = 1, pageSize = 10 } = validationPages;
 
     let validationFilters;
     // Validate query parameters
@@ -53,6 +53,9 @@ export const GET = async (request: NextRequest) => {
       }
     }
 
+    let skip: number | undefined = (page - 1) * pageSize;
+    let take: number | undefined = pageSize;
+
     // Build where clause
     const where: Prisma.ClubWhereInput = {};
     if (validationFilters?.name) {
@@ -60,14 +63,16 @@ export const GET = async (request: NextRequest) => {
         contains: validationFilters.name,
         mode: 'insensitive',
       };
+      skip = undefined;
+      take = undefined;
     }
 
     // Fetch data with pagination
     const [total, clubs] = await prisma.$transaction([
       prisma.club.count(),
       prisma.club.findMany({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip,
+        take,
         where,
         select: {
           id: true,

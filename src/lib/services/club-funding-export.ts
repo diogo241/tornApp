@@ -57,7 +57,7 @@ export async function getAllClubsWithBalances() {
         };
       })
       // Get only clubs with totalCost > 0, with tournaments
-      .filter((club): club is ProcessedClubFundingData => club.totalCost !== 0);
+      .filter((club): club is ProcessedClubFundingData => club.totalCost > 0);
 
     // Check if we have any valid data after processing
     if (processedData.length === 0) {
@@ -75,67 +75,6 @@ export async function getAllClubsWithBalances() {
     return {
       success: false,
       message: 'Failed to retrieve club funding data',
-    };
-  }
-}
-
-/**
- * Get summary statistics for club funding
- *
- * Purpose: Calculate high-level statistics for dashboard/summary views
- * Performance: Lightweight query, aggregates only
- *
- * @returns Summary statistics or error
- */
-export async function getClubFundingSummary(): Promise<{
-  success: boolean;
-  summary?: {
-    totalClubs: number;
-    totalFunding: number;
-    totalCost: number;
-    totalNetBalance: number;
-    averageFunding: number;
-    positiveBalanceCount: number;
-    negativeBalanceCount: number;
-  };
-  error?: string;
-}> {
-  try {
-    const result = await getAllClubsWithFunding();
-
-    if (!result.success || !result.data) {
-      return {
-        success: false,
-        error: result.error || 'Failed to fetch data',
-      };
-    }
-
-    const clubs = result.data;
-    const totalFunding = clubs.reduce((sum, club) => sum + club.funding, 0);
-    const totalCost = clubs.reduce((sum, club) => sum + club.totalCost, 0);
-    const totalNetBalance = clubs.reduce(
-      (sum, club) => sum + club.netBalance,
-      0,
-    );
-
-    return {
-      success: true,
-      summary: {
-        totalClubs: clubs.length,
-        totalFunding,
-        totalCost,
-        totalNetBalance,
-        averageFunding: clubs.length > 0 ? totalFunding / clubs.length : 0,
-        positiveBalanceCount: clubs.filter((c) => c.netBalance > 0).length,
-        negativeBalanceCount: clubs.filter((c) => c.netBalance < 0).length,
-      },
-    };
-  } catch (error) {
-    console.error('Error calculating club funding summary:', error);
-
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'UNKNOWN_ERROR',
     };
   }
 }

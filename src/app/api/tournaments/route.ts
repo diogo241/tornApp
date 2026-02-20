@@ -64,6 +64,9 @@ export const GET = async (request: NextRequest) => {
       }
     }
 
+    let skip: number | undefined = (page - 1) * pageSize;
+    let take: number | undefined = pageSize;
+
     // Build where clause
     const where: Prisma.TournamentWhereInput = {};
     if (validationFilters?.name) {
@@ -71,6 +74,9 @@ export const GET = async (request: NextRequest) => {
         contains: validationFilters.name,
         mode: 'insensitive',
       };
+
+      skip = undefined;
+      take = undefined;
     }
     if (validationFilters?.club) {
       where.club = {
@@ -79,20 +85,26 @@ export const GET = async (request: NextRequest) => {
           mode: 'insensitive',
         },
       };
+
+      skip = undefined;
+      take = undefined;
     }
     if (validationFilters?.clubId) {
       where.clubId = {
         equals: validationFilters.clubId,
         mode: 'insensitive',
       };
+
+      skip = undefined;
+      take = undefined;
     }
 
     // Fetch data with pagination
     const [total, tournaments] = await prisma.$transaction([
       prisma.tournament.count(),
       prisma.tournament.findMany({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip,
+        take,
         where,
         select: {
           id: true,
@@ -170,7 +182,6 @@ export const POST = async (request: NextRequest) => {
         'increment',
       );
     }
-
 
     if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
