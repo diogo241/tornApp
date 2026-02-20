@@ -29,6 +29,7 @@ export default function UserShowPage() {
   }
 
   const user = record as User;
+  if (!user) return null;
 
   return (
     <ShowView>

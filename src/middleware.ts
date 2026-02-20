@@ -11,7 +11,6 @@ export default async function middleware(request: NextRequest) {
   // Protect all other API routes
   if (pathname.startsWith('/api/')) {
     // Check for session cookie
-    console.log(request.cookies);
     const sessionToken =
       request.cookies.get('__Secure-better-auth.session_token')?.value ||
       request.cookies.get('better-auth.session_token')?.value;
