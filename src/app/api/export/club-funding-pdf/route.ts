@@ -53,7 +53,8 @@ export const GET = async (request: NextRequest) => {
         name: club.name,
         totalCost: club.totalCost,
         netBalance: club.netBalance,
-        totalFunding: clubFunding?.amount ?? 0,
+        //TODO: FIX THE CLUB FUNDING AMOUNT, NETBALANCE POSITIVE
+        totalFunding: club.netBalance > 0 ? clubFunding?.amount! - club.netBalance : clubFunding?.amount!,
       })),
       totalFundingCost,
       totalCost,
@@ -65,7 +66,6 @@ export const GET = async (request: NextRequest) => {
     const pdfBuffer = await generateClubFundingPDF(pdfData);
 
     // Generate filename with timestamp
-    const timestamp = generatePDFTimestamp();
     const year = new Date().getFullYear();
     const yearSuffix = year ? `_${year}` : '';
     const filename = `club_municipal_report${yearSuffix}.pdf`;

@@ -46,13 +46,9 @@ export async function getAllClubsWithBalances() {
     // Process and validate each club's data
     const processedData: ProcessedClubFundingData[] = clubs
       .map((club) => {
-        const clubNetBalance = club.clubBalance?.netBalance ?? 0;
-        const clubSuportedValue =
-          clubNetBalance > 0 ? 0 : Math.abs(clubNetBalance);
-
         return {
           name: club.name,
-          netBalance: clubSuportedValue,
+          netBalance: club.clubBalance?.netBalance,
           totalCost: club.clubBalance?.totalCost ?? 0,
         };
       })

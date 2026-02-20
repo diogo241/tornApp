@@ -24,9 +24,24 @@ export const getClubFundingById = async (id: string) => {
 // Calculate total funding to club
 export const getTotalFunding = (clubFunding: ClubFunding) => {
   let totalFunding = 0;
+  const clubFundingAmount = clubFunding.amount;
+  if (!clubFundingAmount) {
+    return totalFunding;
+  }
+  const clubBalances = clubFunding.clubBalances;
+  if (!clubBalances) {
+    return totalFunding;
+  }
 
-  const totalBalances = clubFunding.clubBalances?.length ?? 0;
-  totalFunding += clubFunding.amount * totalBalances;
+  clubBalances.forEach((clubBalance) => {
+    // If club net balance is positive, only some the difference between the clubFunding amount ant the net balance
+    if (clubBalance.netBalance! > 0) {
+      totalFunding += clubFundingAmount - clubBalance.netBalance!;
+    } else {
+      // Else some the clubFunding amount
+      totalFunding += clubFundingAmount;
+    }
+  });
 
   return totalFunding;
 };
