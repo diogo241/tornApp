@@ -66,7 +66,6 @@ export default function RateList() {
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton recordItemId={row.original.id} size="sm" />
-            <ShowButton recordItemId={row.original.id} size="sm" />
             <DeleteButton recordItemId={row.original.id} size="sm" />
           </div>
         ),
