@@ -30,7 +30,10 @@ export type RefereeAssignment = z.infer<typeof insertRefereeAssignment> & {
   updatedAt?: Date;
 };
 
-export type Club = z.infer<typeof insertClub>;
+export type Club = z.infer<typeof insertClub> & {
+  totalCost?: number;
+  clubBalance?: ClubBalance;
+};
 
 export type User = z.infer<typeof insertUser> & {
   role?: string;
@@ -64,7 +67,6 @@ export type ClubBalance = {
   clubId?: string;
   club?: Club;
   clubFunding?: ClubFunding;
-  year?: number;
   netBalance?: number;
   totalCost?: number;
   createdAt?: Date;

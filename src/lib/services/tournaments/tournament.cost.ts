@@ -1,5 +1,8 @@
-import type { Rate, Tournament } from '@lib/types';
+import type { Rate, RefereeAssignment, Tournament } from '@lib/types';
 import { prisma } from '@lib/prisma';
+import { getAssignmentTotalCost } from '../assignments/assignemt.helpers';
+import { updateRefereeCost } from '../referee';
+import { Referee } from '../../types';
 
 // Get tournament total cost
 export const getTournamentCost = async (
@@ -66,6 +69,62 @@ export const updateTournamentCost = async (
     });
 
     return { success: true, totalCost };
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+};
+
+// Update Assignemnt total cost and referee total cost
+export const updateAssignmentTotalCost = async (
+  assignment: RefereeAssignment,
+  tournament: Tournament,
+) => {
+  try {
+    const { totalCost } = await getAssignmentTotalCost(
+      assignment,
+      tournament.rate!,
+      tournament,
+    );
+
+    if (!totalCost || totalCost === 0) {
+      return {
+        success: false,
+        message: 'Error getting total cost for assignment',
+      };
+    }
+
+    const updatedAssignment = await prisma.refereeAssignment.update({
+      where: { id: assignment.id },
+      data: {
+        totalCost,
+      },
+      include: {
+        referee: true,
+      },
+    });
+
+    if (!updatedAssignment) {
+      return {
+        success: false,
+        message: 'Error updating assignment total cost',
+      };
+    }
+
+    const costDelta = updatedAssignment.totalCost! - assignment.totalCost!;
+
+    // Update referee total cost
+    const referee = await updateRefereeCost(
+      updatedAssignment.refereeId,
+      costDelta,
+    );
+    if (!referee) {
+      return {
+        success: false,
+        message: 'Error updating referee total cost',
+      };
+    }
+
+    return { success: true };
   } catch (error) {
     return { success: false, message: (error as Error).message };
   }

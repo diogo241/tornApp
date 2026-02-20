@@ -6,6 +6,9 @@ const nextConfig = {
       sizeLimit: '1mb',
     },
   },
+  experimental: {
+    sourceMaps: true,
+  },
   async headers() {
     return [
       {

@@ -171,6 +171,7 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
+
     if (!tournament) {
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }

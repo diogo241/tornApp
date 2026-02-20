@@ -11,6 +11,7 @@ import type { Club } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 import TournamentTable from '@components/features/tournament-table';
+import { formatCurrency } from '../../../../../lib/utils';
 
 export default function ClubShowPage() {
   const { result: record, query } = useShow({});
@@ -29,7 +30,6 @@ export default function ClubShowPage() {
     );
   }
 
-
   const club = record as Club;
 
   return (
@@ -38,6 +38,28 @@ export default function ClubShowPage() {
       <LoadingOverlay loading={isLoading}>
         <Card>
           <CardContent className="flex flex-col justify-start gap-4 md:flex-row md:gap-8">
+            <div>
+              <h4 className="text-sm font-medium mb-2">Net Balance:</h4>
+              <p
+                className={
+                  club?.clubBalance
+                    ? club.clubBalance.netBalance! > 0
+                      ? `text-sm text-green-500 opacity-70`
+                      : `text-sm text-red-500 opacity-70`
+                    : `text-sm text-muted-foreground`
+                }
+              >
+                {club?.clubBalance
+                  ? formatCurrency(club.clubBalance.netBalance as number)
+                  : 0}
+              </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-2">Total Cost:</h4>
+              <p className="text-sm text-muted-foreground">
+                {formatCurrency(club?.totalCost as number) || 0}
+              </p>
+            </div>
             <div>
               <h4 className="text-sm font-medium mb-2">Created at:</h4>
               <p className="text-sm text-muted-foreground">

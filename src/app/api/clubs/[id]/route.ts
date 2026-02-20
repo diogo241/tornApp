@@ -34,7 +34,16 @@ export const GET = async (
       return apiError('Not found', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(club);
+    const clubBalance = club.clubBalances[0];
+
+    return NextResponse.json({
+      id: club.id,
+      name: club.name,
+      totalCost: clubBalance.totalCost,
+      createdAt: club.createdAt,
+      updatedAt: club.updatedAt,
+      clubBalance,
+    });
   } catch (error) {
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }

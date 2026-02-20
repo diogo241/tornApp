@@ -42,7 +42,6 @@ export const createClubBalance = async (
     const clubBalance = await prisma.clubBalance.create({
       data: {
         clubId,
-        year,
         totalCost,
         clubFundingId: clubFunding?.id,
         netBalance: clubFunding?.amount - totalCost,
@@ -58,21 +57,17 @@ export const createClubBalance = async (
 // Update Club Balance
 export const updateClubBalance = async (
   clubBalance: ClubBalance,
-  tournamentCost: number,
+  deltaCost: number,
   increment: 'increment' | 'decrement',
 ) => {
   try {
     // Calculate net balance
     let netBalance;
     increment === 'increment'
-      ? (netBalance = calculateNetBalance(clubBalance, tournamentCost, true))
-      : (netBalance = calculateNetBalance(clubBalance, tournamentCost, false));
-    
-  console.log("tournamentCost", tournamentCost);
-  console.log("clubBalance", clubBalance);
-  console.log("netBalance", netBalance);
+      ? (netBalance = calculateNetBalance(clubBalance, deltaCost, true))
+      : (netBalance = calculateNetBalance(clubBalance, deltaCost, false));
 
-    if (!netBalance) {
+    if (!netBalance && netBalance !== 0) {
       return { success: false, message: 'Error calculating net balance' };
     }
 
@@ -81,8 +76,39 @@ export const updateClubBalance = async (
       where: { id: clubBalance.id },
       data: {
         totalCost: {
-          increment: tournamentCost,
+          increment: deltaCost,
         },
+        netBalance,
+      },
+    });
+
+    return { success: true, clubBalance };
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+};
+
+// Update Club Balance Net Value
+export const updateClubBalanceNetValue = async (
+  clubBalance: ClubBalance,
+  deltaCost: number,
+  increment: 'increment' | 'decrement',
+) => {
+  try {
+    // Calculate net balance
+    let netBalance;
+    increment === 'increment'
+      ? (netBalance = calculateNetBalance(clubBalance, deltaCost, true))
+      : (netBalance = calculateNetBalance(clubBalance, deltaCost, false));
+
+    if (!netBalance && netBalance !== 0) {
+      return { success: false, message: 'Error calculating net balance' };
+    }
+
+    // Update net balance
+    await prisma.clubBalance.update({
+      where: { id: clubBalance.id },
+      data: {
         netBalance,
       },
     });

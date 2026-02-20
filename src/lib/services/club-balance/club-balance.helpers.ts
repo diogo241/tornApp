@@ -6,23 +6,17 @@ export const calculateNetBalance = (
   newCost: number,
   increment: true | false,
 ) => {
-  const { clubFunding, club, totalCost } = clubBalance;
+  const { clubId, netBalance } = clubBalance;
 
-  if (!clubFunding || !club) return null;
+  if (!clubId) return null;
 
-  const { amount } = clubFunding;
+  let totalNetBalance = netBalance ?? 0;
 
-  let totalCostAmount = -(totalCost ?? 0);
-  
   if (increment) {
-    totalCostAmount -= -newCost;
+    totalNetBalance += -newCost || 0;
   } else {
-    totalCostAmount += newCost;
+    totalNetBalance -= newCost || 0;
   }
-  // console.log(totalCostAmount);
-  // console.log(amount);
-  // console.log(totalCost);
-  // console.log(Math.round((totalCostAmount - amount) * 100) / 100);
 
-  return Math.round((totalCostAmount - amount) * 100) / 100;
+  return totalNetBalance;
 };

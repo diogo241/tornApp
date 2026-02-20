@@ -23,7 +23,7 @@ export default function ClubFundingEditPage() {
   const router = useRouter();
 
   const {
-    refineCore: { onFinish, formLoading },
+    refineCore: { onFinish, formLoading, query },
     ...form
   } = useForm<BaseRecord, HttpError, ClubFunding>({
     resolver: zodResolver(insertClubFunding),
