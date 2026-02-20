@@ -80,6 +80,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 show: '/rates/show/:id',
                 meta: {
                   canDelete: true,
+                  canShow: false,
                   icon: <HandCoinsIcon />,
                 },
               },
