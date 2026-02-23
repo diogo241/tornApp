@@ -48,7 +48,7 @@ export async function getAllClubsWithBalances() {
       .map((club) => {
         return {
           name: club.name,
-          netBalance: club.clubBalance?.netBalance,
+          netBalance: club.clubBalance?.netBalance ?? 0,
           totalCost: club.clubBalance?.totalCost ?? 0,
         };
       })
