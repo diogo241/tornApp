@@ -8,7 +8,6 @@ import { getSession } from '@lib/auth';
 import { apiError, HttpStatusCode } from '@lib/api';
 import { generateClubFundingPDF } from '@lib/pdf/generators';
 import { getAllClubsWithBalances } from '@lib/services/club-funding-export';
-import { generatePDFTimestamp } from '@lib/pdf/formatters';
 import { getClubFunding, getTotalFunding } from '@lib/services/club-funding';
 
 /**
@@ -43,7 +42,7 @@ export const GET = async (request: NextRequest) => {
       0,
     );
     const totalClubsCost = clubsData.data.reduce(
-      (sum, club) => sum + club.netBalance,
+      (sum, club) => sum + Math.abs(club.netBalance),
       0,
     );
 
@@ -52,7 +51,7 @@ export const GET = async (request: NextRequest) => {
       clubs: clubsData.data.map((club) => ({
         name: club.name,
         totalCost: club.totalCost,
-        netBalance: club.netBalance,
+        netBalance: Math.abs(club.netBalance),
         //TODO: FIX THE CLUB FUNDING AMOUNT, NETBALANCE POSITIVE
         totalFunding: club.netBalance > 0 ? clubFunding?.amount! - club.netBalance : clubFunding?.amount!,
       })),
