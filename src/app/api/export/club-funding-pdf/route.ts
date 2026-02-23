@@ -51,7 +51,7 @@ export const GET = async (request: NextRequest) => {
       clubs: clubsData.data.map((club) => ({
         name: club.name,
         totalCost: club.totalCost,
-        netBalance: Math.abs(club.netBalance),
+        netBalance: club.netBalance > 0 ? 0 : Math.abs(club.netBalance),
         //TODO: FIX THE CLUB FUNDING AMOUNT, NETBALANCE POSITIVE
         totalFunding: club.netBalance > 0 ? clubFunding?.amount! - club.netBalance : clubFunding?.amount!,
       })),
