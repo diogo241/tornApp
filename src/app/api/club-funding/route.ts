@@ -37,7 +37,6 @@ export const GET = async (request: NextRequest) => {
     if (validationPages instanceof Response) {
       return validationPages;
     }
-    const { page = 1, pageSize = 10 } = validationPages;
 
     // Fetch data
     const total = await prisma.clubFunding.count();
