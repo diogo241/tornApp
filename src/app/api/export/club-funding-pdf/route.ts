@@ -41,10 +41,13 @@ export const GET = async (request: NextRequest) => {
       (sum, club) => sum + club.totalCost,
       0,
     );
-    const totalClubsCost = clubsData.data.reduce(
-      (sum, club) => sum + Math.abs(club.netBalance),
-      0,
-    );
+    const totalClubsCost = clubsData.data.reduce((sum, club) => {
+      if (club.netBalance > 0) {
+        return sum;
+      } else {
+        return sum + Math.abs(club.netBalance);
+      }
+    }, 0);
 
     // Create PDF from retrieved data
     const pdfData = {
@@ -53,7 +56,10 @@ export const GET = async (request: NextRequest) => {
         totalCost: club.totalCost,
         netBalance: club.netBalance > 0 ? 0 : Math.abs(club.netBalance),
         //TODO: FIX THE CLUB FUNDING AMOUNT, NETBALANCE POSITIVE
-        totalFunding: club.netBalance > 0 ? clubFunding?.amount! - club.netBalance : clubFunding?.amount!,
+        totalFunding:
+          club.netBalance > 0
+            ? clubFunding?.amount! - club.netBalance
+            : clubFunding?.amount!,
       })),
       totalFundingCost,
       totalCost,
