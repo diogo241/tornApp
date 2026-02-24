@@ -68,8 +68,8 @@ export default function ClubListPage() {
             <DeleteButton recordItemId={row.original.id} size="sm" />
           </div>
         ),
+        size: 180,
         enableSorting: false,
-        size: 100,
       }),
     ];
   }, []);

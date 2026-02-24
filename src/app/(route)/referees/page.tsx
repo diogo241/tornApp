@@ -55,7 +55,6 @@ export default function RefereeList() {
           </div>
         ),
         enableSorting: false,
-        size: 100,
       }),
     ];
   }, []);
