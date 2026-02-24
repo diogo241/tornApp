@@ -4,9 +4,18 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useList, type HttpError } from '@refinedev/core';
+import type { Tournament } from '@lib/types';
 
 export function ClubFundingExportButton() {
   const [isLoading, setIsLoading] = useState(false);
+
+  // Only show button if there are any tournaments
+  const { result, query } = useList<Tournament, HttpError>({
+    resource: 'tournaments',
+  });
+  const tournaments = result?.data ?? [];
+  if (query.isLoading) return null;
 
   const handleExport = async () => {
     if (isLoading) return;
@@ -70,19 +79,23 @@ export function ClubFundingExportButton() {
    * Render button with appropriate state
    */
   return (
-    <Button onClick={handleExport} disabled={isLoading}>
-      {isLoading ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Generating...
-        </>
-      ) : (
-        <>
-          <Download className="mr-2 h-4 w-4" />
-          Export Municipal Resume
-        </>
+    <>
+      {tournaments.length > 0 && (
+        <Button onClick={handleExport} disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              Export Municipal Resume
+            </>
+          )}
+        </Button>
       )}
-    </Button>
+    </>
   );
 }
 
