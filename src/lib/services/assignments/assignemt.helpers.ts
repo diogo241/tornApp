@@ -25,30 +25,56 @@ export const checkNumberOfGames = async (
       message: 'Total Games is greater then tournament total games',
     };
 
+  let gamesMaxValues = {
+    countA: tournament.countA ?? 0,
+    countARef: (tournament.countA ?? 0) * 2,
+    countB: tournament.countB ?? 0,
+    countBRef: (tournament.countB ?? 0) * 2,
+    countC: tournament.countC ?? 0,
+    countCRef: (tournament.countC ?? 0) * 2,
+  };
+
   const validators = [
     {
       label: 'countA',
-      value: (countA ?? 0) + (countARef ?? 0),
-      max: tournament.countA ?? 0,
+      value: countA ?? 0,
+      max: gamesMaxValues.countA,
     },
     {
       label: 'countB',
-      value: (countB ?? 0) + (countBRef ?? 0),
-      max: tournament.countB ?? 0,
+      value: countB ?? 0,
+      max: gamesMaxValues.countB,
     },
     {
       label: 'countC',
-      value: (countC ?? 0) + (countCRef ?? 0),
-      max: tournament.countC ?? 0,
+      value: countC ?? 0,
+      max: gamesMaxValues.countC,
+    },
+    {
+      label: 'countARef',
+      value: countARef ?? 0,
+      max: gamesMaxValues.countARef,
+    },
+    {
+      label: 'countBRef',
+      value: countBRef ?? 0,
+      max: gamesMaxValues.countBRef,
+    },
+    {
+      label: 'countCRef',
+      value: countCRef ?? 0,
+      max: gamesMaxValues.countCRef,
     },
   ];
 
   const validation = validateGamesCount(validators);
-  if (validation.success === false) {
-    return validation;
-  }
+  if (!validation.success)
+    return {
+      success: false,
+      message: validation.message,
+    };
 
-  return { success: true };
+  return { success: validation.success };
 };
 
 // Validate if games assigned are less or equal to the remaining games

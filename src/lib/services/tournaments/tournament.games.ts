@@ -14,9 +14,9 @@ export const getRemainingGames = async (
           countA: tournament.countA,
           countB: tournament.countB ?? 0,
           countC: tournament.countC ?? 0,
-          countARef: tournament.countA ?? 0,
-          countBRef: tournament.countB ?? 0,
-          countCRef: tournament.countC ?? 0,
+          countARef: (tournament.countA ?? 0) * 2,
+          countBRef: (tournament.countB ?? 0) * 2,
+          countCRef: (tournament.countC ?? 0) * 2,
         },
       };
 
@@ -26,11 +26,15 @@ export const getRemainingGames = async (
     );
 
     // Calculate the remaining games
-    const totalGames = {
-      countA: tournament.countA,
+    let totalGames = {
+      countA: tournament.countA ?? 0,
       countB: tournament.countB ?? 0,
       countC: tournament.countC ?? 0,
+      countARef: (tournament.countA ?? 0) * 2,
+      countBRef: (tournament.countB ?? 0) * 2,
+      countCRef: (tournament.countC ?? 0) * 2,
     };
+
     const remainingGames = calculateRemainingGames(assignedGames, totalGames);
 
     return {
@@ -78,15 +82,15 @@ const calculateRemainingGames = (
     countC: Math.max(0, (totalGames.countC || 0) - (assignedGames.countC || 0)),
     countARef: Math.max(
       0,
-      (totalGames.countA || 0) - (assignedGames.countARef || 0),
+      (totalGames.countARef || 0) - (assignedGames.countARef || 0),
     ),
     countBRef: Math.max(
       0,
-      (totalGames.countB || 0) - (assignedGames.countBRef || 0),
+      (totalGames.countBRef || 0) - (assignedGames.countBRef || 0),
     ),
     countCRef: Math.max(
       0,
-      (totalGames.countC || 0) - (assignedGames.countCRef || 0),
+      (totalGames.countCRef || 0) - (assignedGames.countCRef || 0),
     ),
   };
 

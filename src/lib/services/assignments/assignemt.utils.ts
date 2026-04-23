@@ -1,6 +1,6 @@
 export const validateGamesCount = (
   validators: { label: string; value: number; max: number }[],
-) => {
+): { success: boolean; message?: string } => {
   for (const validator of validators) {
     if (validator.value > validator.max)
       return {
