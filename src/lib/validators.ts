@@ -49,7 +49,7 @@ export const insertClub = z.object({
 // User validators
 export const insertUser = z
   .object({
-    id: z.string().uuid().optional(),
+    id: z.string().optional(),
     name: z.string().min(3).max(50).trim(),
     email: z.string().email().min(3).max(50).trim(),
     createdAt: z.coerce
