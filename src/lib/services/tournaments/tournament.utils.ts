@@ -28,6 +28,6 @@ export const getCostPerGame = (
   aRate: number,
   minutes: number,
 ) => {
-  const refValue = refRate + aRate;
+  const refValue = refRate + (aRate * 2);
   return formatCurrency(refValue * minutes);
 };

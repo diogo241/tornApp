@@ -114,7 +114,7 @@ export default function AssignmentTable({
         enableSorting: false,
       }),
     ];
-  }, []);
+  }, [tournamentId]);
 
   const table = useTable({
     columns,

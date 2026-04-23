@@ -35,7 +35,7 @@ export const getTournamentCost = async (
 
     // Use  aRate if players is 11
     activeRate?.players === 11
-      ? (costPerMinute = (activeRate.aRate ?? 0) + activeRate.refRate)
+      ? (costPerMinute = (activeRate.aRate! * 2) + activeRate.refRate)
       : (costPerMinute = activeRate.refRate);
 
     // Calculate total cost, validate if B and C are not null
