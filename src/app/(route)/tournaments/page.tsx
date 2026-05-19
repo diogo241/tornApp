@@ -23,7 +23,7 @@ export default function TournamentList() {
       columnHelper.accessor('name', {
         id: 'name',
         header: 'Name',
-        size: 150,
+        size: 220,
       }),
       columnHelper.accessor('club.name', {
         id: 'club.name',
@@ -46,7 +46,7 @@ export default function TournamentList() {
         cell: ({ row }) => {
           return formatDateTime(row.original.startDate as Date).dateOnly;
         },
-        size: 120,
+        size: 150,
       }),
       columnHelper.accessor('endDate', {
         id: 'endDate',
@@ -54,7 +54,7 @@ export default function TournamentList() {
         cell: ({ row }) => {
           return formatDateTime(row.original.endDate as Date).dateOnly;
         },
-        size: 120,
+        size: 150,
       }),
       columnHelper.accessor('totalCost', {
         id: 'totalCost',
