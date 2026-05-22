@@ -90,6 +90,18 @@ export default function TournamentList() {
         mode: 'server',
       },
       syncWithLocation: true,
+      sorters: {
+        permanent: [
+          {
+            field: 'startDate',
+            order: 'desc',
+          },
+          {
+            field: 'endDate',
+            order: 'desc',
+          },
+        ],
+      },
       filters: {
         permanent: [
           {

@@ -3,6 +3,7 @@ import {
   apiError,
   apiListSuccess,
   HttpStatusCode,
+  validateOrderBy,
   validateQueryParams,
 } from '@lib/api';
 import {
@@ -39,6 +40,8 @@ export const GET = async (request: NextRequest) => {
 
     // Validate query parameters
     const { searchParams } = new URL(request.url);
+
+    const validOrderBy = validateOrderBy(searchParams.get('sort'));
 
     const validationPages = validateQueryParams(
       searchParams,
@@ -118,9 +121,7 @@ export const GET = async (request: NextRequest) => {
           createdAt: true,
           updatedAt: true,
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: validOrderBy as Prisma.TournamentOrderByWithRelationInput,
       }),
     ]);
 
