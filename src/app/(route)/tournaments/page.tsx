@@ -23,7 +23,7 @@ export default function TournamentList() {
       columnHelper.accessor('name', {
         id: 'name',
         header: 'Name',
-        size: 350,
+        size: 450,
       }),
       columnHelper.accessor('club.name', {
         id: 'club.name',
