@@ -99,3 +99,27 @@ export function validateQueryParams<T extends z.ZodTypeAny>(
     throw error;
   }
 }
+
+/**
+ * Validates orderBy
+ */
+
+export function validateOrderBy(orderBy: string | null | undefined) {
+  if (!orderBy || orderBy.length === 0) {
+    return { createdAt: 'asc' };
+  }
+
+  const orderByArray = orderBy
+    .split(',')
+    .map((field) => field.trim())
+    .filter(Boolean);
+
+  return orderByArray.map((field) => {
+    const isDesc = field.startsWith('-');
+    const cleanedField = isDesc ? field.substring(1) : field;
+
+    return {
+      [cleanedField]: isDesc ? 'desc' : 'asc',
+    };
+  });
+}

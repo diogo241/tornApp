@@ -87,7 +87,6 @@ export const formatDateTime = (dateString: Date | string | null | undefined) => 
     hour12: false, // use 12-hour clock (true) or 24-hour clock (false)
   };
   const dateOptions: Intl.DateTimeFormatOptions = {
-    weekday: 'short', // abbreviated weekday name (e.g., 'Mon')
     month: 'numeric', // abbreviated month name (e.g., 'Oct')
     year: 'numeric', // abbreviated year (e.g., '2023')
     day: 'numeric', // numeric day of the month (e.g., '25')
