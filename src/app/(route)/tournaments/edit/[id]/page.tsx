@@ -78,13 +78,6 @@ export default function TournamentEditPage() {
 
   // Fix to get correct endDate
   const tournament = query?.data?.data as Tournament | undefined;
-  const endDate = new Date(tournament?.endDate ?? '');
-  useEffect(() => {
-    if (endDate) {
-      form.setValue('endDate', endDate, { shouldDirty: false });
-      form.setValue('year', endDate.getFullYear(), { shouldDirty: false });
-    }
-  }, [query]);
 
   const isLoading = formLoading || query?.isPending;
 
@@ -109,6 +102,11 @@ export default function TournamentEditPage() {
       pageSize: 100,
     },
   });
+
+  if (query?.isError || query?.isLoading) return null;
+
+  console.log(form.getValues('endDate'));
+  console.log(tournament?.endDate);
 
   return (
     <EditView>
@@ -147,7 +145,7 @@ export default function TournamentEditPage() {
                           >
                             {field.value
                               ? `${formatDateTime(field.value).dateOnly} - ${
-                                  formatDateTime(form.getValues('endDate'))
+                                  formatDateTime(form.getValues('endDate') ?? tournament?.endDate)
                                     .dateOnly
                                 }`
                               : 'Pick a date'}
@@ -175,6 +173,10 @@ export default function TournamentEditPage() {
                               if (range?.from) {
                                 const fromDate = new Date(range.from);
                                 const selectedYear = fromDate.getFullYear();
+                                form.setValue('startDate', range.from, {
+                                  shouldValidate: true,
+                                  shouldDirty: true,
+                                });
                                 form.setValue('year', selectedYear, {
                                   shouldValidate: true,
                                   shouldDirty: true,
@@ -391,7 +393,7 @@ export default function TournamentEditPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.back()}
+                onClick={() => router.back() ?? router.push(`/tournaments/show/${id}`)}
               >
                 Cancel
               </Button>
