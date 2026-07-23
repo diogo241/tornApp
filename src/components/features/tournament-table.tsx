@@ -29,7 +29,7 @@ export default function TournamentTable({ clubId }: { clubId: string }) {
       columnHelper.accessor('name', {
         id: 'name',
         header: 'Name',
-        size: 150,
+        size: 210,
       }),
       columnHelper.accessor('rate.name', {
         id: 'rate.name',
