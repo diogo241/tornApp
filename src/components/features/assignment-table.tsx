@@ -43,14 +43,14 @@ export default function AssignmentTable({
           columnHelper.accessor('tournament.name', {
             id: 'tournament.name',
             header: 'Tournament',
-            size: 200,
+            size: 260,
           }),
         ]
       : [
           columnHelper.accessor('referee.name', {
             id: 'referee.name',
             header: 'Name',
-            size: 240,
+            size: 260,
           }),
         ];
 
@@ -59,32 +59,32 @@ export default function AssignmentTable({
       columnHelper.accessor('countA', {
         id: 'countA',
         header: 'Ref',
-        size: 80,
+        size: 60,
       }),
       columnHelper.accessor('countB', {
         id: 'countB',
         header: 'Ref B',
-        size: 80,
+        size: 60,
       }),
       columnHelper.accessor('countC', {
         id: 'countC',
         header: 'Ref C',
-        size: 80,
+        size: 60,
       }),
       columnHelper.accessor('countARef', {
         id: 'countARef',
         header: 'ARef',
-        size: 80,
+        size: 60,
       }),
       columnHelper.accessor('countBRef', {
         id: 'countBRef',
         header: 'ARef B',
-        size: 80,
+        size: 60,
       }),
       columnHelper.accessor('countCRef', {
         id: 'countCRef',
         header: 'ARef C',
-        size: 80,
+        size: 60,
       }),
       columnHelper.accessor('totalCost', {
         id: 'totalCost',

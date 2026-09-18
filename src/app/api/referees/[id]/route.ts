@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { ZodError } from 'zod';
 import { prisma } from '@lib/prisma';
-import { apiError, HttpStatusCode } from '@lib/api';
+import { apiError, handleValidationError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
+import { updateReferee } from '@lib/validators';
 import { getAssignmentsByRefereeId } from '@lib/services/referee';
 
 /**
@@ -29,6 +31,7 @@ export const GET = async (
         id: true,
         name: true,
         totalCost: true,
+        paid: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -65,11 +68,20 @@ export const PUT = async (
 
     // Validate request body
     const data = await request.json();
+    let validatedData;
+    try {
+      validatedData = updateReferee.parse(data);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return handleValidationError(error);
+      }
+      throw error;
+    }
 
     // Update referee
     const referee = await prisma.referee.update({
       where: { id },
-      data,
+      data: validatedData,
     });
 
     if (!referee) {
@@ -78,6 +90,10 @@ export const PUT = async (
 
     return NextResponse.json(referee);
   } catch (error) {
+    if ((error as { code?: string }).code === 'P2025') {
+      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+    }
+
     return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 };

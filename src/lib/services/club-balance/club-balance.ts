@@ -118,3 +118,23 @@ export const updateClubBalanceNetValue = async (
     return { success: false, message: (error as Error).message };
   }
 };
+
+// Update Club Balance Paid status
+export const updateClubBalancePaid = async (id: string, paid: boolean) => {
+  try {
+    const clubBalance = await prisma.clubBalance.update({
+      where: { id },
+      data: { paid },
+    });
+
+    return { success: true, clubBalance };
+  } catch (error) {
+    const notFound = (error as { code?: string }).code === 'P2025';
+
+    return {
+      success: false,
+      notFound,
+      message: (error as Error).message,
+    };
+  }
+};

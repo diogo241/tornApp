@@ -11,6 +11,7 @@ import type { Club } from '@lib/types';
 import { formatDateTime } from '@lib/utils';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 import TournamentTable from '@components/features/tournament-table';
+import { ClubDebtPaidToggle } from '@components/features/club-debt-paid-toggle';
 import { formatCurrency } from '../../../../../lib/utils';
 
 export default function ClubShowPage() {
@@ -53,6 +54,23 @@ export default function ClubShowPage() {
                   ? formatCurrency(club.clubBalance.netBalance as number)
                   : 0}
               </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-2">Paid:</h4>
+              {club?.clubBalance && (club.clubBalance.netBalance ?? 0) < 0 ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {club.clubBalance.paid ? 'Yes' : 'No'}
+                  </span>
+                  <ClubDebtPaidToggle
+                    id={club.clubBalance.id}
+                    paid={club.clubBalance.paid}
+                    clubId={club?.id}
+                  />
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">-</p>
+              )}
             </div>
             <div>
               <h4 className="text-sm font-medium mb-2">Total Cost:</h4>

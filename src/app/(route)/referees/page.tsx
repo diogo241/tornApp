@@ -9,6 +9,7 @@ import {
   ListViewHeader,
 } from '@/components/refine-ui/views/list-view';
 import { Input } from '@components/ui/input';
+import { RefereePaidToggle } from '@/components/features/referee-paid-toggle';
 import type { Referee } from '@lib/types';
 import { formatCurrency, formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
@@ -34,6 +35,24 @@ export default function RefereeList() {
           return formatCurrency(row.original.totalCost as number);
         },
         size: 80,
+      }),
+      columnHelper.display({
+        id: 'paid',
+        header: 'Paid',
+        cell: ({ row }) => {
+          const referee = row.original;
+          if ((referee.totalCost ?? 0) <= 0) {
+            return <span className="text-muted-foreground">-</span>;
+          }
+          return (
+            <RefereePaidToggle
+              id={referee.id as string}
+              paid={referee.paid}
+            />
+          );
+        },
+        size: 60,
+        enableSorting: false,
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',

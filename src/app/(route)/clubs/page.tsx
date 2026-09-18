@@ -8,12 +8,14 @@ import {
   ListView,
   ListViewHeader,
 } from '@/components/refine-ui/views/list-view';
+import { ClubDebtPaidToggle } from '@/components/features/club-debt-paid-toggle';
 import type { Club, ClubBalance } from '@lib/types';
 import { formatCurrency, formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 export default function ClubListPage() {
   const columns = useMemo(() => {
@@ -49,6 +51,47 @@ export default function ClubListPage() {
           );
         },
         size: 80,
+      }),
+      columnHelper.accessor('refereeCost', {
+        id: 'refereeCost',
+        header: 'Referee Cost',
+        enableSorting: false,
+        cell: ({ row }) => {
+          return formatCurrency((row.original.refereeCost as number) ?? 0);
+        },
+        size: 80,
+      }),
+      columnHelper.display({
+        id: 'costMismatch',
+        header: 'Difference',
+        cell: ({ row }) => {
+          const totalCost = (row.original.clubBalance?.totalCost as number) ?? 0;
+          const refereeCost = (row.original.refereeCost as number) ?? 0;
+          if (totalCost === refereeCost) {
+            return <span className="text-muted-foreground">-</span>;
+          }
+          return <Badge variant="destructive">Diff</Badge>;
+        },
+        size: 90,
+        enableSorting: false,
+      }),
+      columnHelper.display({
+        id: 'clubBalance.paid',
+        header: 'Paid',
+        cell: ({ row }) => {
+          const clubBalance = row.original.clubBalance;
+          if (!clubBalance || (clubBalance.netBalance ?? 0) >= 0) {
+            return <span className="text-muted-foreground">-</span>;
+          }
+          return (
+            <ClubDebtPaidToggle
+              id={clubBalance.id}
+              paid={clubBalance.paid}
+            />
+          );
+        },
+        size: 60,
+        enableSorting: false,
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',

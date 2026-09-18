@@ -11,6 +11,7 @@ import type { Referee } from '@lib/types';
 import { formatCurrency, formatDateTime } from '@lib/utils';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 import AssignmentTable from '@components/features/assignment-table';
+import { RefereePaidToggle } from '@components/features/referee-paid-toggle';
 
 export default function RefereeShow() {
   const { result: record, query } = useShow({});
@@ -43,6 +44,23 @@ export default function RefereeShow() {
               <p className="text-sm text-muted-foreground">
                 {formatCurrency(referee?.totalCost as number)}
               </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-2">Paid:</h4>
+              {referee && (referee.totalCost ?? 0) > 0 ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {referee.paid ? 'Yes' : 'No'}
+                  </span>
+                  <RefereePaidToggle
+                    id={referee.id as string}
+                    paid={referee.paid}
+                    refereeId={referee.id as string}
+                  />
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">-</p>
+              )}
             </div>
             <div>
               <h4 className="text-sm font-medium mb-2">Created at:</h4>

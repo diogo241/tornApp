@@ -82,6 +82,12 @@ export const insertReferee = z.object({
     .optional(),
 });
 
+// Referee update validators
+export const updateReferee = z.object({
+  name: z.string().min(3).max(250).trim().optional(),
+  paid: z.boolean().optional(),
+});
+
 // Rate validators
 export const insertRate = z
   .object({
@@ -202,4 +208,9 @@ export const insertTournament = z
 export const insertClubFunding = z.object({
   year: z.coerce.number().min(0),
   amount: z.coerce.number().min(0),
+});
+
+// Club Balance validators
+export const updateClubBalancePaid = z.object({
+  paid: z.boolean(),
 });
