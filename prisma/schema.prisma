@@ -68,6 +68,8 @@ model Referee {
   id          String              @id @default(uuid())
   name        String
   totalCost   Float               @default(0)
+  // Whether the referee has been paid for their accumulated cost
+  paid        Boolean             @default(false)
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @default(now()) @updatedAt
   assignments RefereeAssignment[]
@@ -134,6 +136,9 @@ model ClubBalance {
 
   // The Net Balance (Funding - Cost)
   netBalance Float
+
+  // Whether the club has settled its debt (netBalance < 0)
+  paid Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

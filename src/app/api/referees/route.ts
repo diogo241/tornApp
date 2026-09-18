@@ -75,6 +75,7 @@ export const GET = async (request: NextRequest) => {
           id: true,
           name: true,
           totalCost: true,
+          paid: true,
           createdAt: true,
           updatedAt: true,
         },

@@ -35,6 +35,24 @@ export default function TournamentShow() {
   const tournament = record as Tournament;
   if (!tournament) return null;
 
+  const assignments = tournament?.assignments ?? [];
+  const refereeGames = assignments.reduce(
+    (sum, assignment) =>
+      sum +
+      (assignment.countA ?? 0) +
+      (assignment.countB ?? 0) +
+      (assignment.countC ?? 0),
+    0,
+  );
+  const assistantGames = assignments.reduce(
+    (sum, assignment) =>
+      sum +
+      (assignment.countARef ?? 0) +
+      (assignment.countBRef ?? 0) +
+      (assignment.countCRef ?? 0),
+    0,
+  );
+
   return (
     <ShowView>
       <ShowViewHeader title={tournament?.name} />
@@ -51,12 +69,6 @@ export default function TournamentShow() {
               <h4 className="text-sm font-medium mb-2">Type:</h4>
               <p className="text-sm text-muted-foreground">
                 {tournament?.rate?.name}
-              </p>
-            </div>
-            <div>
-              <h4 className="text-sm font-medium mb-2">Total Games:</h4>
-              <p className="text-sm text-muted-foreground">
-                {tournament?.totalGames}
               </p>
             </div>
             <div>
@@ -88,6 +100,20 @@ export default function TournamentShow() {
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(tournament?.updatedAt as Date).dateTime ?? '-'}
               </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-2">Total Games:</h4>
+              <p className="text-sm text-muted-foreground">
+                {tournament?.totalGames}
+              </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-2">Referee Games:</h4>
+              <p className="text-sm text-muted-foreground">{refereeGames}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-2">Assistant Games:</h4>
+              <p className="text-sm text-muted-foreground">{assistantGames}</p>
             </div>
           </CardContent>
         </Card>

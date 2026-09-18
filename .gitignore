@@ -37,4 +37,9 @@ next-env.d.ts
 /generated/prisma
 
 .env
-AGENTS.md
+
+# AI Blueprint local workflow files
+.agents/
+.claude/
+blueprint/
+CLAUDE.md

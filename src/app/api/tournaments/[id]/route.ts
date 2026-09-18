@@ -58,6 +58,16 @@ export const GET = async (
         rateId: true,
         createdAt: true,
         updatedAt: true,
+        assignments: {
+          select: {
+            countA: true,
+            countB: true,
+            countC: true,
+            countARef: true,
+            countBRef: true,
+            countCRef: true,
+          },
+        },
       },
     });
 

@@ -11,6 +11,7 @@ import {
   paginationQuerySchema,
 } from '@lib/validators';
 import { getSession } from '@lib/auth';
+import { aggregateRefereeCostByClub } from '@lib/services/clubs/club-referee-cost';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Prisma } from '../../../../generated/prisma/client';
 
@@ -80,6 +81,7 @@ export const GET = async (request: NextRequest) => {
           createdAt: true,
           updatedAt: true,
           clubBalance: true,
+          tournaments: { select: { id: true } },
         },
         orderBy: {
           createdAt: 'desc',
@@ -87,8 +89,28 @@ export const GET = async (request: NextRequest) => {
       }),
     ]);
 
+    // Sum referee assignment costs for every tournament owned by the listed clubs
+    const tournamentIds = clubs.flatMap((club) =>
+      club.tournaments.map((tournament) => tournament.id),
+    );
+
+    const groupedCosts = tournamentIds.length
+      ? await prisma.refereeAssignment.groupBy({
+          by: ['tournamentId'],
+          where: { tournamentId: { in: tournamentIds } },
+          _sum: { totalCost: true },
+        })
+      : [];
+
+    const refereeCostByClub = aggregateRefereeCostByClub(clubs, groupedCosts);
+
+    const data = clubs.map(({ tournaments, ...club }) => ({
+      ...club,
+      refereeCost: refereeCostByClub[club.id] ?? 0,
+    }));
+
     // Build response
-    const response = apiListSuccess(clubs, total);
+    const response = apiListSuccess(data, total);
 
     return response;
   } catch (error) {
