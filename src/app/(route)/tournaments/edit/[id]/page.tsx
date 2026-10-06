@@ -42,6 +42,8 @@ export default function TournamentEditPage() {
     defaultValues: {
       name: '',
       year: 0,
+      startDate: undefined,
+      endDate: undefined,
       totalGames: 0,
       countA: 0,
       durationA: 0,
