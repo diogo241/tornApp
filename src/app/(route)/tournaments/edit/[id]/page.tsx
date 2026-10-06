@@ -41,6 +41,7 @@ export default function TournamentEditPage() {
     resolver: zodResolver(insertTournament),
     defaultValues: {
       name: '',
+      year: 0,
       totalGames: 0,
       countA: 0,
       durationA: 0,
@@ -104,9 +105,6 @@ export default function TournamentEditPage() {
   });
 
   if (query?.isError || query?.isLoading) return null;
-
-  console.log(form.getValues('endDate'));
-  console.log(tournament?.endDate);
 
   return (
     <EditView>

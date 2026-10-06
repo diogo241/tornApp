@@ -42,6 +42,7 @@ export const GET = async (
       select: {
         id: true,
         name: true,
+        year: true,
         startDate: true,
         endDate: true,
         totalGames: true,
