@@ -10,7 +10,7 @@ import {
 } from '@/components/refine-ui/views/list-view';
 import { ClubDebtPaidToggle } from '@/components/features/club-debt-paid-toggle';
 import type { Club, ClubBalance } from '@lib/types';
-import { formatCurrency, formatDateTime } from '@lib/utils';
+import { formatCurrency, formatDateTime, round2 } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
@@ -67,7 +67,7 @@ export default function ClubListPage() {
         cell: ({ row }) => {
           const totalCost = (row.original.clubBalance?.totalCost as number) ?? 0;
           const refereeCost = (row.original.refereeCost as number) ?? 0;
-          if (totalCost === refereeCost) {
+          if (round2(totalCost) === round2(refereeCost)) {
             return <span className="text-muted-foreground">-</span>;
           }
           return <Badge variant="destructive">Diff</Badge>;
