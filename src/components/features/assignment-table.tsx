@@ -42,14 +42,14 @@ export default function AssignmentTable({
       ? [
           columnHelper.accessor('tournament.name', {
             id: 'tournament.name',
-            header: 'Tournament',
+            header: 'Torneio',
             size: 260,
           }),
         ]
       : [
           columnHelper.accessor('referee.name', {
             id: 'referee.name',
-            header: 'Name',
+            header: 'Nome',
             size: 260,
           }),
         ];
@@ -58,37 +58,37 @@ export default function AssignmentTable({
       ...defColumns,
       columnHelper.accessor('countA', {
         id: 'countA',
-        header: 'Ref',
+        header: 'Árbitro',
         size: 60,
       }),
       columnHelper.accessor('countB', {
         id: 'countB',
-        header: 'Ref B',
+        header: 'Árbitro B',
         size: 60,
       }),
       columnHelper.accessor('countC', {
         id: 'countC',
-        header: 'Ref C',
+        header: 'Árbitro C',
         size: 60,
       }),
       columnHelper.accessor('countARef', {
         id: 'countARef',
-        header: 'ARef',
+        header: 'Assistente',
         size: 60,
       }),
       columnHelper.accessor('countBRef', {
         id: 'countBRef',
-        header: 'ARef B',
+        header: 'Assistente B',
         size: 60,
       }),
       columnHelper.accessor('countCRef', {
         id: 'countCRef',
-        header: 'ARef C',
+        header: 'Assistente C',
         size: 60,
       }),
       columnHelper.accessor('totalCost', {
         id: 'totalCost',
-        header: 'Total Cost',
+        header: 'Custo total',
         cell: ({ row, getValue }) => {
           return formatCurrency(getValue() as number);
         },
@@ -96,7 +96,7 @@ export default function AssignmentTable({
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Actions',
+        header: 'Ações',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton
@@ -135,7 +135,7 @@ export default function AssignmentTable({
       <CardContent>
         <div className="flex flex-col gap-4 mt-4">
           <div className="flex flex-col md:flex-row md:justify-between gap-4">
-            <h2 className="font-bold text-lg">Referee Assignments</h2>
+            <h2 className="font-bold text-lg">Jogos dos árbitros</h2>
             {tournamentId && (
               <Button asChild>
                 <Link
@@ -147,7 +147,7 @@ export default function AssignmentTable({
                   }
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Create</span>
+                  <span>Criar</span>
                 </Link>
               </Button>
             )}

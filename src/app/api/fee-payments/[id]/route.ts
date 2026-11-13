@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { apiError, handleValidationError, HttpStatusCode } from '@lib/api';
+import {
+  API_MESSAGES,
+  apiError,
+  handleValidationError,
+  HttpStatusCode,
+} from '@lib/api';
 import { getSession } from '@lib/auth';
 import { updateFeePayment } from '@lib/validators';
 import {
@@ -18,12 +23,12 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     let body: unknown;
@@ -54,7 +59,7 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         return apiError(
-          'Já existe um pagamento para este sócio e esta cota',
+          'Já existe um pagamento para este sócio e esta quota',
           HttpStatusCode.CONFLICT,
         );
       }
@@ -66,7 +71,10 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
       }
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -78,12 +86,12 @@ export const DELETE = async (request: NextRequest, { params }: RouteContext) => 
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const payment = await deleteFeePayment(id);
@@ -96,6 +104,9 @@ export const DELETE = async (request: NextRequest, { params }: RouteContext) => 
       return apiError('Pagamento não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

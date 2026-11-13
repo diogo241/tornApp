@@ -42,7 +42,9 @@ const options: CreateDataProviderOptions = {
     mapResponse: async (response) => {
       if (!response.ok) {
         const error = (await response.json()) as ApiErrorResponse;
-        throw new Error(error.message || error.error || 'Failed to fetch data');
+        throw new Error(
+          error.message || error.error || 'Não foi possível obter os dados',
+        );
       }
       const payload: GetListResponse = await response.json();
 
@@ -85,7 +87,7 @@ const options: CreateDataProviderOptions = {
       const error = (await response.json()) as ApiErrorResponse;
 
       return {
-        message: error.error || 'Update failed',
+        message: error.error || 'Não foi possível guardar as alterações',
         statusCode: response.status,
       };
     },
@@ -100,7 +102,7 @@ const options: CreateDataProviderOptions = {
       const error = (await response.json()) as ApiErrorResponse;
 
       return {
-        message: error.error || 'Delete failed',
+        message: error.error || 'Não foi possível eliminar o registo',
         statusCode: response.status,
       };
     },
@@ -115,7 +117,7 @@ const options: CreateDataProviderOptions = {
       const error = (await response.json()) as ApiErrorResponse;
 
       return {
-        message: error.error || 'Something went wrong',
+        message: error.error || 'Ocorreu um erro. Tente novamente.',
         statusCode: response.status,
       };
     },

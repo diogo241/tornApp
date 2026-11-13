@@ -45,16 +45,16 @@ export default function UserEditPage() {
   return (
     <EditView>
       <LoadingOverlay loading={formLoading}>
-        <EditViewHeader title="Edit Club" />
+        <EditViewHeader title="Editar utilizador" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="name"
-              rules={{ required: 'Name is required' }}
+              rules={{ required: 'O nome é obrigatório' }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value || ''} />
                   </FormControl>
@@ -65,7 +65,7 @@ export default function UserEditPage() {
             <FormField
               control={form.control}
               name="email"
-              rules={{ required: 'Email is required' }}
+              rules={{ required: 'O email é obrigatório' }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
@@ -79,10 +79,10 @@ export default function UserEditPage() {
             <FormField
               control={form.control}
               name="password"
-              rules={{ required: 'Password is required' }}
+              rules={{ required: 'A palavra-passe é obrigatória' }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Palavra-passe</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -97,10 +97,10 @@ export default function UserEditPage() {
             <FormField
               control={form.control}
               name="confirmPassword"
-              rules={{ required: 'Password is required' }}
+              rules={{ required: 'A palavra-passe é obrigatória' }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>Confirmar palavra-passe</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -119,14 +119,14 @@ export default function UserEditPage() {
                 {...form.saveButtonProps}
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Updating...' : 'Update'}
+                {form.formState.isSubmitting ? 'A guardar...' : 'Guardar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

@@ -20,16 +20,17 @@ export default function RefereeList() {
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Referee>();
 
+    // MESQUITA - #19: cabecalhos em pt-PT
     return [
       columnHelper.accessor('name', {
         id: 'name',
-        header: 'Name',
+        header: 'Nome',
         enableSorting: true,
         size: 300,
       }),
       columnHelper.accessor('totalCost', {
         id: 'totalCost',
-        header: 'Total Cost',
+        header: 'Custo total',
         enableSorting: true,
         cell: ({ row }) => {
           return formatCurrency(row.original.totalCost as number);
@@ -38,7 +39,7 @@ export default function RefereeList() {
       }),
       columnHelper.display({
         id: 'paid',
-        header: 'Paid',
+        header: 'Pago',
         cell: ({ row }) => {
           const referee = row.original;
           if ((referee.totalCost ?? 0) <= 0) {
@@ -56,7 +57,7 @@ export default function RefereeList() {
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
-        header: 'Created at',
+        header: 'Criado em',
         enableSorting: true,
         cell: ({ row }) => {
           return formatDateTime(row.original.createdAt as Date).dateTime;
@@ -65,7 +66,7 @@ export default function RefereeList() {
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Actions',
+        header: 'Ações',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton recordItemId={row.original.id} size="sm" />
@@ -106,11 +107,12 @@ export default function RefereeList() {
 
   return (
     <ListView>
-      <ListViewHeader />
+      <ListViewHeader title="Árbitros" />
+      {/* MESQUITA - #19: placeholder de filtro em pt-PT */}
       <div className="flex items-center gap-4">
         <Input
           type="text"
-          placeholder="Filter by name..."
+          placeholder="Filtrar por nome..."
           value={searchName}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="max-w-sm"

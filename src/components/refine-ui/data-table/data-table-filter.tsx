@@ -24,6 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { FILTER_OPERATOR_LABELS } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export type DataTableFilterDropdownProps<TData> = {
@@ -119,7 +120,7 @@ export function DataTableFilterDropdownActions({
         }}
       >
         <X className={cn("w-3.5", "h-3.5", "text-muted-foreground")} />
-        {t("buttons.clear", "Clear")}
+        {t("buttons.clear", "Limpar")}
       </Button>
 
       <Button
@@ -130,7 +131,7 @@ export function DataTableFilterDropdownActions({
           onApply();
         }}
       >
-        {t("buttons.apply", "Apply")}
+        {t("buttons.apply", "Aplicar")}
       </Button>
     </div>
   );
@@ -182,7 +183,7 @@ export function DataTableFilterDropdownText<TData>({
         <Input
           type="text"
           placeholder={
-            placeholder ?? t("table.filter.text.placeholder", "Filter by...")
+            placeholder ?? t("table.filter.text.placeholder", "Filtrar por...")
           }
           value={value}
           onChange={(event) => {
@@ -221,7 +222,8 @@ export function DataTableFilterDropdownNumeric<TData>({
         <Input
           type="number"
           placeholder={
-            placeholder ?? t("table.filter.numeric.placeholder", "Filter by...")
+            placeholder ??
+            t("table.filter.numeric.placeholder", "Filtrar por...")
           }
           value={value}
           onChange={(event) => {
@@ -296,12 +298,15 @@ export function DataTableFilterCombobox<TData>({
         const getDisplayText = () => {
           if (currentValues.length === 0) {
             return (
-              placeholder ?? t("table.filter.combobox.placeholder", "Select...")
+              placeholder ??
+              t("table.filter.combobox.placeholder", "Selecione...")
             );
           }
 
           if (multiple) {
-            return `${currentValues.length} selected`;
+            return currentValues.length === 1
+              ? "1 selecionado"
+              : `${currentValues.length} selecionados`;
           }
 
           const selectedOption = options.find(
@@ -386,7 +391,7 @@ export function DataTableFilterCombobox<TData>({
                             "px-1"
                           )}
                         >
-                          +{currentValues.length - 3} more
+                          +{currentValues.length - 3} mais
                         </span>
                       )}
                     </div>
@@ -413,14 +418,14 @@ export function DataTableFilterCombobox<TData>({
             <PopoverContent className={cn("w-[200px]", "p-0")} align="start">
               <Command>
                 <CommandInput
-                  placeholder={t("table.filter.combobox.search", "Search...")}
+                  placeholder={t("table.filter.combobox.search", "Pesquisar...")}
                 />
                 <CommandList>
                   <CommandEmpty>
                     {noResultsText ??
                       t(
                         "table.filter.combobox.noResults",
-                        "Results not found."
+                        "Nenhum resultado encontrado."
                       )}
                   </CommandEmpty>
                   <CommandGroup>
@@ -773,108 +778,18 @@ export function DataTableFilterInput<TData>({
   );
 }
 
-const CRUD_OPERATOR_LABELS: Record<
+const CRUD_OPERATOR_LABELS = Object.fromEntries(
+  Object.entries(FILTER_OPERATOR_LABELS).map(([operator, label]) => [
+    operator,
+    {
+      i18nKey: `table.filter.operator.${operator}`,
+      defaultLabel: label,
+    },
+  ])
+) as Record<
   Exclude<CrudOperators, "or" | "and">,
   { i18nKey: string; defaultLabel: string }
-> = {
-  eq: { i18nKey: "table.filter.operator.eq", defaultLabel: "Equals" },
-  ne: { i18nKey: "table.filter.operator.ne", defaultLabel: "Not equals" },
-  lt: { i18nKey: "table.filter.operator.lt", defaultLabel: "Less than" },
-  gt: { i18nKey: "table.filter.operator.gt", defaultLabel: "Greater than" },
-  lte: {
-    i18nKey: "table.filter.operator.lte",
-    defaultLabel: "Less than or equal",
-  },
-  gte: {
-    i18nKey: "table.filter.operator.gte",
-    defaultLabel: "Greater than or equal",
-  },
-  in: {
-    i18nKey: "table.filter.operator.in",
-    defaultLabel: "Includes in an array",
-  },
-  nin: {
-    i18nKey: "table.filter.operator.nin",
-    defaultLabel: "Not includes in an array",
-  },
-  ina: {
-    i18nKey: "table.filter.operator.ina",
-    defaultLabel: "Includes in an array (case sensitive)",
-  },
-  nina: {
-    i18nKey: "table.filter.operator.nina",
-    defaultLabel: "Not includes in an array (case sensitive)",
-  },
-  contains: {
-    i18nKey: "table.filter.operator.contains",
-    defaultLabel: "Contains",
-  },
-  ncontains: {
-    i18nKey: "table.filter.operator.ncontains",
-    defaultLabel: "Not contains",
-  },
-  containss: {
-    i18nKey: "table.filter.operator.containss",
-    defaultLabel: "Contains (case sensitive)",
-  },
-  ncontainss: {
-    i18nKey: "table.filter.operator.ncontainss",
-    defaultLabel: "Not contains (case sensitive)",
-  },
-  between: {
-    i18nKey: "table.filter.operator.between",
-    defaultLabel: "Between",
-  },
-  nbetween: {
-    i18nKey: "table.filter.operator.nbetween",
-    defaultLabel: "Not between",
-  },
-  null: { i18nKey: "table.filter.operator.null", defaultLabel: "Is null" },
-  nnull: {
-    i18nKey: "table.filter.operator.nnull",
-    defaultLabel: "Is not null",
-  },
-  startswith: {
-    i18nKey: "table.filter.operator.startswith",
-    defaultLabel: "Starts with",
-  },
-  nstartswith: {
-    i18nKey: "table.filter.operator.nstartswith",
-    defaultLabel: "Not starts with",
-  },
-  startswiths: {
-    i18nKey: "table.filter.operator.startswiths",
-    defaultLabel: "Starts with (case sensitive)",
-  },
-  nstartswiths: {
-    i18nKey: "table.filter.operator.nstartswiths",
-    defaultLabel: "Not starts with (case sensitive)",
-  },
-  endswith: {
-    i18nKey: "table.filter.operator.endswith",
-    defaultLabel: "Ends with",
-  },
-  nendswith: {
-    i18nKey: "table.filter.operator.nendswith",
-    defaultLabel: "Not ends with",
-  },
-  endswiths: {
-    i18nKey: "table.filter.operator.endswiths",
-    defaultLabel: "Ends with (case sensitive)",
-  },
-  nendswiths: {
-    i18nKey: "table.filter.operator.nendswiths",
-    defaultLabel: "Not ends with (case sensitive)",
-  },
-  eqs: {
-    i18nKey: "table.filter.operator.eqs",
-    defaultLabel: "Equals (case sensitive)",
-  },
-  nes: {
-    i18nKey: "table.filter.operator.nes",
-    defaultLabel: "Not equals (case sensitive)",
-  },
-};
+>;
 
 export type DataTableFilterOperatorSelectProps = {
   value: CrudOperators;
@@ -909,10 +824,11 @@ export function DataTableFilterOperatorSelect({
       .defaultLabel
   );
   const placeholderText =
-    placeholder ?? t("table.filter.operator.placeholder", "Search operator...");
+    placeholder ??
+    t("table.filter.operator.placeholder", "Pesquisar operador...");
   const noResultsText = t(
     "table.filter.operator.noResults",
-    "No operator found."
+    "Nenhum operador encontrado."
   );
 
   return (

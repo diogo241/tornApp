@@ -121,7 +121,12 @@ export const updateAfterRateUpdate = async (
 
     return { success: true };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to update tournament costs after rate update', error);
+    return {
+      success: false,
+      message:
+        'Não foi possível atualizar os custos associados a este valor por jogo',
+    };
   }
 };
 

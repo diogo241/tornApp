@@ -1,5 +1,6 @@
 import { prisma } from '@lib/prisma';
 import {
+  API_MESSAGES,
   apiError,
   apiListSuccess,
   HttpStatusCode,
@@ -12,7 +13,9 @@ import {
   paginationQuerySchema,
 } from '@lib/validators';
 import { getSession } from '@lib/auth';
+import { matchesSearch } from '@lib/search';
 import { NextResponse, type NextRequest } from 'next/server';
+import type { z } from 'zod';
 import type { Prisma } from '../../../../generated/prisma/client';
 import { getTournamentCost } from '@lib/services/tournaments/tournament.cost';
 import {
@@ -35,7 +38,7 @@ export const GET = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Validate query parameters
@@ -54,17 +57,22 @@ export const GET = async (request: NextRequest) => {
     const { page = 1, pageSize = 10 } = validationPages;
 
     // Validate query parameters
-    let validationFilters;
+    let validationFilters: z.infer<typeof filtersQuerySchema> | undefined;
     if (
       searchParams.get('name') ||
       searchParams.get('clubName') ||
       searchParams.get('clubId')
     ) {
-      validationFilters = validateQueryParams(searchParams, filtersQuerySchema);
+      const parsedFilters = validateQueryParams(
+        searchParams,
+        filtersQuerySchema,
+      );
 
-      if (validationFilters instanceof Response) {
-        return validationFilters;
+      if (parsedFilters instanceof Response) {
+        return parsedFilters;
       }
+
+      validationFilters = parsedFilters;
     }
 
     let skip: number | undefined = (page - 1) * pageSize;
@@ -73,22 +81,10 @@ export const GET = async (request: NextRequest) => {
     // Build where clause
     const where: Prisma.TournamentWhereInput = {};
     if (validationFilters?.name) {
-      where.name = {
-        contains: validationFilters.name,
-        mode: 'insensitive',
-      };
-
       skip = undefined;
       take = undefined;
     }
     if (validationFilters?.club) {
-      where.club = {
-        name: {
-          contains: validationFilters.club,
-          mode: 'insensitive',
-        },
-      };
-
       skip = undefined;
       take = undefined;
     }
@@ -125,12 +121,24 @@ export const GET = async (request: NextRequest) => {
       }),
     ]);
 
+    // The text filters run in memory so accents and word order do not matter
+    const filteredTournaments = tournaments.filter(
+      (tournament) =>
+        (!validationFilters?.name ||
+          matchesSearch(tournament.name, validationFilters.name)) &&
+        (!validationFilters?.club ||
+          matchesSearch(tournament.club.name, validationFilters.club)),
+    );
+
     // Build response
-    const response = apiListSuccess(tournaments, total);
+    const response = apiListSuccess(filteredTournaments, total);
 
     return response;
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -143,7 +151,7 @@ export const POST = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Validate request body
@@ -155,7 +163,7 @@ export const POST = async (request: NextRequest) => {
 
     if (!tournamentCost.success) {
       return apiError(
-        tournamentCost.message ?? 'Error calculating total cost',
+        tournamentCost.message ?? 'Não foi possível calcular o custo total',
         HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
@@ -185,11 +193,14 @@ export const POST = async (request: NextRequest) => {
     }
 
     if (!tournament) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(tournament);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

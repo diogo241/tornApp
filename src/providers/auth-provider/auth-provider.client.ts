@@ -22,7 +22,7 @@ export const authProviderClient: AuthProvider = {
       success: false,
       error: {
         name: 'LoginError',
-        message: 'Invalid username or password',
+        message: 'Email ou palavra-passe inválidos',
       },
     };
   },

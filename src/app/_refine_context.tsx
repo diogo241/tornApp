@@ -10,9 +10,11 @@ import { useNotificationProvider } from '@/components/refine-ui/notification/use
 import { ThemeProvider } from '@/components/refine-ui/theme/theme-provider';
 import { authProviderClient } from '@providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@providers/data-provider';
+import { i18nProvider } from '@lib/i18n';
 import { DevtoolsPanel, DevtoolsProvider } from '@refinedev/devtools';
 import Image from 'next/image';
 import {
+  BanknoteIcon,
   BrickWallIcon,
   Dice4,
   HandCoinsIcon,
@@ -42,12 +44,13 @@ export const RefineContext = ({ children }: RefineContextProps) => {
             notificationProvider={notificationProvider}
             authProvider={authProviderClient}
             routerProvider={routerProvider}
+            i18nProvider={i18nProvider}
             resources={[
               {
                 name: 'dashboard',
                 list: '/dashboard',
                 meta: {
-                  label: 'Dashboard',
+                  label: 'Painel',
                   icon: <LayoutDashboardIcon />,
                 },
               },
@@ -59,6 +62,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 show: '/tournaments/show/:id',
                 meta: {
                   canDelete: true,
+                  label: 'Torneios',
                   icon: <Dice4 />,
                 },
               },
@@ -70,6 +74,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 show: '/referees/show/:id',
                 meta: {
                   canDelete: true,
+                  label: 'Árbitros',
                   icon: <UserIcon />,
                 },
               },
@@ -82,6 +87,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 meta: {
                   canDelete: true,
                   canShow: false,
+                  label: 'Valor por jogo',
                   icon: <HandCoinsIcon />,
                 },
               },
@@ -93,6 +99,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 show: '/clubs/show/:id',
                 meta: {
                   canDelete: true,
+                  label: 'Clubes',
                   icon: <ShieldBanIcon />,
                 },
               },
@@ -111,16 +118,26 @@ export const RefineContext = ({ children }: RefineContextProps) => {
               },
               {
                 name: 'fees',
-                list: '/fees',
-                create: '/fees/create',
-                edit: '/fees/edit/:id',
+                list: '/members/fees',
+                create: '/members/fees/create',
+                edit: '/members/fees/edit/:id',
                 meta: {
                   canDelete: true,
                   canShow: false,
                   hide: true,
-                  label: 'Valores das cotas',
+                  label: 'Valores das quotas',
                   parent: 'members',
                   icon: <ReceiptIcon />,
+                },
+              },
+              {
+                name: 'quotas',
+                list: '/members/quotas',
+                meta: {
+                  hide: true,
+                  label: 'Quotas',
+                  parent: 'members',
+                  icon: <BanknoteIcon />,
                 },
               },
               {
@@ -132,7 +149,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                   canShow: false,
                   canCreate: false,
                   icon: <UniversityIcon />,
-                  label: 'Municipal Funding',
+                  label: 'Financiamento Municipal',
                 },
               },
               {
@@ -143,6 +160,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 show: '/users/show/:id',
                 meta: {
                   canDelete: true,
+                  label: 'Utilizadores',
                   icon: <BrickWallIcon />,
                 },
               },
@@ -155,7 +173,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                   canDelete: true,
                   canShow: false,
                   hide: true,
-                  label: 'Referee Assignements',
+                  label: 'Jogos',
                 },
               },
             ]}
@@ -166,7 +184,7 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 icon: (
                   <Image
                     src="/logo.png"
-                    alt="Refine"
+                    alt="NAF"
                     width={100}
                     height={100}
                   />

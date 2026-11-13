@@ -4,7 +4,7 @@ import { RefineContext } from './_refine_context';
 
 export const metadata: Metadata = {
   title: 'NAF',
-  description: 'NAF',
+  description: 'Aplicação de gestão de torneios, clubes e arbitragem.',
 };
 
 export default async function RootLayout({
@@ -13,7 +13,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="pt-PT" className="dark">
       <body>
         <Suspense>
           <RefineContext>{children}</RefineContext>

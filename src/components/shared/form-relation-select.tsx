@@ -3,6 +3,7 @@
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { cn } from '@/lib/utils';
+import { matchesSearch } from '@/lib/search';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -37,8 +38,8 @@ interface FormRelationSelectProps {
 export function FormRelationSelect({
   name,
   label,
-  placeholder = 'Select option...',
-  emptyMessage = 'No option found.',
+  placeholder = 'Selecione uma opção...',
+  emptyMessage = 'Nenhuma opção encontrada.',
   options,
   className,
 }: FormRelationSelectProps) {
@@ -71,9 +72,13 @@ export function FormRelationSelect({
               </FormControl>
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
-              <Command>
+              <Command
+                filter={(value, search) =>
+                  matchesSearch(value, search) ? 1 : 0
+                }
+              >
                 <CommandInput
-                  placeholder={`Search ${label.toLowerCase()}...`}
+                  placeholder={`Pesquisar ${label.toLowerCase()}...`}
                 />
                 <CommandList>
                   <CommandEmpty>{emptyMessage}</CommandEmpty>

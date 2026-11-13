@@ -105,7 +105,7 @@ export default function AssigmentCreatePage() {
               {/* Referee Name Field */}
               <FormRelationSelect
                 name="refereeId"
-                label="Referee"
+                label="Árbitro"
                 options={refereeOptions}
               />
 
@@ -115,7 +115,7 @@ export default function AssigmentCreatePage() {
                 name="tournamentId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tournament</FormLabel>
+                    <FormLabel>Torneio</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
@@ -136,7 +136,7 @@ export default function AssigmentCreatePage() {
               />
             </div>
             <Separator className="md:my-4 my-8" />
-            <h3 className="text-md">Games as Referee</h3>
+            <h3 className="text-md">Jogos como árbitro</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Count A Field */}
               <FormField
@@ -144,13 +144,13 @@ export default function AssigmentCreatePage() {
                 name="countA"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Main duration</FormLabel>
+                    <FormLabel>Duração principal</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         required
                         min={1}
-                        placeholder="Number of games with main duration"
+                        placeholder="Nº de jogos com duração principal"
                         {...field}
                         value={field.value ?? ''}
                       />
@@ -167,13 +167,13 @@ export default function AssigmentCreatePage() {
                   name="countB"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>B Duration</FormLabel>
+                      <FormLabel>Duração B</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           required
                           min={1}
-                          placeholder="Number of games with B duration"
+                          placeholder="Nº de jogos com duração B"
                           {...field}
                           value={field.value ?? ''}
                         />
@@ -191,13 +191,13 @@ export default function AssigmentCreatePage() {
                   name="countC"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>C Duration</FormLabel>
+                      <FormLabel>Duração C</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           required
                           min={1}
-                          placeholder="Number of games with C duration"
+                          placeholder="Nº de jogos com duração C"
                           {...field}
                           value={field.value ?? ''}
                         />
@@ -212,7 +212,7 @@ export default function AssigmentCreatePage() {
               <>
                 <Separator className="md:my-4 my-8" />
                 <h3 className="text-md text-bold">
-                  Games as Assistant Referee
+                  Jogos como árbitro assistente
                 </h3>
               </>
             )}
@@ -224,13 +224,13 @@ export default function AssigmentCreatePage() {
                   name="countARef"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assistent Referee main duration</FormLabel>
+                      <FormLabel>Duração principal do árbitro assistente</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           required
                           min={1}
-                          placeholder="Number of games has Assistent Referee"
+                          placeholder="Nº de jogos como árbitro assistente"
                           {...field}
                           value={field.value ?? ''}
                         />
@@ -247,13 +247,13 @@ export default function AssigmentCreatePage() {
                   name="countBRef"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assistent Referee B duration</FormLabel>
+                      <FormLabel>Duração B do árbitro assistente</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           required
                           min={1}
-                          placeholder="Number of games has Assistent Referee B duration"
+                          placeholder="Nº de jogos como árbitro assistente com duração B"
                           {...field}
                           value={field.value ?? ''}
                         />
@@ -270,13 +270,13 @@ export default function AssigmentCreatePage() {
                   name="countCRef"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assistent Referee C duration</FormLabel>
+                      <FormLabel>Duração C do árbitro assistente</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           required
                           min={1}
-                          placeholder="Number of games has Assistent Referee C duration"
+                          placeholder="Nº de jogos como árbitro assistente com duração C"
                           {...field}
                           value={field.value ?? ''}
                         />
@@ -294,14 +294,14 @@ export default function AssigmentCreatePage() {
                 {...form.saveButtonProps}
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Creating...' : 'Create'}
+                {form.formState.isSubmitting ? 'A criar...' : 'Criar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

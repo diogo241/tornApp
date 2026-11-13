@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
-import { apiError, HttpStatusCode } from '@lib/api';
+import { API_MESSAGES, apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import {
   getTournamentsByRateId,
@@ -21,11 +21,11 @@ export const GET = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const rate = await prisma.rate.findFirst({
@@ -42,12 +42,15 @@ export const GET = async (
     });
 
     if (!rate) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(rate);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -63,11 +66,11 @@ export const PUT = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     // Get old rate
@@ -75,7 +78,7 @@ export const PUT = async (
       where: { id },
     });
     if (!oldRate) {
-      return apiError('Rate not found', HttpStatusCode.NOT_FOUND);
+      return apiError('Valor por jogo não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
     // Validate request body
@@ -92,7 +95,7 @@ export const PUT = async (
     });
 
     if (!rate) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     const { tournaments } = rate;
@@ -104,7 +107,7 @@ export const PUT = async (
       const updateTournaments = await updateAfterRateUpdate(tournaments, rate);
       if (!updateTournaments.success) {
         return apiError(
-          updateTournaments.message ?? 'Error updating tournaments',
+          updateTournaments.message ?? 'Não foi possível atualizar os torneios',
           HttpStatusCode.INTERNAL_SERVER_ERROR,
         );
       }
@@ -112,7 +115,10 @@ export const PUT = async (
 
     return NextResponse.json(rate);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -128,18 +134,18 @@ export const DELETE = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     // Get tournaments that use this rate
     const tournaments = await getTournamentsByRateId(id);
     if (tournaments && tournaments?.length > 0) {
       return apiError(
-        'Cannot delete rate with tournaments assigned',
+        'Não é possível eliminar um valor por jogo com torneios associados',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -150,11 +156,14 @@ export const DELETE = async (
     });
 
     if (!rate) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(rate);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

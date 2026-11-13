@@ -4,21 +4,21 @@ import { z } from 'zod';
 export const paginationQuerySchema = z.object({
   page: z.coerce
     .number({
-      invalid_type_error: 'Page must be a number',
-      required_error: 'Page is required',
+      invalid_type_error: 'A página tem de ser um número',
+      required_error: 'A página é obrigatória',
     })
-    .int('Page must be an integer')
-    .positive('Page must be positive')
+    .int('A página tem de ser um número inteiro')
+    .positive('A página tem de ser positiva')
     .default(1)
     .optional(),
   pageSize: z.coerce
     .number({
-      invalid_type_error: 'PageSize must be a number',
-      required_error: 'PageSize is required',
+      invalid_type_error: 'O número de linhas por página tem de ser um número',
+      required_error: 'O número de linhas por página é obrigatório',
     })
-    .int('PageSize must be an integer')
-    .positive('PageSize must be positive')
-    .max(100, 'PageSize cannot exceed 100')
+    .int('O número de linhas por página tem de ser um número inteiro')
+    .positive('O número de linhas por página tem de ser positivo')
+    .max(100, 'O número de linhas por página não pode exceder 100')
     .default(10)
     .optional(),
 });
@@ -64,7 +64,7 @@ export const insertUser = z
     confirmPassword: z.string().min(3).max(50).trim().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: 'As palavras-passe não coincidem',
     path: ['confirmPassword'],
   });
 
@@ -113,8 +113,8 @@ export const insertRefereeAssignment = z
     countARef: z.coerce.number().min(0).optional(),
     countBRef: z.coerce.number().min(0).optional(),
     countCRef: z.coerce.number().min(0).optional(),
-    refereeId: z.string().min(1, { message: 'Referee is required' }),
-    tournamentId: z.string().min(1, { message: 'Tournament is required' }),
+    refereeId: z.string().min(1, { message: 'O árbitro é obrigatório' }),
+    tournamentId: z.string().min(1, { message: 'O torneio é obrigatório' }),
   })
   .superRefine((data, ctx) => {
     // Check if sum of games is greater then zero
@@ -129,7 +129,7 @@ export const insertRefereeAssignment = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Sum of games is zero',
+        message: 'Tem de indicar pelo menos um jogo',
         path: [
           'countA',
           'countB',
@@ -156,8 +156,8 @@ export const insertTournament = z
     durationB: z.coerce.number().min(0).optional(),
     countC: z.coerce.number().min(0).optional(),
     durationC: z.coerce.number().min(0).optional(),
-    clubId: z.string().min(1, { message: 'Club is required' }),
-    rateId: z.string().min(1, { message: 'Rate is required' }),
+    clubId: z.string().min(1, { message: 'O clube é obrigatório' }),
+    rateId: z.string().min(1, { message: 'O escalão é obrigatório' }),
   })
   .superRefine((data, ctx) => {
     // Check if countA + countB + countC is equal to totalGames
@@ -168,7 +168,7 @@ export const insertTournament = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message:
-          'Total games must be equal to Games with main duration + Games with B duration + Games with C duration',
+          'O total de jogos tem de ser igual à soma dos jogos com duração principal, B e C',
         path: ['totalGames'],
       });
     }
@@ -177,7 +177,7 @@ export const insertTournament = z
     if (data.countB !== undefined && data.countB > 0 && !data.durationB) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Duration B is required when Count B is provided',
+        message: 'A duração B é obrigatória quando existem jogos com duração B',
         path: ['durationB'],
       });
     }
@@ -186,7 +186,7 @@ export const insertTournament = z
     if (data.countC !== undefined && data.countC > 0 && !data.durationC) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Duration C is required when Count C is provided',
+        message: 'A duração C é obrigatória quando existem jogos com duração C',
         path: ['durationC'],
       });
     }
@@ -195,7 +195,7 @@ export const insertTournament = z
     if (data.countB === 0 && data.countC !== undefined && data?.countC > 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Cannot set Count C when Count B is 0',
+        message: 'Não pode indicar jogos com duração C sem jogos com duração B',
         path: ['countB'],
       });
     }
@@ -411,11 +411,11 @@ export const createFeePayment = z
       .max(64, 'Sócio inválido'),
     feeId: z
       .string({
-        required_error: 'Cota é obrigatória',
-        invalid_type_error: 'Cota inválida',
+        required_error: 'Quota é obrigatória',
+        invalid_type_error: 'Quota inválida',
       })
-      .min(1, 'Cota é obrigatória')
-      .max(64, 'Cota inválida'),
+      .min(1, 'Quota é obrigatória')
+      .max(64, 'Quota inválida'),
     paidAt: feePaymentDateSchema,
     method: feePaymentMethodSchema.optional(),
     methodDetail: feePaymentDetailSchema,
@@ -439,3 +439,37 @@ export const updateFeePayment = z
     halfFee: z.boolean(),
   })
   .superRefine(requirePaymentMethodDetail);
+
+// Paid fees dashboard filter
+const cotasPagasDateSchema = z
+  .string({ invalid_type_error: 'Data inválida' })
+  .trim()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida')
+  .superRefine((value, ctx) => {
+    const date = new Date(`${value}T00:00:00.000Z`);
+
+    if (
+      Number.isNaN(date.getTime()) ||
+      date.toISOString().slice(0, 10) !== value
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Data inválida',
+      });
+    }
+  });
+
+export const cotasPagasFilter = z
+  .object({
+    from: cotasPagasDateSchema.optional(),
+    to: cotasPagasDateSchema.optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.from && data.to && data.from > data.to) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Intervalo de datas inválido',
+        path: ['to'],
+      });
+    }
+  });

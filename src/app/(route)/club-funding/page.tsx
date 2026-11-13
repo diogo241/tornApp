@@ -20,12 +20,12 @@ export default function ClubFundingListPage() {
     return [
       columnHelper.accessor('year', {
         id: 'year',
-        header: 'Year',
+        header: 'Ano',
         enableSorting: true,
       }),
       columnHelper.accessor('amount', {
         id: 'amount',
-        header: 'Amount',
+        header: 'Valor',
         enableSorting: true,
         cell: ({ row }) => {
           return formatCurrency(row.original.amount as number);
@@ -33,7 +33,7 @@ export default function ClubFundingListPage() {
       }),
       columnHelper.accessor('totalFundingCost', {
         id: 'totalFundingCost',
-        header: 'Total Funding Cost',
+        header: 'Total de financiamento',
         enableSorting: true,
         cell: ({ row }) => {
           return formatCurrency(row.original.totalFundingCost as number);
@@ -41,7 +41,7 @@ export default function ClubFundingListPage() {
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
-        header: 'Created at',
+        header: 'Criado em',
         enableSorting: true,
         cell: ({ row }) => {
           return formatDateTime(row.original.createdAt as Date).dateTime;
@@ -49,7 +49,7 @@ export default function ClubFundingListPage() {
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Actions',
+        header: 'Ações',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton recordItemId={row.original.id} size="sm" />
@@ -74,7 +74,7 @@ export default function ClubFundingListPage() {
 
   return (
     <ListView>
-      <ListViewHeader title="Municipal Funding" />
+      <ListViewHeader title="Financiamento Municipal" />
       <DataTable table={table} />
       <div className='flex'>
         <ClubFundingExportButton />

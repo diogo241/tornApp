@@ -128,13 +128,13 @@ export const SUMMARY_TABLE_COLUMNS = [
     styles: { halign: 'right' as const, cellWidth: 40 },
   },
   {
-    header: 'Custo Total',
+    header: 'Custo total',
     dataKey: 'totalCost',
     width: 40,
     styles: { halign: 'right' as const, cellWidth: 40 },
   },
   {
-    header: 'Saldo Líquido',
+    header: 'Saldo líquido',
     dataKey: 'netBalance',
     width: 45,
     styles: { halign: 'right' as const, cellWidth: 45 },

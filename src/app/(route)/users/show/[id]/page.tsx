@@ -19,9 +19,9 @@ export default function UserShowPage() {
     return (
       <ShowView>
         <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Erro</AlertTitle>
           <AlertDescription>
-            {error.message || 'Failed to load user'}
+            {error.message || 'Não foi possível carregar o utilizador'}
           </AlertDescription>
         </Alert>
       </ShowView>
@@ -42,13 +42,13 @@ export default function UserShowPage() {
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Created at:</h4>
+              <h4 className="text-sm font-medium mb-2">Criado em:</h4>
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(user?.createdAt as Date).dateTime}
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Updated at:</h4>
+              <h4 className="text-sm font-medium mb-2">Atualizado em:</h4>
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(user?.updatedAt as Date).dateTime ?? '-'}
               </p>

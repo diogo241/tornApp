@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
-import { apiError, HttpStatusCode } from '@lib/api';
+import { API_MESSAGES, apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import { convertToPlainObject } from '@lib/utils';
 import { insertRefereeAssignment } from '@lib/validators';
@@ -27,11 +27,11 @@ export const GET = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const assignment = await prisma.refereeAssignment.findFirst({
@@ -47,12 +47,15 @@ export const GET = async (
     });
 
     if (!assignment) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(convertToPlainObject(assignment));
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -68,12 +71,12 @@ export const PUT = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
 
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     // Get old assignment Data
@@ -81,7 +84,7 @@ export const PUT = async (
       where: { id },
     });
     if (!oldAssignment) {
-      return apiError('Assignment not found', HttpStatusCode.NOT_FOUND);
+      return apiError('Jogo não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
     // Validate request body
@@ -91,14 +94,14 @@ export const PUT = async (
     // Get the tournament
     const tournament = await getTournamentById(newAssignemtData.tournamentId);
     if (!tournament) {
-      return apiError('Tournament not found', HttpStatusCode.NOT_FOUND);
+      return apiError('Torneio não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
     // Validate if games are valid for the tournament
     const validGames = await checkNumberOfGames(newAssignemtData, tournament);
     if (validGames.success === false) {
       return apiError(
-        validGames.message ?? 'Invalid games',
+        validGames.message ?? 'Jogos inválidos',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -110,13 +113,13 @@ export const PUT = async (
     );
     if (!remainingGames.games) {
       return apiError(
-        'Error getting remaining games',
+        'Não foi possível obter os jogos restantes',
         HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
     if (remainingGames.success === false) {
       return apiError(
-        remainingGames.message ?? 'Invalid games',
+        remainingGames.message ?? 'Jogos inválidos',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -139,7 +142,7 @@ export const PUT = async (
     );
     if (canBeAssigned.success === false) {
       return apiError(
-        canBeAssigned.message ?? 'Invalid games',
+        canBeAssigned.message ?? 'Jogos inválidos',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -153,7 +156,7 @@ export const PUT = async (
 
     if (!assigmentTotalCost.success) {
       return apiError(
-        assigmentTotalCost.message ?? 'Error calculating total cost',
+        assigmentTotalCost.message ?? 'Não foi possível calcular o custo total',
         HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
@@ -171,7 +174,7 @@ export const PUT = async (
     });
 
     if (!assignment) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     // Update referee total cost
@@ -179,7 +182,10 @@ export const PUT = async (
 
     return NextResponse.json(assignment);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -195,11 +201,11 @@ export const DELETE = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     // Delete assignment
@@ -211,11 +217,14 @@ export const DELETE = async (
     await updateRefereeCost(assignment.refereeId, -assignment.totalCost!);
 
     if (!assignment) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(assignment);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

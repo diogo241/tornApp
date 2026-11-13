@@ -137,7 +137,7 @@ const UserDropdown = () => {
             className={cn("text-destructive", "hover:text-destructive")}
           />
           <span className={cn("text-destructive", "hover:text-destructive")}>
-            {isLoggingOut ? "Logging out..." : "Logout"}
+            {isLoggingOut ? "A sair..." : "Sair"}
           </span>
         </DropdownMenuItem>
       </DropdownMenuContent>

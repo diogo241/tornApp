@@ -1,5 +1,7 @@
 import { prisma } from '@lib/prisma';
+import { matchesSearch } from '@lib/search';
 import {
+  API_MESSAGES,
   apiError,
   apiListSuccess,
   HttpStatusCode,
@@ -12,7 +14,6 @@ import {
 } from '@lib/validators';
 import { createUser, getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
-import type { Prisma } from '../../../../generated/prisma/client';
 
 /**
  * GET /api/users
@@ -27,7 +28,7 @@ export const GET = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Validate query parameters
@@ -56,14 +57,8 @@ export const GET = async (request: NextRequest) => {
     let skip: number | undefined = (page - 1) * pageSize;
     let take: number | undefined = pageSize;
 
-    // Build where clause
-    const where: Prisma.UserWhereInput = {};
+    // The name filter runs in memory so accents and word order do not matter
     if (validationFilters?.name) {
-      where.name = {
-        contains: validationFilters.name,
-        mode: 'insensitive',
-      };
-
       skip = undefined;
       take = undefined;
     }
@@ -74,7 +69,6 @@ export const GET = async (request: NextRequest) => {
       prisma.user.findMany({
         skip,
         take,
-        where,
         select: {
           id: true,
           name: true,
@@ -89,12 +83,21 @@ export const GET = async (request: NextRequest) => {
       }),
     ]);
 
+    const filteredUsers = validationFilters?.name
+      ? users.filter((user) =>
+          matchesSearch(user.name, validationFilters.name),
+        )
+      : users;
+
     // Build response
-    const response = apiListSuccess(users, total);
+    const response = apiListSuccess(filteredUsers, total);
 
     return response;
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -107,7 +110,7 @@ export const POST = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Validate request body
@@ -122,6 +125,9 @@ export const POST = async (request: NextRequest) => {
 
     return NextResponse.json(user);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

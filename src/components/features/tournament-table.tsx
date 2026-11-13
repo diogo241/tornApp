@@ -28,22 +28,22 @@ export default function TournamentTable({ clubId }: { clubId: string }) {
     return [
       columnHelper.accessor('name', {
         id: 'name',
-        header: 'Name',
+        header: 'Nome',
         size: 260,
       }),
       columnHelper.accessor('rate.name', {
         id: 'rate.name',
-        header: 'Type',
+        header: 'Tipo',
         size: 100,
       }),
       columnHelper.accessor('totalGames', {
         id: 'totalGames',
-        header: 'Total games',
+        header: 'Total de jogos',
         size: 100,
       }),
       columnHelper.accessor('startDate', {
         id: 'startDate',
-        header: 'Started at',
+        header: 'Início',
         cell: ({ row }) => {
           return formatDateTime(row.original.startDate as Date).dateOnly;
         },
@@ -51,7 +51,7 @@ export default function TournamentTable({ clubId }: { clubId: string }) {
       }),
       columnHelper.accessor('endDate', {
         id: 'endDate',
-        header: 'Ended at',
+        header: 'Fim',
         cell: ({ row }) => {
           return formatDateTime(row.original.endDate as Date).dateOnly;
         },
@@ -59,7 +59,7 @@ export default function TournamentTable({ clubId }: { clubId: string }) {
       }),
       columnHelper.accessor('totalCost', {
         id: 'totalCost',
-        header: 'Total Cost',
+        header: 'Custo total',
         cell: ({ row }) => {
           return formatCurrency(row.original.totalCost as number);
         },
@@ -67,7 +67,7 @@ export default function TournamentTable({ clubId }: { clubId: string }) {
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Actions',
+        header: 'Ações',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton resource='tournaments' recordItemId={row.original.id} size="sm" />
@@ -99,14 +99,14 @@ export default function TournamentTable({ clubId }: { clubId: string }) {
       <CardContent>
         <div className="flex flex-col gap-4 mt-4">
           <div className="flex flex-col md:flex-row md:justify-between gap-4">
-            <h2 className="text-2xl font-bold">Tournaments</h2>
+            <h2 className="text-2xl font-bold">Torneios</h2>
             <Button asChild>
               <Link
                 className="flex items-center gap-2 font-semibold"
                 href={`/tournaments/create?clubId=${clubId}`}
               >
                 <Plus className="w-4 h-4" />
-                <span>Create</span>
+                <span>Criar</span>
               </Link>
             </Button>
           </div>

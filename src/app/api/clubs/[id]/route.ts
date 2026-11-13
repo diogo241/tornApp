@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@lib/prisma';
-import { apiError, HttpStatusCode } from '@lib/api';
+import { API_MESSAGES, apiError, HttpStatusCode } from '@lib/api';
 import { getSession } from '@lib/auth';
 import { insertClub } from '@lib/validators';
 
@@ -16,11 +16,11 @@ export const GET = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const club = await prisma.club.findFirst({
@@ -31,7 +31,7 @@ export const GET = async (
     });
 
     if (!club) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
 
@@ -44,7 +44,10 @@ export const GET = async (
       clubBalance: club.clubBalance,
     });
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -60,11 +63,11 @@ export const PUT = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     // Validate request body
@@ -78,12 +81,15 @@ export const PUT = async (
     });
 
     if (!club) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(club);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -99,11 +105,11 @@ export const DELETE = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     // Get tournaments that use this club
@@ -115,7 +121,7 @@ export const DELETE = async (
   
     if (tournaments && tournaments?.length > 0) {
       return apiError(
-        'Cannot delete club with tournaments assigned',
+        'Não é possível eliminar um clube com torneios associados',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -126,11 +132,14 @@ export const DELETE = async (
     });
 
     if (!club) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(club);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

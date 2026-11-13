@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { API_MESSAGES } from '@lib/api-errors';
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -21,7 +22,7 @@ export default async function middleware(request: NextRequest) {
 
     if (!sessionToken) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'No session token provided' },
+        { error: API_MESSAGES.unauthorized, message: 'Sessão não iniciada' },
         { status: 401 },
       );
     }

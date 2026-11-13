@@ -254,10 +254,10 @@ function DataTableNoData({
           {emptyState ?? (
             <>
               <div className={cn("text-lg", "font-semibold", "text-foreground")}>
-                No data to display
+                Sem dados para mostrar
               </div>
               <div className={cn("text-sm", "text-muted-foreground")}>
-                This table is empty for the time being.
+                Esta tabela está vazia de momento.
               </div>
             </>
           )}

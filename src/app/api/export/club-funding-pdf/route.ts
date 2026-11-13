@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@lib/auth';
-import { apiError, HttpStatusCode } from '@lib/api';
+import { API_MESSAGES, apiError, HttpStatusCode } from '@lib/api';
 import { generateClubFundingPDF } from '@lib/pdf/generators';
 import { getAllClubsWithBalances } from '@lib/services/club-funding-export';
 import { getClubFunding, getTotalFunding } from '@lib/services/club-funding';
@@ -18,7 +18,7 @@ export const GET = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Get clubs data
@@ -26,13 +26,13 @@ export const GET = async (request: NextRequest) => {
 
     // Check if data retrieval was successful
     if (!clubsData.success || !clubsData.data) {
-      return apiError('Failed to retrieve data', HttpStatusCode.NOT_FOUND);
+      return apiError('Não foi possível obter os dados', HttpStatusCode.NOT_FOUND);
     }
 
     // Get total funding for municipality costs
     const { success, clubFunding } = await getClubFunding();
     if (!success && !clubFunding) {
-      return apiError('No club funding found', HttpStatusCode.NOT_FOUND);
+      return apiError('Financiamento municipal não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
     const totalFundingCost = getTotalFunding(clubFunding!);
@@ -73,7 +73,7 @@ export const GET = async (request: NextRequest) => {
     // Generate filename with timestamp
     const year = new Date().getFullYear();
     const yearSuffix = year ? `_${year}` : '';
-    const filename = `club_municipal_report${yearSuffix}.pdf`;
+    const filename = `relatorio-financiamento-municipal${yearSuffix}.pdf`;
 
     // Create response with proper headers for PDF download
     const response = new NextResponse(Buffer.from(pdfBuffer), {
@@ -90,7 +90,7 @@ export const GET = async (request: NextRequest) => {
     return response;
   } catch (error) {
     return apiError(
-      'Failed to generate PDF report',
+      'Não foi possível gerar o relatório PDF',
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }

@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { apiError, handleValidationError, HttpStatusCode } from '@lib/api';
+import {
+  API_MESSAGES,
+  apiError,
+  handleValidationError,
+  HttpStatusCode,
+} from '@lib/api';
 import { getSession } from '@lib/auth';
 import { updateMember } from '@lib/validators';
 import {
@@ -20,12 +25,12 @@ export const GET = async (request: NextRequest, { params }: RouteContext) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const member = await getMemberById(id);
@@ -35,7 +40,10 @@ export const GET = async (request: NextRequest, { params }: RouteContext) => {
 
     return NextResponse.json(member);
   } catch {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -47,12 +55,12 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     let body: unknown;
@@ -79,7 +87,10 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
       }
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -92,12 +103,12 @@ export const DELETE = async (request: NextRequest, { params }: RouteContext) => 
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const member = await deleteMember(id);
@@ -114,6 +125,9 @@ export const DELETE = async (request: NextRequest, { params }: RouteContext) => 
       return apiError('Sócio não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

@@ -65,9 +65,9 @@ export default function RateCreatePage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Nome</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter a name" />
+                      <Input {...field} placeholder="Introduza um nome" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -79,18 +79,18 @@ export default function RateCreatePage() {
                 name="players"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Players</FormLabel>
+                    <FormLabel>Jogadores</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       required
                       defaultValue={
                         String(field.value) !== ''
                           ? String(field.value)
-                          : 'Select number of players'
+                          : 'Selecione o número de jogadores'
                       }
                     >
                       <SelectTrigger className="dark:bg-input/30 text-muted-foreground border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs md:text-sm">
-                        <SelectValue placeholder="Select number of players" />
+                        <SelectValue placeholder="Selecione o número de jogadores" />
                       </SelectTrigger>
                       <SelectContent>
                         {NUMBER_PLAYERS.map((item) => (
@@ -115,13 +115,13 @@ export default function RateCreatePage() {
                 name="refRate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Referee Rate</FormLabel>
+                    <FormLabel>Valor do árbitro</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="number"
                         required
-                        placeholder="Enter a rate"
+                        placeholder="Introduza um valor"
                       />
                     </FormControl>
                     <FormMessage />
@@ -135,12 +135,12 @@ export default function RateCreatePage() {
                   name="aRate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assistant Referee Rate</FormLabel>
+                      <FormLabel>Valor do árbitro assistente</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           type="number"
-                          placeholder="Enter a rate"
+                          placeholder="Introduza um valor"
                         />
                       </FormControl>
                       <FormMessage />
@@ -156,14 +156,14 @@ export default function RateCreatePage() {
                 {...form.saveButtonProps}
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Creating...' : 'Create'}
+                {form.formState.isSubmitting ? 'A criar...' : 'Criar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

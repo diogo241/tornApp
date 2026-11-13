@@ -45,16 +45,16 @@ export default function ClubEditPage() {
   return (
     <EditView>
       <LoadingOverlay loading={formLoading}>
-        <EditViewHeader title='Edit Club' />
+        <EditViewHeader title='Editar clube' />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="name"
-              rules={{ required: 'Title is required' }}
+              rules={{ required: 'O nome é obrigatório' }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value || ''} />
                   </FormControl>
@@ -69,14 +69,14 @@ export default function ClubEditPage() {
                 {...form.saveButtonProps}
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Updating...' : 'Update'}
+                {form.formState.isSubmitting ? 'A guardar...' : 'Guardar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

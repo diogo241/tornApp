@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { API_MESSAGES } from '@lib/api-errors';
 import type { FeePayment } from '@lib/types';
 import { formatCurrency } from '@lib/utils';
 import { updateFeePayment } from '@lib/validators';
@@ -91,7 +92,9 @@ const todayAsDateInput = () => {
 const errorMessage = (error: HttpError | null, fallback: string) => {
   const message = error?.message;
 
-  return message && message !== 'Validation failed' ? message : fallback;
+  return message && message !== API_MESSAGES.validationFailed
+    ? message
+    : fallback;
 };
 
 function PaymentForm({
@@ -210,7 +213,8 @@ function PaymentForm({
       <form onSubmit={form.handleSubmit(onValid)} className="space-y-5">
         {selectableFees.length > 1 && (
           <div className="space-y-2">
-            <Label htmlFor="payment-fee">Cota</Label>
+            {/* MESQUITA - #19f: terminologia quota */}
+            <Label htmlFor="payment-fee">Quota</Label>
             <Select
               value={fee.id}
               onValueChange={onSelectFee}
@@ -231,7 +235,7 @@ function PaymentForm({
         )}
 
         <div className="bg-muted flex items-center justify-between rounded-md border px-3 py-2">
-          <span className="text-sm font-medium">Valor da cota</span>
+          <span className="text-sm font-medium">Valor da quota</span>
           <span className="text-lg font-semibold">
             {formatCurrency(fee.amount)}
           </span>
@@ -320,7 +324,7 @@ function PaymentForm({
                 />
               </FormControl>
               <div className="space-y-1">
-                <FormLabel>Pagou meia cota (50%)</FormLabel>
+                <FormLabel>Pagou meia quota (50%)</FormLabel>
                 <p className="text-muted-foreground text-xs">
                   {formatCurrency(Number(fee.amount) / 2)} em vez de{' '}
                   {formatCurrency(fee.amount)} — conta como paga.
@@ -426,7 +430,7 @@ export function FeePaymentDialog({
             {payment ? 'Pagamento' : 'Registar pagamento'}
           </DialogTitle>
           <DialogDescription>
-            Cota {fee.year} · Nº {member.number} · {member.name}
+            Quota {fee.year} · Nº {member.number} · {member.name}
           </DialogDescription>
         </DialogHeader>
 

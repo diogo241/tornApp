@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { ZodError } from 'zod';
-import { apiError, handleValidationError, HttpStatusCode } from '@lib/api';
+import {
+  API_MESSAGES,
+  apiError,
+  handleValidationError,
+  HttpStatusCode,
+} from '@lib/api';
 import { getSession } from '@lib/auth';
 import { updateClubBalancePaid as updateClubBalancePaidSchema } from '@lib/validators';
 import { updateClubBalancePaid } from '@lib/services/club-balance/club-balance';
@@ -17,12 +22,12 @@ export const PUT = async (
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('Invalid ID', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     // Validate request body
@@ -41,12 +46,18 @@ export const PUT = async (
 
     if (!result.success || !result.clubBalance) {
       return result.notFound
-        ? apiError('Not found', HttpStatusCode.NOT_FOUND)
-        : apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        ? apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND)
+        : apiError(
+            API_MESSAGES.serverError,
+            HttpStatusCode.INTERNAL_SERVER_ERROR,
+          );
     }
 
     return NextResponse.json(result.clubBalance);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

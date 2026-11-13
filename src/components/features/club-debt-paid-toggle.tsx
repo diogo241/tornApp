@@ -37,11 +37,11 @@ export function ClubDebtPaidToggle({
             });
           }
           toast.success(
-            checked ? 'Debt marked as paid' : 'Debt marked as unpaid',
+            checked ? 'Dívida marcada como paga' : 'Dívida marcada como não paga',
           );
         },
         onError: () => {
-          toast.error('Could not update the payment status');
+          toast.error('Não foi possível atualizar o estado de pagamento');
         },
       },
     );
@@ -52,7 +52,7 @@ export function ClubDebtPaidToggle({
       checked={paid}
       onCheckedChange={handleCheckedChange}
       disabled={mutation.isPending}
-      aria-label="Paid"
+      aria-label="Pago"
     />
   );
 }

@@ -80,7 +80,7 @@ export function MemberList({ fees }: MemberListProps) {
       }),
       columnHelper.display({
         id: 'overdue',
-        header: 'Cotas em dia',
+        header: 'Quotas em dia',
         size: 100,
         cell: ({ row }) =>
           areFeesUpToDate(row.original.lastPaidYear) ? (
@@ -101,6 +101,7 @@ export function MemberList({ fees }: MemberListProps) {
 
           return (
             <div className="flex gap-2">
+              {/* MESQUITA - #19f: terminologia quota no botao de pagamento */}
               {!areFeesUpToDate(row.original.lastPaidYear) && hasUnpaidFee && (
                 <Button
                   type="button"
@@ -206,7 +207,7 @@ export function MemberList({ fees }: MemberListProps) {
               checked={onlyHalfFee}
               onCheckedChange={(checked) => setOnlyHalfFee(checked === true)}
             />
-            <Label htmlFor="only-half-fee">Só meias cotas</Label>
+            <Label htmlFor="only-half-fee">Só meias quotas</Label>
           </div>
           <div className="flex items-center gap-2">
             <Checkbox
@@ -241,9 +242,15 @@ export function MemberList({ fees }: MemberListProps) {
             </Select>
           </div>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link href="/fees">Gerir cotas</Link>
-        </Button>
+        {/* MESQUITA - #18: botao de acesso as cotas pagas */}
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/members/quotas">Ver quotas pagas</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/members/fees">Gerir quotas</Link>
+          </Button>
+        </div>
       </div>
       <DataTable
         table={table}

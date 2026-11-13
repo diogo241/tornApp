@@ -119,3 +119,28 @@ export type ClubBalance = {
   updatedAt?: Date;
 };
 
+export type PaidFeeRow = {
+  id: string;
+  paidAt: string | null;
+  method: FeePaymentMethod;
+  methodDetail: string | null;
+  halfFee: boolean;
+  value: number;
+  member: { number: number; name: string };
+  fee: { year: number; amount: number };
+};
+
+export type PaidFeesTotals = {
+  count: number;
+  amount: number;
+  byMethod: {
+    cash: number;
+    other: Array<{ label: string; amount: number; count: number }>;
+  };
+};
+
+export type PaidFeesResponse = {
+  data: PaidFeeRow[];
+  total: number;
+  totals: PaidFeesTotals;
+};

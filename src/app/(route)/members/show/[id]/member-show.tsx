@@ -72,7 +72,7 @@ export function MemberShow({ fees }: MemberShowProps) {
                   </Badge>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium mb-2">Cotas em dia</h4>
+                  <h4 className="text-sm font-medium mb-2">Quotas em dia</h4>
                   {areFeesUpToDate(member.lastPaidYear) ? (
                     <Badge variant="default">Sim</Badge>
                   ) : (

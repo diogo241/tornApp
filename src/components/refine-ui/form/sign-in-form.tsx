@@ -64,12 +64,12 @@ export const SignInForm = () => {
               'font-semibold',
             )}
           >
-            Sign in
+            Entrar
           </CardTitle>
           <CardDescription
             className={cn('text-muted-foreground', 'font-medium')}
           >
-            Welcome back
+            Bem-vindo de volta
           </CardDescription>
         </CardHeader>
 
@@ -91,7 +91,7 @@ export const SignInForm = () => {
             <div
               className={cn('relative', 'flex', 'flex-col', 'gap-2', 'mt-6')}
             >
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Palavra-passe</Label>
               <InputPassword
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -115,7 +115,7 @@ export const SignInForm = () => {
                     setRememberMe(checked === 'indeterminate' ? false : checked)
                   }
                 />
-                <Label htmlFor="remember">Remember me</Label>
+                <Label htmlFor="remember">Lembrar-me</Label>
               </div>
             </div>
 
@@ -125,7 +125,7 @@ export const SignInForm = () => {
               className={cn('w-full', 'mt-6')}
               disabled={isPending}
             >
-              Sign in
+              Entrar
             </Button>
           </form>
         </CardContent>

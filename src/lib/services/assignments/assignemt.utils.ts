@@ -5,7 +5,8 @@ export const validateGamesCount = (
     if (validator.value > validator.max)
       return {
         success: false,
-        message: `Invalid ${validator.label}: is greater then tournament ${validator.label} or ARef ${validator.label}`,
+        message:
+          'O número de jogos não pode ser superior aos jogos disponíveis no torneio',
       };
   }
 
