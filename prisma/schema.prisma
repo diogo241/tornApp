@@ -146,6 +146,53 @@ model ClubBalance {
   @@map("club_balance")
 }
 
+model Member {
+  id          String   @id @default(uuid())
+  number      Int      @unique
+  name        String
+  memberSince Int?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  feePayments FeePayment[]
+
+  @@index([name])
+  @@map("member")
+}
+
+model Fee {
+  id        String   @id @default(uuid())
+  year      Int      @unique
+  amount    Decimal  @default(0) @db.Decimal(10, 2)
+  label     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  payments FeePayment[]
+
+  @@map("fee")
+}
+
+model FeePayment {
+  id           String    @id @default(cuid())
+  memberId     String
+  member       Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  feeId        String
+  fee          Fee       @relation(fields: [feeId], references: [id], onDelete: Restrict)
+  paidAt       DateTime?
+  method       String    @default("cash")
+  methodDetail String?
+  halfFee      Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+
+  @@unique([memberId, feeId])
+  @@index([feeId])
+  @@map("fee_payment")
+}
+
 model User {
   id            String    @id
   name          String

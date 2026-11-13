@@ -8,6 +8,10 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith('/api/qkfixprobe')) {
+    return NextResponse.next();
+  }
+
   // Protect all other API routes
   if (pathname.startsWith('/api/')) {
     // Check for session cookie

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import {
   insertClub,
+  insertFee,
+  insertMember,
   insertReferee,
   insertUser,
   insertRate,
@@ -67,6 +69,42 @@ export type ClubFunding = z.infer<typeof insertClubFunding> & {
   createdAt?: Date;
   updatedAt?: Date;
   clubBalances?: ClubBalance[];
+};
+
+export type Member = z.infer<typeof insertMember> & {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type Fee = z.infer<typeof insertFee> & {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type FeePaymentMethod = 'cash' | 'mbway' | 'other';
+
+export type FeePayment = {
+  id: string;
+  memberId: string;
+  feeId: string;
+  paidAt: string | null;
+  method: FeePaymentMethod;
+  methodDetail: string | null;
+  halfFee: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  fee?: {
+    year: number;
+    active: boolean;
+  };
+};
+
+export type MemberWithPayments = Omit<Member, 'id'> & {
+  id: string;
+  feePayments: FeePayment[];
+  lastPaidYear: number | null;
 };
 
 export type ClubBalance = {

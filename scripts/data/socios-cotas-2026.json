@@ -1,0 +1,220 @@
+{
+  "source": "docs/Sócios 26.27-3.pdf",
+  "sheetUpdatedAt": "2026-09-21",
+  "fees": [2024, 2025, 2026, 2027],
+  "members": [
+    {
+      "number": 1,
+      "name": "José Augusto Silva Pereira",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 2,
+      "name": "Domingos Barbosa",
+      "memberSince": 2014,
+      "payments": []
+    },
+    {
+      "number": 3,
+      "name": "Zé Manel",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 4,
+      "name": "Cosme Cunha Machado",
+      "memberSince": 2014,
+      "payments": []
+    },
+    {
+      "number": 5,
+      "name": "Carvalho",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 6,
+      "name": "Fernando Pereira",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "name": "Sérgio Fernandes",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 8,
+      "name": "Quim",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 9,
+      "name": "Camilo",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 10,
+      "name": "Oliveira",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 11,
+      "name": "José Carlos Tinoco",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 12,
+      "name": "Carlos Simões",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 13,
+      "name": "Bruno Moreira",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 14,
+      "name": "Hugo Araújo",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 15,
+      "name": "Luís Manuel Pereira Silva",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 16,
+      "name": "Ricardo Amorim",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 17,
+      "name": "Marco César P. Marques",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 18,
+      "name": "João Pedro Silva Pinheiro",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "name": "José Miguel",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 20,
+      "name": "Miguel Ângelo Silva",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "name": "Manuela",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 22,
+      "name": "Raul Jorge Campos Silva",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 23,
+      "name": "Rui Pinho",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 24,
+      "name": "Cândido Costa",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 25,
+      "name": "Gabriel",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 26,
+      "name": "António Manuel S. P. Silva",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 27,
+      "name": "Rui Pedro Morais Pereira",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 28,
+      "name": "Filipe Miguel Silva Antunes",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 29,
+      "name": "José Francisco Costa",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 30,
+      "name": "Pedro Napoleão Oliveira",
+      "memberSince": 2013,
+      "payments": []
+    }
+  ]
+}

@@ -17,10 +17,12 @@ import {
   Dice4,
   HandCoinsIcon,
   LayoutDashboardIcon,
+  ReceiptIcon,
   ShieldBan,
   ShieldBanIcon,
   UniversityIcon,
   UserIcon,
+  UsersIcon,
   WarehouseIcon,
 } from 'lucide-react';
 
@@ -92,6 +94,33 @@ export const RefineContext = ({ children }: RefineContextProps) => {
                 meta: {
                   canDelete: true,
                   icon: <ShieldBanIcon />,
+                },
+              },
+              {
+                name: 'members',
+                list: '/members',
+                create: '/members/create',
+                edit: '/members/edit/:id',
+                show: '/members/show/:id',
+                meta: {
+                  canDelete: true,
+                  canShow: true,
+                  label: 'Sócios',
+                  icon: <UsersIcon />,
+                },
+              },
+              {
+                name: 'fees',
+                list: '/fees',
+                create: '/fees/create',
+                edit: '/fees/edit/:id',
+                meta: {
+                  canDelete: true,
+                  canShow: false,
+                  hide: true,
+                  label: 'Valores das cotas',
+                  parent: 'members',
+                  icon: <ReceiptIcon />,
                 },
               },
               {
