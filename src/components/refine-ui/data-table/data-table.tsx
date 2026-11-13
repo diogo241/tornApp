@@ -15,14 +15,16 @@ import type { UseTableReturnType } from "@refinedev/react-table";
 import type { Column } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import { Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type DataTableProps<TData extends BaseRecord> = {
   table: UseTableReturnType<TData, HttpError>;
+  emptyState?: ReactNode;
 };
 
 export function DataTable<TData extends BaseRecord>({
   table,
+  emptyState,
 }: DataTableProps<TData>) {
   const {
     reactTable: { getHeaderGroups, getRowModel, getAllColumns },
@@ -193,6 +195,7 @@ export function DataTable<TData extends BaseRecord>({
               <DataTableNoData
                 isOverflowing={isOverflowing}
                 columnsLength={columns.length}
+                emptyState={emptyState}
               />
             )}
           </TableBody>
@@ -215,9 +218,11 @@ export function DataTable<TData extends BaseRecord>({
 function DataTableNoData({
   isOverflowing,
   columnsLength,
+  emptyState,
 }: {
   isOverflowing: { horizontal: boolean; vertical: boolean };
   columnsLength: number;
+  emptyState?: ReactNode;
 }) {
   return (
     <TableRow className="hover:bg-transparent">
@@ -246,12 +251,16 @@ function DataTableNoData({
             minWidth: "300px",
           }}
         >
-          <div className={cn("text-lg", "font-semibold", "text-foreground")}>
-            No data to display
-          </div>
-          <div className={cn("text-sm", "text-muted-foreground")}>
-            This table is empty for the time being.
-          </div>
+          {emptyState ?? (
+            <>
+              <div className={cn("text-lg", "font-semibold", "text-foreground")}>
+                No data to display
+              </div>
+              <div className={cn("text-sm", "text-muted-foreground")}>
+                This table is empty for the time being.
+              </div>
+            </>
+          )}
         </div>
       </TableCell>
     </TableRow>

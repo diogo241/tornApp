@@ -57,7 +57,14 @@ const options: CreateDataProviderOptions = {
   getOne: {
     getEndpoint: ({ resource, id }) => `${resource}/${id}`,
     mapResponse: async (response) => {
-      const payload = await response.json();
+      // eslint-disable-next-line no-console
+      console.log('[qkfix-probe] mapResponse start', response.status, response.url, response.bodyUsed);
+      const text = await response.text();
+      // eslint-disable-next-line no-console
+      console.log('[qkfix-probe] mapResponse text', text.length, text.slice(0, 80));
+      const payload = JSON.parse(text);
+      // eslint-disable-next-line no-console
+      console.log('[qkfix-probe] mapResponse done', payload);
       return payload as BaseRecord;
     },
   },

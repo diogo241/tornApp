@@ -13,6 +13,7 @@ import {
   useUserFriendlyName,
 } from '@refinedev/core';
 import { ArrowLeftIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { EditButton } from '../buttons/edit';
 import { DeleteButton } from '../buttons/delete';
 
@@ -29,6 +30,7 @@ export function ShowView({ children, className }: ShowViewProps) {
 type ShowViewHeaderProps = PropsWithChildren<{
   resource?: string;
   title?: string;
+  backTo?: string;
   wrapperClassName?: string;
   headerClassName?: string;
 }>;
@@ -36,10 +38,21 @@ type ShowViewHeaderProps = PropsWithChildren<{
 export const ShowViewHeader = ({
   resource: resourceFromProps,
   title: titleFromProps,
+  backTo,
   wrapperClassName,
   headerClassName,
 }: ShowViewHeaderProps) => {
   const back = useBack();
+  const router = useRouter();
+
+  const onBack = () => {
+    if (backTo && window.history.length <= 1) {
+      router.replace(backTo);
+      return;
+    }
+
+    back();
+  };
 
   const getUserFriendlyName = useUserFriendlyName();
 
@@ -76,7 +89,7 @@ export const ShowViewHeader = ({
         )}
       >
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={back}>
+          <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeftIcon className="h-4 w-4" />
           </Button>
           <h2 className="text-2xl font-bold">{title}</h2>
