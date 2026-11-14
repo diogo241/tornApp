@@ -28,7 +28,7 @@ import type { CrudFilters } from '@refinedev/core';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 export type MemberListProps = {
   fees: FeePaymentOption[];
@@ -39,6 +39,19 @@ export function MemberList({ fees }: MemberListProps) {
   const years = fees.map((fee) => fee.year);
   const [paymentMember, setPaymentMember] =
     useState<MemberWithPayments | null>(null);
+
+  const feesKey = fees
+    .map((fee) => `${fee.id}:${fee.year}:${fee.amount}`)
+    .join('|');
+  const feesRef = useRef(fees);
+  const feesKeyRef = useRef(feesKey);
+
+  if (feesKeyRef.current !== feesKey) {
+    feesKeyRef.current = feesKey;
+    feesRef.current = fees;
+  }
+
+  const feeOptions = feesRef.current;
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<MemberWithPayments>();
@@ -99,7 +112,9 @@ export function MemberList({ fees }: MemberListProps) {
           const paidFeeIds = new Set(
             row.original.feePayments.map((payment) => payment.feeId),
           );
-          const hasUnpaidFee = fees.some((fee) => !paidFeeIds.has(fee.id));
+          const hasUnpaidFee = feeOptions.some(
+            (fee) => !paidFeeIds.has(fee.id),
+          );
 
           return (
             <div className="flex items-center gap-2">
@@ -132,7 +147,7 @@ export function MemberList({ fees }: MemberListProps) {
         },
       }),
     ];
-  }, [fees]);
+  }, [feeOptions]);
 
   const [searchName, setSearchName] = useState('');
   const [onlyActive, setOnlyActive] = useState(true);
