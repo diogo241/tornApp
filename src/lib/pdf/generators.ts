@@ -131,7 +131,7 @@ export function addClubFundingTable(
       head: [[
         'Clube',
         'Apoio Câmara Municipal',
-        'Custo Total',
+        'Custo total',
         'Suportado pelo Clube',
       ]],
 
@@ -219,7 +219,7 @@ export function addSummarySection(
   // Statistics grid (2 columns)
   const statsData = [
     { label: 'Clubes:', value: stats.totalClubs.toString() },
-    { label: 'Custo Total:', value: formatCurrencyForPDF(stats.totalCost) },
+    { label: 'Custo total:', value: formatCurrencyForPDF(stats.totalCost) },
     {
       label: 'Suportado pelo Município:',
       value: formatCurrencyForPDF(stats.totalFunding),

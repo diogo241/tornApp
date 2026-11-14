@@ -105,6 +105,8 @@ export type MemberWithPayments = Omit<Member, 'id'> & {
   id: string;
   feePayments: FeePayment[];
   lastPaidYear: number | null;
+  // MESQUITA - #20: add optional viewToken for authenticated share links
+  viewToken?: string;
 };
 
 export type ClubBalance = {
@@ -119,3 +121,49 @@ export type ClubBalance = {
   updatedAt?: Date;
 };
 
+export type PaidFeeRow = {
+  id: string;
+  paidAt: string | null;
+  method: FeePaymentMethod;
+  methodDetail: string | null;
+  halfFee: boolean;
+  value: number;
+  member: { number: number; name: string };
+  fee: { year: number; amount: number };
+};
+
+export type PaidFeesTotals = {
+  count: number;
+  amount: number;
+  byMethod: {
+    cash: number;
+    other: Array<{ label: string; amount: number; count: number }>;
+  };
+};
+
+export type PaidFeesResponse = {
+  data: PaidFeeRow[];
+  total: number;
+  totals: PaidFeesTotals;
+};
+
+// MESQUITA - #20: add public member view DTO types
+export type PublicMemberPayment = {
+  year: number;
+  paidAt: string | null;
+  method: FeePaymentMethod;
+  methodDetail: string | null;
+  halfFee: boolean;
+  amountPaid: number;
+};
+
+export type PublicMemberView = {
+  member: {
+    name: string;
+    number: number;
+    memberSince: number | null;
+    active: boolean;
+  };
+  lastPaidYear: number | null;
+  payments: PublicMemberPayment[];
+};

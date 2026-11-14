@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import {
+  API_MESSAGES,
   apiError,
   apiListSuccess,
   handleValidationError,
@@ -28,7 +29,7 @@ export const GET = async (request: NextRequest) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { searchParams } = new URL(request.url);
@@ -54,7 +55,10 @@ export const GET = async (request: NextRequest) => {
 
     return apiListSuccess(data, total);
   } catch {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -66,7 +70,7 @@ export const POST = async (request: NextRequest) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     let body: unknown;
@@ -92,11 +96,14 @@ export const POST = async (request: NextRequest) => {
       error.code === 'P2002'
     ) {
       return apiError(
-        'Já existe uma cota para esse ano',
+        'Já existe uma quota para esse ano',
         HttpStatusCode.BAD_REQUEST,
       );
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

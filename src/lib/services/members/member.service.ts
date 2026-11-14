@@ -1,4 +1,5 @@
 import { prisma } from '@lib/prisma';
+import { matchesSearch } from '@lib/search';
 import type {
   insertMember as MemberInput,
   updateMember as MemberUpdateInput,
@@ -44,7 +45,7 @@ const gridFeePaymentSelect = {
 
 /**
  * Lists members with server-side pagination, name, status, half-fee and
- * last-paid-year filters.
+ * last-paid-year filters. The name search ignores accents and word order.
  * With `withPayments`, each row also carries the payments of active fee years
  * and the latest paid year. Plain calls keep the original payload.
  */
@@ -58,10 +59,6 @@ export const listMembers = async ({
   lastPaidBefore,
 }: MemberListParams) => {
   const where: Prisma.MemberWhereInput = {};
-
-  if (name) {
-    where.name = { contains: name, mode: 'insensitive' };
-  }
 
   if (typeof active === 'boolean') {
     where.active = active;
@@ -79,6 +76,22 @@ export const listMembers = async ({
   if (typeof lastPaidBefore === 'number') {
     where.NOT = {
       feePayments: { some: { fee: { year: { gte: lastPaidBefore } } } },
+    };
+  }
+
+  if (name) {
+    // Postgres has no accent-insensitive collation configured here, so the
+    // terms are matched against the name of the rows that already passed the
+    // other filters, and only their ids reach the page query.
+    const candidates = await prisma.member.findMany({
+      where,
+      select: { id: true, name: true },
+    });
+
+    where.id = {
+      in: candidates
+        .filter((candidate) => matchesSearch(candidate.name, name))
+        .map((candidate) => candidate.id),
     };
   }
 
@@ -185,7 +198,7 @@ export const updateMember = async (
 
 export class MemberHasFeePaymentsError extends Error {
   constructor() {
-    super('Sócio com cotas registadas; desativar em vez de eliminar');
+    super('Sócio com quotas registadas; desativar em vez de eliminar');
     this.name = 'MemberHasFeePaymentsError';
   }
 }

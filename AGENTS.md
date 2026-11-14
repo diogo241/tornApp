@@ -52,9 +52,14 @@ to `package.json` and document it here.
 
 ## Conventions
 
-- Next.js App Router; route groups `(route)` (authenticated) and `(auth)`.
+- Next.js App Router; route groups `(route)` (authenticated), `(auth)` (login)
+  and `(public)` (no session; currently only the signed member view).
 - API route handlers in `src/app/api/<resource>/route.ts` and `[id]/route.ts`,
   using `@lib/api` helpers, Zod validation, and a `getSession()` guard.
+- Public API exception: `/api/public/*` is public by design. Today only
+  `/api/public/members/view` exists; it verifies a signed member token and
+  returns a minimal read-only DTO. Never add another public route without an
+  explicit security review.
 - Business logic in `src/lib/services`; Zod schemas in `src/lib/validators.ts`.
 - All database access through Prisma (`src/lib/prisma.ts`).
 - Format currency and dates with `src/lib/utils.ts` (pt-PT, EUR).

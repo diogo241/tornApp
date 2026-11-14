@@ -1,4 +1,9 @@
-import { apiError, apiListSuccess, HttpStatusCode } from '@lib/api';
+import {
+  API_MESSAGES,
+  apiError,
+  apiListSuccess,
+  HttpStatusCode,
+} from '@lib/api';
 import { getSession } from '@lib/auth';
 import { prisma } from '@lib/prisma';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -21,7 +26,7 @@ export const GET = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Fetch data with pagination
@@ -51,7 +56,7 @@ export const GET = async (request: NextRequest) => {
       (!totalAssignments && totalAssignments !== 0) ||
       (!totalTournamentCost && totalTournamentCost !== 0)
     ) {
-      return apiError('Erro fetching data', HttpStatusCode.NOT_FOUND);
+      return apiError('Não foi possível obter os dados', HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json({
@@ -61,6 +66,9 @@ export const GET = async (request: NextRequest) => {
       totalCost: totalTournamentCost,
     });
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

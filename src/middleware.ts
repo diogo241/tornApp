@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { API_MESSAGES } from '@lib/api-errors';
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,6 +13,14 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // MESQUITA - #20: allow exact public member view endpoint without session
+  const normalizedPathname = pathname.endsWith('/')
+    ? pathname.slice(0, -1)
+    : pathname;
+  if (normalizedPathname === '/api/public/members/view') {
+    return NextResponse.next();
+  }
+
   // Protect all other API routes
   if (pathname.startsWith('/api/')) {
     // Check for session cookie
@@ -21,7 +30,7 @@ export default async function middleware(request: NextRequest) {
 
     if (!sessionToken) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'No session token provided' },
+        { error: API_MESSAGES.unauthorized, message: 'Sessão não iniciada' },
         { status: 401 },
       );
     }

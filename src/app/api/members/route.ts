@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import {
+  API_MESSAGES,
   apiError,
   apiListSuccess,
   handleValidationError,
@@ -16,6 +17,11 @@ import {
   createMember,
   listMembers,
 } from '@lib/services/members/member.service';
+// MESQUITA - #20: import server-only view token helpers for share links
+import {
+  createMemberViewToken,
+  hasMemberViewSecret,
+} from '@lib/members/view-token';
 import { Prisma } from '../../../../generated/prisma/client';
 
 /**
@@ -37,7 +43,7 @@ export const GET = async (request: NextRequest) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { searchParams } = new URL(request.url);
@@ -59,19 +65,39 @@ export const GET = async (request: NextRequest) => {
     }
 
     const { page = 1, pageSize = 10 } = pagination;
+    const withPayments = filters.data.payments ?? false;
     const { data, total } = await listMembers({
       page,
       pageSize,
       name: filters.data.name,
       active: filters.data.active,
-      withPayments: filters.data.payments ?? false,
+      withPayments,
       halfFeeOnly: filters.data.halfFee ?? false,
       lastPaidBefore: filters.data.lastPaidBefore,
     });
 
+    // MESQUITA - #20: attach signed viewToken on payments list when secret is configured
+    if (withPayments && hasMemberViewSecret()) {
+      const dataWithTokens = data.map((member) => {
+        try {
+          return {
+            ...member,
+            viewToken: createMemberViewToken(member.id),
+          };
+        } catch {
+          return member;
+        }
+      });
+
+      return apiListSuccess(dataWithTokens, total);
+    }
+
     return apiListSuccess(data, total);
   } catch {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -83,7 +109,7 @@ export const POST = async (request: NextRequest) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     let body: unknown;
@@ -111,6 +137,9 @@ export const POST = async (request: NextRequest) => {
       return apiError('Nº de sócio já existe', HttpStatusCode.BAD_REQUEST);
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

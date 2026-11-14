@@ -16,10 +16,10 @@ export function DataTableSorter<TData>({
 }: DataTableSorterProps<TData>) {
   const title =
     column.getIsSorted() === "desc"
-      ? `Sort by ${column.id} as descending`
+      ? "Ordenar por esta coluna (descendente)"
       : column.getIsSorted() === "asc"
-      ? `Sort by ${column.id} as ascending`
-      : `Sort by ${column.id}`;
+      ? "Ordenar por esta coluna (ascendente)"
+      : "Ordenar por esta coluna";
 
   return (
     <Button

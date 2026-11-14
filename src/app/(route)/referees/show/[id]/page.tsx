@@ -21,9 +21,9 @@ export default function RefereeShow() {
     return (
       <ShowView>
         <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Erro</AlertTitle>
           <AlertDescription>
-            {error.message || 'Failed to load referee'}
+            {error.message || 'Não foi possível carregar o árbitro'}
           </AlertDescription>
         </Alert>
       </ShowView>
@@ -40,17 +40,17 @@ export default function RefereeShow() {
         <Card>
           <CardContent className="flex flex-col justify-start gap-4 md:flex-row md:gap-8">
             <div>
-              <h4 className="text-sm font-medium mb-2">Total Cost:</h4>
+              <h4 className="text-sm font-medium mb-2">Custo total:</h4>
               <p className="text-sm text-muted-foreground">
                 {formatCurrency(referee?.totalCost as number)}
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Paid:</h4>
+              <h4 className="text-sm font-medium mb-2">Pago:</h4>
               {referee && (referee.totalCost ?? 0) > 0 ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {referee.paid ? 'Yes' : 'No'}
+                    {referee.paid ? 'Sim' : 'Não'}
                   </span>
                   <RefereePaidToggle
                     id={referee.id as string}
@@ -63,13 +63,13 @@ export default function RefereeShow() {
               )}
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Created at:</h4>
+              <h4 className="text-sm font-medium mb-2">Criado em:</h4>
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(referee?.createdAt as Date).dateTime}
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Updated at:</h4>
+              <h4 className="text-sm font-medium mb-2">Atualizado em:</h4>
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(referee?.updatedAt as Date).dateTime ?? '-'}
               </p>

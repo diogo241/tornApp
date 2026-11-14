@@ -87,7 +87,7 @@ export const updateFee = async (
 
 export class FeeHasFeePaymentsError extends Error {
   constructor() {
-    super('Cota com pagamentos registados; desativar em vez de eliminar');
+    super('Quota com pagamentos registados; desativar em vez de eliminar');
     this.name = 'FeeHasFeePaymentsError';
   }
 }

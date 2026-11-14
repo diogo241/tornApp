@@ -42,7 +42,9 @@ const options: CreateDataProviderOptions = {
     mapResponse: async (response) => {
       if (!response.ok) {
         const error = (await response.json()) as ApiErrorResponse;
-        throw new Error(error.message || error.error || 'Failed to fetch data');
+        throw new Error(
+          error.message || error.error || 'Não foi possível obter os dados',
+        );
       }
       const payload: GetListResponse = await response.json();
 
@@ -57,14 +59,7 @@ const options: CreateDataProviderOptions = {
   getOne: {
     getEndpoint: ({ resource, id }) => `${resource}/${id}`,
     mapResponse: async (response) => {
-      // eslint-disable-next-line no-console
-      console.log('[qkfix-probe] mapResponse start', response.status, response.url, response.bodyUsed);
-      const text = await response.text();
-      // eslint-disable-next-line no-console
-      console.log('[qkfix-probe] mapResponse text', text.length, text.slice(0, 80));
-      const payload = JSON.parse(text);
-      // eslint-disable-next-line no-console
-      console.log('[qkfix-probe] mapResponse done', payload);
+      const payload = await response.json();
       return payload as BaseRecord;
     },
   },
@@ -85,7 +80,7 @@ const options: CreateDataProviderOptions = {
       const error = (await response.json()) as ApiErrorResponse;
 
       return {
-        message: error.error || 'Update failed',
+        message: error.error || 'Não foi possível guardar as alterações',
         statusCode: response.status,
       };
     },
@@ -100,7 +95,7 @@ const options: CreateDataProviderOptions = {
       const error = (await response.json()) as ApiErrorResponse;
 
       return {
-        message: error.error || 'Delete failed',
+        message: error.error || 'Não foi possível eliminar o registo',
         statusCode: response.status,
       };
     },
@@ -115,7 +110,7 @@ const options: CreateDataProviderOptions = {
       const error = (await response.json()) as ApiErrorResponse;
 
       return {
-        message: error.error || 'Something went wrong',
+        message: error.error || 'Ocorreu um erro. Tente novamente.',
         statusCode: response.status,
       };
     },

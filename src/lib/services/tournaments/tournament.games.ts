@@ -42,7 +42,11 @@ export const getRemainingGames = async (
       games: remainingGames,
     };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to calculate remaining games', error);
+    return {
+      success: false,
+      message: 'Não foi possível obter os jogos restantes',
+    };
   }
 };
 

@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { apiError, handleValidationError, HttpStatusCode } from '@lib/api';
+import {
+  API_MESSAGES,
+  apiError,
+  handleValidationError,
+  HttpStatusCode,
+} from '@lib/api';
 import { getSession } from '@lib/auth';
 import { createFeePayment } from '@lib/validators';
 import { createFeePayment as createFeePaymentRecord } from '@lib/services/fee-payments/fee-payment.service';
@@ -15,7 +20,7 @@ export const POST = async (request: NextRequest) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     let body: unknown;
@@ -43,11 +48,11 @@ export const POST = async (request: NextRequest) => {
       }
 
       if (result.error === 'fee-not-found') {
-        return apiError('Cota não encontrada', HttpStatusCode.NOT_FOUND);
+        return apiError('Quota não encontrada', HttpStatusCode.NOT_FOUND);
       }
 
       return apiError(
-        'Cota inativa; não é possível registar pagamentos',
+        'Quota inativa; não é possível registar pagamentos',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -59,11 +64,14 @@ export const POST = async (request: NextRequest) => {
       error.code === 'P2002'
     ) {
       return apiError(
-        'Já existe um pagamento para este sócio e esta cota',
+        'Já existe um pagamento para este sócio e esta quota',
         HttpStatusCode.CONFLICT,
       );
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

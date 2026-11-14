@@ -34,6 +34,10 @@ export const updateAssignmentTotalCost = async (
 
     return { success: true, totalCost };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to update assignment total cost', error);
+    return {
+      success: false,
+      message: 'Não foi possível atualizar o custo do jogo',
+    };
   }
 };

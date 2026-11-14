@@ -49,7 +49,7 @@ export default function UserCreatePage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -60,7 +60,7 @@ export default function UserCreatePage() {
             <FormField
               control={form.control}
               name="email"
-              rules={{ required: 'Email is required' }}
+              rules={{ required: 'O email é obrigatório' }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
@@ -74,10 +74,10 @@ export default function UserCreatePage() {
             <FormField
               control={form.control}
               name="password"
-              rules={{ required: 'Password is required' }}
+              rules={{ required: 'A palavra-passe é obrigatória' }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Palavra-passe</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -92,10 +92,10 @@ export default function UserCreatePage() {
             <FormField
               control={form.control}
               name="confirmPassword"
-              rules={{ required: 'Password is required' }}
+              rules={{ required: 'A palavra-passe é obrigatória' }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>Confirmar palavra-passe</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -114,14 +114,14 @@ export default function UserCreatePage() {
                 {...form.saveButtonProps}
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Creating...' : 'Create'}
+                {form.formState.isSubmitting ? 'A criar...' : 'Criar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

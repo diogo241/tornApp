@@ -48,7 +48,7 @@ export default function FeeEditPage() {
   return (
     <EditView>
       <LoadingOverlay loading={formLoading}>
-        <EditViewHeader title="Editar cota" />
+        <EditViewHeader title="Editar quota" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField

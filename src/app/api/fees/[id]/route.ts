@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { apiError, handleValidationError, HttpStatusCode } from '@lib/api';
+import {
+  API_MESSAGES,
+  apiError,
+  handleValidationError,
+  HttpStatusCode,
+} from '@lib/api';
 import { getSession } from '@lib/auth';
 import { updateFee } from '@lib/validators';
 import {
@@ -20,22 +25,25 @@ export const GET = async (request: NextRequest, { params }: RouteContext) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const fee = await getFeeById(id);
     if (!fee) {
-      return apiError('Cota não encontrada', HttpStatusCode.NOT_FOUND);
+      return apiError('Quota não encontrada', HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(fee);
   } catch {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -47,12 +55,12 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     let body: unknown;
@@ -73,16 +81,19 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         return apiError(
-          'Já existe uma cota para esse ano',
+          'Já existe uma quota para esse ano',
           HttpStatusCode.BAD_REQUEST,
         );
       }
       if (error.code === 'P2025') {
-        return apiError('Cota não encontrada', HttpStatusCode.NOT_FOUND);
+        return apiError('Quota não encontrada', HttpStatusCode.NOT_FOUND);
       }
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -95,12 +106,12 @@ export const DELETE = async (request: NextRequest, { params }: RouteContext) => 
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const fee = await deleteFee(id);
@@ -113,15 +124,18 @@ export const DELETE = async (request: NextRequest, { params }: RouteContext) => 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2003') {
         return apiError(
-          'Cota com pagamentos registados; desativar em vez de eliminar',
+          'Quota com pagamentos registados; desativar em vez de eliminar',
           HttpStatusCode.BAD_REQUEST,
         );
       }
       if (error.code === 'P2025') {
-        return apiError('Cota não encontrada', HttpStatusCode.NOT_FOUND);
+        return apiError('Quota não encontrada', HttpStatusCode.NOT_FOUND);
       }
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

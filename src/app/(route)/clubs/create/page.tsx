@@ -49,9 +49,9 @@ export default function ClubCreatePage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter a name" />
+                    <Input {...field} placeholder="Introduza um nome" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -64,14 +64,14 @@ export default function ClubCreatePage() {
                 {...form.saveButtonProps}
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Creating...' : 'Create'}
+                {form.formState.isSubmitting ? 'A criar...' : 'Criar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

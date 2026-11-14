@@ -20,15 +20,16 @@ export default function RateList() {
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Rate>();
 
+    // MESQUITA - #19: cabecalhos em pt-PT
     return [
       columnHelper.accessor('name', {
         id: 'name',
-        header: 'Name',
+        header: 'Nome',
         enableSorting: true,
       }),
       columnHelper.accessor('players', {
         id: 'players',
-        header: 'Number of Players',
+        header: 'Número de jogadores',
         enableSorting: true,
         cell: ({ getValue }) => {
           return <Badge>{getValue()}</Badge>;
@@ -36,7 +37,7 @@ export default function RateList() {
       }),
       columnHelper.accessor('refRate', {
         id: 'refRate',
-        header: 'Referee Rate',
+        header: 'Valor do árbitro',
         enableSorting: true,
         cell: ({ getValue }) => {
           return formatCurrency(getValue());
@@ -44,7 +45,7 @@ export default function RateList() {
       }),
       columnHelper.accessor('aRate', {
         id: 'aRate',
-        header: 'Assistant Referee Rate',
+        header: 'Valor do árbitro assistente',
         enableSorting: true,
         cell: ({ row }) => {
           return row.original.aRate
@@ -54,7 +55,7 @@ export default function RateList() {
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
-        header: 'Created at',
+        header: 'Criado em',
         enableSorting: true,
         cell: ({ row }) => {
           return formatDateTime(row.original.createdAt as Date).dateTime;
@@ -62,7 +63,7 @@ export default function RateList() {
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Actions',
+        header: 'Ações',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton recordItemId={row.original.id} size="sm" />
@@ -103,11 +104,12 @@ export default function RateList() {
 
   return (
     <ListView>
-      <ListViewHeader />
+      <ListViewHeader title="Valor por jogo" />
+      {/* MESQUITA - #19: placeholder de filtro em pt-PT */}
       <div className="flex items-center gap-4">
         <Input
           type="text"
-          placeholder="Filter by name..."
+          placeholder="Filtrar por nome..."
           value={searchName}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="max-w-sm"

@@ -19,6 +19,7 @@ export function RefereePaidToggle({
   const invalidate = useInvalidate();
   const { mutate, mutation } = useUpdate<Referee, HttpError>();
 
+  // MESQUITA - #19: toasts e aria-label em pt-PT
   const handleCheckedChange = (checked: boolean) => {
     mutate(
       {
@@ -37,11 +38,13 @@ export function RefereePaidToggle({
             });
           }
           toast.success(
-            checked ? 'Referee marked as paid' : 'Referee marked as unpaid',
+            checked
+              ? 'Árbitro marcado como pago'
+              : 'Árbitro marcado como não pago',
           );
         },
         onError: () => {
-          toast.error('Could not update the payment status');
+          toast.error('Não foi possível atualizar o estado de pagamento');
         },
       },
     );
@@ -52,7 +55,7 @@ export function RefereePaidToggle({
       checked={paid}
       onCheckedChange={handleCheckedChange}
       disabled={mutation.isPending}
-      aria-label="Paid"
+      aria-label="Pago"
     />
   );
 }

@@ -24,12 +24,12 @@ export default function ClubListPage() {
     return [
       columnHelper.accessor('name', {
         id: 'name',
-        header: 'Name',
+        header: 'Nome',
         enableSorting: true,
       }),
       columnHelper.accessor('clubBalance.totalCost', {
         id: 'clubBalance.totalCost',
-        header: 'Total Cost',
+        header: 'Custo total',
         enableSorting: true,
         cell: ({ row }) => {
           const value = (row.original.clubBalance?.totalCost as number) ?? 0;
@@ -39,7 +39,7 @@ export default function ClubListPage() {
       }),
       columnHelper.accessor('clubBalance.netBalance', {
         id: 'clubBalance.netBalance',
-        header: 'Net Balance',
+        header: 'Saldo líquido',
         enableSorting: true,
         cell: ({ row }) => {
           const value = (row.original.clubBalance?.netBalance as number) ?? 0;
@@ -54,7 +54,7 @@ export default function ClubListPage() {
       }),
       columnHelper.accessor('refereeCost', {
         id: 'refereeCost',
-        header: 'Referee Cost',
+        header: 'Custo de arbitragem',
         enableSorting: false,
         cell: ({ row }) => {
           return formatCurrency((row.original.refereeCost as number) ?? 0);
@@ -63,21 +63,21 @@ export default function ClubListPage() {
       }),
       columnHelper.display({
         id: 'costMismatch',
-        header: 'Difference',
+        header: 'Diferença',
         cell: ({ row }) => {
           const totalCost = (row.original.clubBalance?.totalCost as number) ?? 0;
           const refereeCost = (row.original.refereeCost as number) ?? 0;
           if (round2(totalCost) === round2(refereeCost)) {
             return <span className="text-muted-foreground">-</span>;
           }
-          return <Badge variant="destructive">Diff</Badge>;
+          return <Badge variant="destructive">Diferença</Badge>;
         },
         size: 90,
         enableSorting: false,
       }),
       columnHelper.display({
         id: 'clubBalance.paid',
-        header: 'Paid',
+        header: 'Pago',
         cell: ({ row }) => {
           const clubBalance = row.original.clubBalance;
           if (!clubBalance || (clubBalance.netBalance ?? 0) >= 0) {
@@ -95,7 +95,7 @@ export default function ClubListPage() {
       }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
-        header: 'Created at',
+        header: 'Criado em',
         enableSorting: true,
         cell: ({ row }) => {
           return formatDateTime(row.original.createdAt as Date).dateTime;
@@ -103,7 +103,7 @@ export default function ClubListPage() {
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Actions',
+        header: 'Ações',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton recordItemId={row.original.id} size="sm" />
@@ -145,11 +145,11 @@ export default function ClubListPage() {
 
   return (
     <ListView>
-      <ListViewHeader />
+      <ListViewHeader title="Clubes" />
       <div className="flex items-center gap-4">
         <Input
           type="text"
-          placeholder="Filter by name..."
+          placeholder="Filtrar por nome..."
           value={searchName}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="max-w-sm"

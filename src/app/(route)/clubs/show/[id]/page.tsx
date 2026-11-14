@@ -22,9 +22,9 @@ export default function ClubShowPage() {
     return (
       <ShowView>
         <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Erro</AlertTitle>
           <AlertDescription>
-            {error.message || 'Failed to load club'}
+            {error.message || 'Não foi possível carregar o clube'}
           </AlertDescription>
         </Alert>
       </ShowView>
@@ -40,7 +40,7 @@ export default function ClubShowPage() {
         <Card>
           <CardContent className="flex flex-col justify-start gap-4 md:flex-row md:gap-8">
             <div>
-              <h4 className="text-sm font-medium mb-2">Net Balance:</h4>
+              <h4 className="text-sm font-medium mb-2">Saldo líquido:</h4>
               <p
                 className={
                   club?.clubBalance
@@ -56,11 +56,11 @@ export default function ClubShowPage() {
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Paid:</h4>
+              <h4 className="text-sm font-medium mb-2">Pago:</h4>
               {club?.clubBalance && (club.clubBalance.netBalance ?? 0) < 0 ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {club.clubBalance.paid ? 'Yes' : 'No'}
+                    {club.clubBalance.paid ? 'Sim' : 'Não'}
                   </span>
                   <ClubDebtPaidToggle
                     id={club.clubBalance.id}
@@ -73,19 +73,19 @@ export default function ClubShowPage() {
               )}
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Total Cost:</h4>
+              <h4 className="text-sm font-medium mb-2">Custo total:</h4>
               <p className="text-sm text-muted-foreground">
                 {formatCurrency(club?.totalCost as number) || 0}
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Created at:</h4>
+              <h4 className="text-sm font-medium mb-2">Criado em:</h4>
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(club?.createdAt as Date).dateTime}
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-2">Updated at:</h4>
+              <h4 className="text-sm font-medium mb-2">Atualizado em:</h4>
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(club?.updatedAt as Date).dateTime ?? '-'}
               </p>

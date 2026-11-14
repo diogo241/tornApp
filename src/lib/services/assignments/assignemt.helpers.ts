@@ -22,7 +22,8 @@ export const checkNumberOfGames = async (
   if (sumAssignedGames > tournament.totalGames)
     return {
       success: false,
-      message: 'Total Games is greater then tournament total games',
+      message:
+        'O total de jogos não pode ser superior ao total de jogos do torneio',
     };
 
   let gamesMaxValues = {
@@ -136,7 +137,8 @@ export const getAssignmentTotalCost = async (
 ) => {
   try {
     const { refRate, aRate = 0 } = rate;
-    if (!refRate) return { success: false, message: 'Ref Rate is required' };
+    if (!refRate)
+      return { success: false, message: 'O valor do árbitro é obrigatório' };
 
     const hasAssistantGames =
       (assignment.countARef ?? 0) +
@@ -145,7 +147,10 @@ export const getAssignmentTotalCost = async (
       0;
 
     if (hasAssistantGames && !aRate && aRate === 0) {
-      return { success: false, message: 'Assistant Rate (aRate) is required' };
+      return {
+        success: false,
+        message: 'O valor do árbitro assistente é obrigatório',
+      };
     }
 
     const categories = [
@@ -176,7 +181,11 @@ export const getAssignmentTotalCost = async (
 
     return { success: true, totalCost };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to calculate assignment total cost', error);
+    return {
+      success: false,
+      message: 'Não foi possível calcular o custo do jogo',
+    };
   }
 };
 
@@ -196,13 +205,17 @@ export const isRefereeUnassigned = async (
     if (assigned.length > 0) {
       return {
         success: false,
-        message: 'Referee is already assigned to this tournament',
+        message: 'O árbitro já está associado a este torneio',
       };
     }
 
     return { success: true };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to validate referee assignment', error);
+    return {
+      success: false,
+      message: 'Não foi possível validar a associação do árbitro',
+    };
   }
 };
 

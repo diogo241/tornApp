@@ -17,7 +17,11 @@ export const getClubFundingById = async (id: string) => {
 
     return { success: true, clubFunding };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to get club funding by id', error);
+    return {
+      success: false,
+      message: 'Não foi possível obter o financiamento municipal',
+    };
   }
 };
 
@@ -63,12 +67,16 @@ export const getClubFunding = async () => {
     if (!clubFunding) {
       return {
         success: false,
-        message: 'No club funding found',
+        message: 'Financiamento municipal não encontrado',
       };
     }
 
     return { success: true, clubFunding };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to get club funding', error);
+    return {
+      success: false,
+      message: 'Não foi possível obter o financiamento municipal',
+    };
   }
 };

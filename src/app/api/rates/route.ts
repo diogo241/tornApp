@@ -1,5 +1,7 @@
 import { prisma } from '@lib/prisma';
+import { matchesSearch } from '@lib/search';
 import {
+  API_MESSAGES,
   apiError,
   apiListSuccess,
   HttpStatusCode,
@@ -12,7 +14,6 @@ import {
 } from '@lib/validators';
 import { getSession } from '@lib/auth';
 import { NextResponse, type NextRequest } from 'next/server';
-import type { Prisma } from '../../../../generated/prisma/client';
 import { z } from 'better-auth';
 
 /**
@@ -28,7 +29,7 @@ export const GET = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Validate query parameters
@@ -57,14 +58,8 @@ export const GET = async (request: NextRequest) => {
     let skip: number | undefined = (page - 1) * pageSize;
     let take: number | undefined = pageSize;
 
-    // Build where clause
-    const where: Prisma.RateWhereInput = {};
+    // The name filter runs in memory so accents and word order do not matter
     if (validationFilters?.name) {
-      where.name = {
-        contains: validationFilters.name,
-        mode: 'insensitive',
-      };
-
       skip = undefined;
       take = undefined;
     }
@@ -75,7 +70,6 @@ export const GET = async (request: NextRequest) => {
       prisma.rate.findMany({
         skip,
         take,
-        where,
         select: {
           id: true,
           name: true,
@@ -91,12 +85,21 @@ export const GET = async (request: NextRequest) => {
       }),
     ]);
 
+    const filteredRates = validationFilters?.name
+      ? rates.filter((rate) =>
+          matchesSearch(rate.name, validationFilters.name),
+        )
+      : rates;
+
     // Build response
-    const response = apiListSuccess(rates, total);
+    const response = apiListSuccess(filteredRates, total);
 
     return response;
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -109,7 +112,7 @@ export const POST = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Validate request body
@@ -124,11 +127,14 @@ export const POST = async (request: NextRequest) => {
       },
     });
     if (!rate) {
-      return apiError('Not found', HttpStatusCode.NOT_FOUND);
+      return apiError(API_MESSAGES.notFound, HttpStatusCode.NOT_FOUND);
     }
 
     return NextResponse.json(rate);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

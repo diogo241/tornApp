@@ -1,7 +1,12 @@
 {
   "source": "docs/Sócios 26.27-3.pdf",
   "sheetUpdatedAt": "2026-09-21",
-  "fees": [2024, 2025, 2026, 2027],
+  "fees": [
+    2024,
+    2025,
+    2026,
+    2027
+  ],
   "members": [
     {
       "number": 1,
@@ -215,6 +220,1037 @@
       "name": "Pedro Napoleão Oliveira",
       "memberSince": 2013,
       "payments": []
+    },
+    {
+      "number": 31,
+      "name": "Jorge David Alvim Barroso",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 32,
+      "name": "Rui Manuel Pereira Salazar",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        },
+        {
+          "year": 2027,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "name": "Pedro Faria",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 34,
+      "name": "Ricardo Pinto",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "name": "Pedro Campos",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 36,
+      "name": "Hélder Branco",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 37,
+      "name": "Catarina Pereira",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 38,
+      "name": "Carlos Teixeira",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 39,
+      "name": "Rui Gomes",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 40,
+      "name": "Jorge Martins",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 41,
+      "name": "Carlos Fontes",
+      "memberSince": 2014,
+      "payments": []
+    },
+    {
+      "number": 42,
+      "name": "Rui Filipe Silva Moreira",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 43,
+      "name": "Tiago J. Simões P. Oliveira",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 44,
+      "name": "Tiago Faria",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 45,
+      "name": "Pedro Leitão",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 46,
+      "name": "Bruno Silva",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 47,
+      "name": "Roberto Oliveira",
+      "memberSince": null,
+      "payments": []
+    },
+    {
+      "number": 48,
+      "name": "Carlos Pacheco",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 49,
+      "name": "Cristiano Araújo",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 50,
+      "name": "Jorge Oliveira",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 51,
+      "name": "João César Barbosa Silva",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 52,
+      "name": "Fábio André Barbosa Silva",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 53,
+      "name": "Rúben Martins",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 54,
+      "name": "Luís Miguel Macedo Oliveira",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "name": "Teresa Oliveira",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 56,
+      "name": "António Barbosa",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 57,
+      "name": "José Pedro Reis",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 58,
+      "name": "António Samuel Reis",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 59,
+      "name": "José Pedro Abreu Silva",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 60,
+      "name": "Patrícia Carneiro",
+      "memberSince": 2014,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 61,
+      "name": "Gonçalo Costa",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 62,
+      "name": "João Carmo",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 63,
+      "name": "Bruno Adriano Oliveira",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 64,
+      "name": "Carlos Bezerra",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 65,
+      "name": "José Bastos",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 66,
+      "name": "Jorge Fernandes",
+      "memberSince": 2013,
+      "payments": []
+    },
+    {
+      "number": 67,
+      "name": "Ricardo Duarte",
+      "memberSince": 2014,
+      "payments": []
+    },
+    {
+      "number": 68,
+      "name": "Bruno Pinto",
+      "memberSince": 2013,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 69,
+      "name": "Fábio Fonseca",
+      "memberSince": 2014,
+      "payments": []
+    },
+    {
+      "number": 70,
+      "name": "Luís Filipe Pacheco Oliveira",
+      "memberSince": 2014,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 71,
+      "name": "Nuno Senra",
+      "memberSince": 2014,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 72,
+      "name": "Rui Silva",
+      "memberSince": 2014,
+      "payments": []
+    },
+    {
+      "number": 73,
+      "name": "Carlos Vilaça",
+      "memberSince": 2014,
+      "payments": []
+    },
+    {
+      "number": 74,
+      "name": "Fábio Daniel Teixeira",
+      "memberSince": 2014,
+      "payments": []
+    },
+    {
+      "number": 75,
+      "name": "Paulo Taveira Fernandes",
+      "memberSince": 2014,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 76,
+      "name": "Marco Paiva",
+      "memberSince": 2015,
+      "payments": []
+    },
+    {
+      "number": 77,
+      "name": "Paulo Renato Costa",
+      "memberSince": 2015,
+      "payments": []
+    },
+    {
+      "number": 78,
+      "name": "Luís Fernandes",
+      "memberSince": 2015,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 79,
+      "name": "João Magalhães",
+      "memberSince": 2015,
+      "payments": []
+    },
+    {
+      "number": 80,
+      "name": "Rui Oliveira",
+      "memberSince": 2015,
+      "payments": []
+    },
+    {
+      "number": 81,
+      "name": "David Barbosa",
+      "memberSince": 2016,
+      "payments": []
+    },
+    {
+      "number": 82,
+      "name": "Martinho Carneiro",
+      "memberSince": 2016,
+      "payments": []
+    },
+    {
+      "number": 83,
+      "name": "José Daniel Mesquita",
+      "memberSince": 2016,
+      "payments": []
+    },
+    {
+      "number": 84,
+      "name": "José Pedro M. Azevedo",
+      "memberSince": 2016,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 85,
+      "name": "Diogo Mesquita",
+      "memberSince": 2017,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 86,
+      "name": "Ricardo Magalhães",
+      "memberSince": 2017,
+      "payments": []
+    },
+    {
+      "number": 87,
+      "name": "Luís Miranda",
+      "memberSince": 2017,
+      "payments": []
+    },
+    {
+      "number": 88,
+      "name": "Ricardo Pereira",
+      "memberSince": 2017,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-06-22",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 89,
+      "name": "João Ribeiro",
+      "memberSince": 2018,
+      "payments": []
+    },
+    {
+      "number": 90,
+      "name": "Hélder Sá",
+      "memberSince": 2018,
+      "payments": []
+    },
+    {
+      "number": 91,
+      "name": "João Mário Silva",
+      "memberSince": 2018,
+      "payments": []
+    },
+    {
+      "number": 92,
+      "name": "Nuno Sequeira",
+      "memberSince": 2018,
+      "payments": []
+    },
+    {
+      "number": 93,
+      "name": "Pedro Taveira Silva",
+      "memberSince": 2019,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": null,
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 94,
+      "name": "João Freitas",
+      "memberSince": 2018,
+      "payments": []
+    },
+    {
+      "number": 95,
+      "name": "Luís Ricardo Carneiro",
+      "memberSince": 2021,
+      "payments": []
+    },
+    {
+      "number": 96,
+      "name": "Francisco Carvalho",
+      "memberSince": 2021,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 97,
+      "name": "Nuno Ribeiro",
+      "memberSince": 2021,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": null,
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 98,
+      "name": "Sara Pinheiro",
+      "memberSince": 2021,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 99,
+      "name": "Claúdio Fonseca",
+      "memberSince": 2021,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-06-22",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 100,
+      "name": "Nuno Manuel Machado",
+      "memberSince": 2021,
+      "payments": []
+    },
+    {
+      "number": 101,
+      "name": "Diogo Marinho",
+      "memberSince": 2021,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 102,
+      "name": "Daniel Moreira",
+      "memberSince": 2022,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 103,
+      "name": "Elisa Marques",
+      "memberSince": 2022,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 104,
+      "name": "Inês Dantas",
+      "memberSince": 2022,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 105,
+      "name": "João Gateira",
+      "memberSince": 2023,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 106,
+      "name": "Rúben Lopes",
+      "memberSince": 2023,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 107,
+      "name": "Hugo Guimarães",
+      "memberSince": 2023,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 108,
+      "name": "Rafael Martins (Futsal)",
+      "memberSince": 2023,
+      "payments": []
+    },
+    {
+      "number": 109,
+      "name": "Rui Machado (Futsal)",
+      "memberSince": 2023,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 110,
+      "name": "Paulo Ribeiro",
+      "memberSince": 2023,
+      "payments": []
+    },
+    {
+      "number": 111,
+      "name": "André Paiva",
+      "memberSince": 2024,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": null,
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 112,
+      "name": "Bárbara Malheiro",
+      "memberSince": 2024,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 113,
+      "name": "Pedro Oliveira",
+      "memberSince": 2024,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 114,
+      "name": "Inês Araújo",
+      "memberSince": 2024,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 115,
+      "name": "Diogo Abreu",
+      "memberSince": 2024,
+      "payments": [
+        {
+          "year": 2024,
+          "paidAt": "2024-12-07",
+          "halfFee": false
+        },
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 116,
+      "name": "Joana Moreira",
+      "memberSince": 2025,
+      "payments": [
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 117,
+      "name": "Inês Reis",
+      "memberSince": 2025,
+      "payments": [
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 118,
+      "name": "Paulo Miranda",
+      "memberSince": 2025,
+      "payments": [
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 119,
+      "name": "Santiago Miranda",
+      "memberSince": 2025,
+      "payments": [
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        },
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 120,
+      "name": "Rafael Silva",
+      "memberSince": 2025,
+      "payments": [
+        {
+          "year": 2025,
+          "paidAt": "2025-12-12",
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 121,
+      "name": "Pavlo",
+      "memberSince": 2026,
+      "payments": [
+        {
+          "year": 2026,
+          "paidAt": null,
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 122,
+      "name": "José Pereira",
+      "memberSince": 2026,
+      "payments": [
+        {
+          "year": 2026,
+          "paidAt": null,
+          "halfFee": false
+        }
+      ]
+    },
+    {
+      "number": 123,
+      "name": "Hugo Braga",
+      "memberSince": 2026,
+      "payments": [
+        {
+          "year": 2026,
+          "paidAt": "2026-11-06",
+          "halfFee": false
+        }
+      ]
     }
   ]
 }

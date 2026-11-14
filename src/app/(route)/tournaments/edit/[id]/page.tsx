@@ -120,9 +120,9 @@ export default function TournamentEditPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Nome</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter a name" />
+                      <Input {...field} placeholder="Introduza um nome" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -134,7 +134,7 @@ export default function TournamentEditPage() {
                 name="startDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date</FormLabel>
+                    <FormLabel>Data</FormLabel>
                     <FormControl>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -148,7 +148,7 @@ export default function TournamentEditPage() {
                                   formatDateTime(form.getValues('endDate') ?? tournament?.endDate)
                                     .dateOnly
                                 }`
-                              : 'Pick a date'}
+                              : 'Selecione uma data'}
                             <ChevronDownIcon />
                           </Button>
                         </PopoverTrigger>
@@ -194,13 +194,13 @@ export default function TournamentEditPage() {
               {/* Rate Field */}
               <FormRelationSelect
                 name="rateId"
-                label="Rate"
+                label="Escalão"
                 options={rateOptions}
               />
               {/* Rate Field */}
               <FormRelationSelect
                 name="clubId"
-                label="Club"
+                label="Clube"
                 options={clubOptions}
               />
               {/* Total Games Field */}
@@ -209,12 +209,12 @@ export default function TournamentEditPage() {
                 name="totalGames"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Total Games</FormLabel>
+                    <FormLabel>Total de jogos</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         required
-                        placeholder="Enter a total games"
+                        placeholder="Introduza um total de jogos"
                         {...field}
                         value={field.value ?? ''}
                       />
@@ -232,12 +232,12 @@ export default function TournamentEditPage() {
                 name="durationA"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Duration (min)</FormLabel>
+                    <FormLabel>Duração (min)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         required
-                        placeholder="Duration of games"
+                        placeholder="Duração dos jogos"
                         min={0}
                         max={90}
                         {...field}
@@ -254,14 +254,14 @@ export default function TournamentEditPage() {
                 name="countA"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Games with main duration</FormLabel>
+                    <FormLabel>Jogos com duração principal</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         required
                         min={1}
                         max={isNaN(remainGamesA) ? 0 : remainGamesA}
-                        placeholder="Number of games with main duration"
+                        placeholder="Nº de jogos com duração principal"
                         {...field}
                         value={field.value ?? ''}
                       />
@@ -275,12 +275,12 @@ export default function TournamentEditPage() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <p className="text-muted-foreground text-sm">
-                    Fill this fields if you have multiple games with different
-                    durations.
+                    Preencha estes campos se tiver vários jogos com durações
+                    diferentes.
                     <br />
                     <span>
-                      Example: 10 games in total - 4 with duration of 20 min and
-                      6 games with duration of 30 min.
+                      Exemplo: 10 jogos no total - 4 com duração de 20 min e 6
+                      jogos com duração de 30 min.
                     </span>
                   </p>
                 </div>
@@ -293,14 +293,14 @@ export default function TournamentEditPage() {
                     name="durationB"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Duration (min) B</FormLabel>
+                        <FormLabel>Duração (min) B</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             required
                             min={0}
                             max={90}
-                            placeholder="Duration of games"
+                            placeholder="Duração dos jogos"
                             {...field}
                             value={field.value ?? ''}
                           />
@@ -315,13 +315,13 @@ export default function TournamentEditPage() {
                     name="countB"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Games with B duration</FormLabel>
+                        <FormLabel>Jogos com duração B</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             required
                             max={isNaN(remainGamesB) ? 0 : remainGamesB}
-                            placeholder="Number of games with B duration"
+                            placeholder="Nº de jogos com duração B"
                             {...field}
                             value={field.value ?? ''}
                           />
@@ -339,14 +339,14 @@ export default function TournamentEditPage() {
                         name="durationC"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Duration (min) C</FormLabel>
+                            <FormLabel>Duração (min) C</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
                                 required
                                 min={0}
                                 max={90}
-                                placeholder="Duration of games"
+                                placeholder="Duração dos jogos"
                                 {...field}
                                 value={field.value ?? ''}
                               />
@@ -360,14 +360,14 @@ export default function TournamentEditPage() {
                         name="countC"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Games with C duration</FormLabel>
+                            <FormLabel>Jogos com duração C</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
                                 required
                                 min={0}
                                 max={isNaN(remainGamesC) ? 0 : remainGamesC}
-                                placeholder="Number of games with C duration"
+                                placeholder="Nº de jogos com duração C"
                                 {...field}
                                 value={field.value ?? ''}
                               />
@@ -388,14 +388,14 @@ export default function TournamentEditPage() {
                 {...form.saveButtonProps}
                 disabled={formLoading}
               >
-                {formLoading ? 'Updating...' : 'Update'}
+                {formLoading ? 'A guardar...' : 'Guardar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back() ?? router.push(`/tournaments/show/${id}`)}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
             {form.formState.errors.root && (

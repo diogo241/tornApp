@@ -1,6 +1,7 @@
 'use client';
 
-import type { PropsWithChildren } from 'react';
+// MESQUITA - #20: support optional custom actions in ShowViewHeader
+import type { PropsWithChildren, ReactNode } from 'react';
 
 import { RefreshButton } from '@/components/refine-ui/buttons/refresh';
 import { Breadcrumb } from '@/components/refine-ui/layout/breadcrumb';
@@ -31,6 +32,7 @@ type ShowViewHeaderProps = PropsWithChildren<{
   resource?: string;
   title?: string;
   backTo?: string;
+  actions?: ReactNode;
   wrapperClassName?: string;
   headerClassName?: string;
 }>;
@@ -39,6 +41,7 @@ export const ShowViewHeader = ({
   resource: resourceFromProps,
   title: titleFromProps,
   backTo,
+  actions,
   wrapperClassName,
   headerClassName,
 }: ShowViewHeaderProps) => {
@@ -95,7 +98,9 @@ export const ShowViewHeader = ({
           <h2 className="text-2xl font-bold">{title}</h2>
         </div>
 
+        {/* MESQUITA - #20: render optional custom actions in ShowViewHeader */}
         <div className="flex items-center gap-2">
+          {actions}
           <RefreshButton
             variant="outline"
             recordItemId={recordItemId}

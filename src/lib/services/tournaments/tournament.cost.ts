@@ -14,20 +14,34 @@ export const getTournamentCost = async (
       tournament;
 
     if (!countA || countA <= 0) {
-      throw new Error('Count A is not valid');
+      return {
+        success: false,
+        message:
+          'O torneio tem de ter pelo menos um jogo com duração principal',
+      };
     }
 
     // If no rate is provided, get the rate from the tournament
     let activeRate = rate;
     if (!activeRate) {
-      if (!rateId) throw new Error('No Rate ID associated with tournament');
+      if (!rateId) {
+        return {
+          success: false,
+          message: 'O torneio não tem um valor por jogo associado',
+        };
+      }
 
       activeRate =
         (await prisma.rate.findFirst({
           where: { id: rateId },
         })) ?? undefined;
 
-      if (!activeRate) throw new Error('Rate not found');
+      if (!activeRate) {
+        return {
+          success: false,
+          message: 'O valor por jogo associado ao torneio não existe',
+        };
+      }
     }
 
     // Calculate cost per minute
@@ -48,12 +62,19 @@ export const getTournamentCost = async (
       totalCost += durationC * costPerMinute * countC;
     }
     if (!totalCost || totalCost <= 0) {
-      throw new Error('Error calculating total cost');
+      return {
+        success: false,
+        message: 'Não foi possível calcular o custo do torneio',
+      };
     }
 
     return { success: true, totalCost };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to calculate tournament cost', error);
+    return {
+      success: false,
+      message: 'Não foi possível calcular o custo do torneio',
+    };
   }
 };
 
@@ -70,7 +91,11 @@ export const updateTournamentCost = async (
 
     return { success: true, totalCost };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to update tournament cost', error);
+    return {
+      success: false,
+      message: 'Não foi possível guardar o custo do torneio',
+    };
   }
 };
 
@@ -89,7 +114,7 @@ export const updateAssignmentTotalCost = async (
     if (!totalCost || totalCost === 0) {
       return {
         success: false,
-        message: 'Error getting total cost for assignment',
+        message: 'Não foi possível calcular o custo do jogo',
       };
     }
 
@@ -106,7 +131,7 @@ export const updateAssignmentTotalCost = async (
     if (!updatedAssignment) {
       return {
         success: false,
-        message: 'Error updating assignment total cost',
+        message: 'Não foi possível atualizar o custo do jogo',
       };
     }
 
@@ -120,12 +145,16 @@ export const updateAssignmentTotalCost = async (
     if (!referee) {
       return {
         success: false,
-        message: 'Error updating referee total cost',
+        message: 'Não foi possível atualizar o custo do árbitro',
       };
     }
 
     return { success: true };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to update assignment and referee total cost', error);
+    return {
+      success: false,
+      message: 'Não foi possível atualizar o custo do jogo',
+    };
   }
 };

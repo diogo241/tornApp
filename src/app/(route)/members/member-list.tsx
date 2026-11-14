@@ -1,6 +1,8 @@
 'use client';
 
 import { FeePaymentDialog } from '@/components/features/fee-payment-dialog';
+// MESQUITA - #20: import share link button for member list actions
+import { MemberShareLinkButton } from '@/components/features/member-share-link-button';
 import { ShowButton } from '@/components/refine-ui/buttons/show';
 import { DataTable } from '@/components/refine-ui/data-table/data-table';
 import {
@@ -26,7 +28,7 @@ import type { CrudFilters } from '@refinedev/core';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 export type MemberListProps = {
   fees: FeePaymentOption[];
@@ -37,6 +39,19 @@ export function MemberList({ fees }: MemberListProps) {
   const years = fees.map((fee) => fee.year);
   const [paymentMember, setPaymentMember] =
     useState<MemberWithPayments | null>(null);
+
+  const feesKey = fees
+    .map((fee) => `${fee.id}:${fee.year}:${fee.amount}`)
+    .join('|');
+  const feesRef = useRef(fees);
+  const feesKeyRef = useRef(feesKey);
+
+  if (feesKeyRef.current !== feesKey) {
+    feesKeyRef.current = feesKey;
+    feesRef.current = fees;
+  }
+
+  const feeOptions = feesRef.current;
 
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<MemberWithPayments>();
@@ -80,7 +95,7 @@ export function MemberList({ fees }: MemberListProps) {
       }),
       columnHelper.display({
         id: 'overdue',
-        header: 'Cotas em dia',
+        header: 'Quotas em dia',
         size: 100,
         cell: ({ row }) =>
           areFeesUpToDate(row.original.lastPaidYear) ? (
@@ -92,15 +107,18 @@ export function MemberList({ fees }: MemberListProps) {
       columnHelper.display({
         id: 'actions',
         header: 'Ações',
-        size: 150,
+        size: 190,
         cell: ({ row }) => {
           const paidFeeIds = new Set(
             row.original.feePayments.map((payment) => payment.feeId),
           );
-          const hasUnpaidFee = fees.some((fee) => !paidFeeIds.has(fee.id));
+          const hasUnpaidFee = feeOptions.some(
+            (fee) => !paidFeeIds.has(fee.id),
+          );
 
           return (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              {/* MESQUITA - #19f: terminologia quota no botao de pagamento */}
               {!areFeesUpToDate(row.original.lastPaidYear) && hasUnpaidFee && (
                 <Button
                   type="button"
@@ -118,12 +136,18 @@ export function MemberList({ fees }: MemberListProps) {
                 size="sm"
                 aria-label="Ver"
               />
+              {/* MESQUITA - #20: copy public member view link */}
+              <MemberShareLinkButton
+                viewToken={row.original.viewToken}
+                memberName={row.original.name}
+                variant="icon"
+              />
             </div>
           );
         },
       }),
     ];
-  }, [fees]);
+  }, [feeOptions]);
 
   const [searchName, setSearchName] = useState('');
   const [onlyActive, setOnlyActive] = useState(true);
@@ -206,7 +230,7 @@ export function MemberList({ fees }: MemberListProps) {
               checked={onlyHalfFee}
               onCheckedChange={(checked) => setOnlyHalfFee(checked === true)}
             />
-            <Label htmlFor="only-half-fee">Só meias cotas</Label>
+            <Label htmlFor="only-half-fee">Só meias quotas</Label>
           </div>
           <div className="flex items-center gap-2">
             <Checkbox
@@ -241,9 +265,15 @@ export function MemberList({ fees }: MemberListProps) {
             </Select>
           </div>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link href="/fees">Gerir cotas</Link>
-        </Button>
+        {/* MESQUITA - #18: botao de acesso as cotas pagas */}
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/members/quotas">Ver quotas pagas</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/members/fees">Gerir quotas</Link>
+          </Button>
+        </div>
       </div>
       <DataTable
         table={table}

@@ -19,7 +19,11 @@ export const getClubBalanceByClubId = async (clubId: string) => {
 
     return { success: true, clubBalance };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to get club balance by club id', error);
+    return {
+      success: false,
+      message: 'Não foi possível obter o saldo do clube',
+    };
   }
 };
 
@@ -36,7 +40,10 @@ export const createClubBalance = async (
     });
 
     if (!clubFunding) {
-      return { success: false, message: 'Club Funding not found' };
+      return {
+        success: false,
+        message: 'Não foi encontrado financiamento municipal para este ano',
+      };
     }
 
     const clubBalance = await prisma.clubBalance.create({
@@ -50,7 +57,11 @@ export const createClubBalance = async (
 
     return { success: true, clubBalance };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to save club balance', error);
+    return {
+      success: false,
+      message: 'Não foi possível guardar o saldo do clube',
+    };
   }
 };
 
@@ -68,7 +79,10 @@ export const updateClubBalance = async (
       : (netBalance = calculateNetBalance(clubBalance, deltaCost, false));
 
     if (!netBalance && netBalance !== 0) {
-      return { success: false, message: 'Error calculating net balance' };
+      return {
+        success: false,
+        message: 'Não foi possível calcular o saldo líquido',
+      };
     }
 
     // Update total cost
@@ -84,7 +98,11 @@ export const updateClubBalance = async (
 
     return { success: true, clubBalance };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to save club balance', error);
+    return {
+      success: false,
+      message: 'Não foi possível guardar o saldo do clube',
+    };
   }
 };
 
@@ -102,7 +120,10 @@ export const updateClubBalanceNetValue = async (
       : (netBalance = calculateNetBalance(clubBalance, deltaCost, false));
 
     if (!netBalance && netBalance !== 0) {
-      return { success: false, message: 'Error calculating net balance' };
+      return {
+        success: false,
+        message: 'Não foi possível calcular o saldo líquido',
+      };
     }
 
     // Update net balance
@@ -115,7 +136,11 @@ export const updateClubBalanceNetValue = async (
 
     return { success: true, clubBalance };
   } catch (error) {
-    return { success: false, message: (error as Error).message };
+    console.error('Failed to save club balance', error);
+    return {
+      success: false,
+      message: 'Não foi possível guardar o saldo do clube',
+    };
   }
 };
 
@@ -129,12 +154,13 @@ export const updateClubBalancePaid = async (id: string, paid: boolean) => {
 
     return { success: true, clubBalance };
   } catch (error) {
+    console.error('Failed to update club balance paid status', error);
     const notFound = (error as { code?: string }).code === 'P2025';
 
     return {
       success: false,
       notFound,
-      message: (error as Error).message,
+      message: 'Não foi possível atualizar o estado de pagamento do clube',
     };
   }
 };

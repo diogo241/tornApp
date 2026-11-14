@@ -74,7 +74,7 @@ export function UndoableNotification({
             "rounded-md"
           )}
         >
-          {t("buttons.undo", "Undo")}
+          {t("buttons.undo", "Anular")}
         </Button>
       </div>
     </div>

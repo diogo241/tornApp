@@ -18,9 +18,10 @@ export const updateRefereeCost = async (refereeId: string, amount: number) => {
       totalCost: updatedReferee.totalCost,
     };
   } catch (error) {
+    console.error('Failed to update referee cost', error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'Failed to update cost',
+      message: 'Não foi possível atualizar o custo do árbitro',
     };
   }
 };

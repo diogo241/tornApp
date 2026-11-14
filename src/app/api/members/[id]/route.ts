@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { apiError, handleValidationError, HttpStatusCode } from '@lib/api';
+import {
+  API_MESSAGES,
+  apiError,
+  handleValidationError,
+  HttpStatusCode,
+} from '@lib/api';
 import { getSession } from '@lib/auth';
 import { updateMember } from '@lib/validators';
 import {
@@ -8,6 +13,11 @@ import {
   MemberHasFeePaymentsError,
   updateMember as updateMemberRecord,
 } from '@lib/services/members/member.service';
+// MESQUITA - #20: import server-only view token helpers for share links
+import {
+  createMemberViewToken,
+  hasMemberViewSecret,
+} from '@lib/members/view-token';
 import { Prisma } from '../../../../../generated/prisma/client';
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -20,12 +30,12 @@ export const GET = async (request: NextRequest, { params }: RouteContext) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const member = await getMemberById(id);
@@ -33,9 +43,24 @@ export const GET = async (request: NextRequest, { params }: RouteContext) => {
       return apiError('Sócio não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(member);
+    // MESQUITA - #20: attach signed viewToken on member detail when secret is configured
+    let viewToken: string | undefined;
+    if (hasMemberViewSecret()) {
+      try {
+        viewToken = createMemberViewToken(member.id);
+      } catch {
+        viewToken = undefined;
+      }
+    }
+
+    return NextResponse.json(
+      viewToken ? { ...member, viewToken } : member,
+    );
   } catch {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -47,12 +72,12 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     let body: unknown;
@@ -79,7 +104,10 @@ export const PUT = async (request: NextRequest, { params }: RouteContext) => {
       }
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -92,12 +120,12 @@ export const DELETE = async (request: NextRequest, { params }: RouteContext) => 
   try {
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const { id } = await params;
     if (!id) {
-      return apiError('ID inválido', HttpStatusCode.BAD_REQUEST);
+      return apiError(API_MESSAGES.invalidId, HttpStatusCode.BAD_REQUEST);
     }
 
     const member = await deleteMember(id);
@@ -114,6 +142,9 @@ export const DELETE = async (request: NextRequest, { params }: RouteContext) => 
       return apiError('Sócio não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

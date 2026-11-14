@@ -47,12 +47,12 @@ export default function ClubFundingEditPage() {
                 name="year"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Year</FormLabel>
+                    <FormLabel>Ano</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="number"
-                        placeholder="Enter a Year"
+                        placeholder="Introduza um ano"
                       />
                     </FormControl>
                     <FormMessage />
@@ -65,12 +65,12 @@ export default function ClubFundingEditPage() {
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Amount</FormLabel>
+                    <FormLabel>Valor</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="number"
-                        placeholder="Enter a Amount"
+                        placeholder="Introduza um valor"
                       />
                     </FormControl>
                     <FormMessage />
@@ -85,14 +85,14 @@ export default function ClubFundingEditPage() {
                 {...form.saveButtonProps}
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Updating...' : 'Update'}
+                {form.formState.isSubmitting ? 'A guardar...' : 'Guardar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
               >
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

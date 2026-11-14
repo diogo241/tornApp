@@ -1,5 +1,6 @@
 import { prisma } from '@lib/prisma';
 import {
+  API_MESSAGES,
   apiError,
   apiListSuccess,
   HttpStatusCode,
@@ -37,7 +38,7 @@ export const GET = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Validate query parameters
@@ -110,7 +111,10 @@ export const GET = async (request: NextRequest) => {
 
     return response;
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 
@@ -123,7 +127,7 @@ export const POST = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     const data = await request.json();
@@ -134,7 +138,7 @@ export const POST = async (request: NextRequest) => {
     // Get the tournament
     const tournament = await getTournamentById(assignemt.tournamentId);
     if (!tournament) {
-      return apiError('Tournament not found', HttpStatusCode.NOT_FOUND);
+      return apiError('Torneio não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
     // Check if referee is already assigned to the tournament
@@ -144,7 +148,7 @@ export const POST = async (request: NextRequest) => {
     );
     if (!isNotAssigned.success) {
       return apiError(
-        isNotAssigned.message ?? 'Referee is already assigned',
+        isNotAssigned.message ?? 'O árbitro já está associado a este torneio',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -153,7 +157,7 @@ export const POST = async (request: NextRequest) => {
     const validGames = await checkNumberOfGames(assignemt, tournament);
     if (validGames.success === false) {
       return apiError(
-        validGames.message ?? 'Invalid games',
+        validGames.message ?? 'Jogos inválidos',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -165,13 +169,13 @@ export const POST = async (request: NextRequest) => {
     );
     if (!remainingGames.games) {
       return apiError(
-        'Error getting remaining games',
+        'Não foi possível obter os jogos restantes',
         HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
     if (remainingGames.success === false) {
       return apiError(
-        remainingGames.message ?? 'Invalid games',
+        remainingGames.message ?? 'Jogos inválidos',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -183,7 +187,7 @@ export const POST = async (request: NextRequest) => {
     );
     if (canBeAssigned.success === false) {
       return apiError(
-        canBeAssigned.message ?? 'Invalid games',
+        canBeAssigned.message ?? 'Jogos inválidos',
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -197,7 +201,7 @@ export const POST = async (request: NextRequest) => {
 
     if (!assigmentTotalCost.success) {
       return apiError(
-        assigmentTotalCost.message ?? 'Error calculating total cost',
+        assigmentTotalCost.message ?? 'Não foi possível calcular o custo total',
         HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
@@ -218,6 +222,9 @@ export const POST = async (request: NextRequest) => {
 
     return NextResponse.json(refereeAssignment);
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

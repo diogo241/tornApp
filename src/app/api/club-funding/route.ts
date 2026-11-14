@@ -1,5 +1,6 @@
 import { prisma } from '@lib/prisma';
 import {
+  API_MESSAGES,
   apiError,
   apiListSuccess,
   HttpStatusCode,
@@ -23,7 +24,7 @@ export const GET = async (request: NextRequest) => {
     // Validate session
     const session = await getSession();
     if (!session) {
-      return apiError('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return apiError(API_MESSAGES.unauthorized, HttpStatusCode.UNAUTHORIZED);
     }
 
     // Validate query parameters
@@ -42,7 +43,7 @@ export const GET = async (request: NextRequest) => {
     const total = await prisma.clubFunding.count();
     const { success, clubFunding } = await getClubFunding();
     if (!success && !clubFunding) {
-      return apiError('No club funding found', HttpStatusCode.NOT_FOUND);
+      return apiError('Financiamento municipal não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
     const totalFundingCost = getTotalFunding(clubFunding!);
@@ -58,6 +59,9 @@ export const GET = async (request: NextRequest) => {
 
     return response;
   } catch (error) {
-    return apiError('API error', HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return apiError(
+      API_MESSAGES.serverError,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 };

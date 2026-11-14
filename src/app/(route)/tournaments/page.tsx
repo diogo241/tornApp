@@ -8,41 +8,44 @@ import {
   ListView,
   ListViewHeader,
 } from '@/components/refine-ui/views/list-view';
+import { Alert, AlertDescription, AlertTitle } from '@components/ui/alert';
 import { Input } from '@components/ui/input';
 import type { Tournament } from '@lib/types';
 import { formatCurrency, formatDateTime } from '@lib/utils';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
+import { TriangleAlert } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function TournamentList() {
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Tournament>();
 
+    // MESQUITA - #19: cabecalhos em pt-PT
     return [
       columnHelper.accessor('name', {
         id: 'name',
-        header: 'Name',
+        header: 'Nome',
         size: 450,
       }),
       columnHelper.accessor('club.name', {
         id: 'club.name',
-        header: 'Club',
+        header: 'Clube',
         size: 100,
       }),
       columnHelper.accessor('rate.name', {
         id: 'rate.name',
-        header: 'Type',
+        header: 'Escalão',
         size: 100,
       }),
       columnHelper.accessor('totalGames', {
         id: 'totalGames',
-        header: 'Total games',
+        header: 'Total de jogos',
         size: 100,
       }),
       columnHelper.accessor('startDate', {
         id: 'startDate',
-        header: 'Started at',
+        header: 'Início',
         cell: ({ row }) => {
           return formatDateTime(row.original.startDate as Date).dateOnly;
         },
@@ -50,7 +53,7 @@ export default function TournamentList() {
       }),
       columnHelper.accessor('endDate', {
         id: 'endDate',
-        header: 'Ended at',
+        header: 'Fim',
         cell: ({ row }) => {
           return formatDateTime(row.original.endDate as Date).dateOnly;
         },
@@ -58,7 +61,7 @@ export default function TournamentList() {
       }),
       columnHelper.accessor('totalCost', {
         id: 'totalCost',
-        header: 'Total Cost',
+        header: 'Custo total',
         cell: ({ row }) => {
           return formatCurrency(row.original.totalCost as number);
         },
@@ -66,7 +69,7 @@ export default function TournamentList() {
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Actions',
+        header: 'Ações',
         cell: ({ row }) => (
           <div className="flex gap-2">
             <EditButton recordItemId={row.original.id} size="sm" />
@@ -128,18 +131,26 @@ export default function TournamentList() {
 
   return (
     <ListView>
-      <ListViewHeader />
+      <ListViewHeader title="Torneios" />
+      <Alert className="mb-4">
+        <TriangleAlert />
+        <AlertTitle>Temporada de torneios</AlertTitle>
+        <AlertDescription>
+          Para começar uma temporada de torneios de novo, todos os torneios devem ser apagados.
+        </AlertDescription>
+      </Alert>
+      {/* MESQUITA - #19: placeholders de filtro em pt-PT */}
       <div className="flex items-center gap-4">
         <Input
           type="text"
-          placeholder="Filter by name..."
+          placeholder="Filtrar por nome..."
           value={searchName}
           onChange={(e) => handleSearchNameChange(e.target.value)}
           className="max-w-sm"
         />
         <Input
           type="text"
-          placeholder="Filter by club..."
+          placeholder="Filtrar por clube..."
           value={searchClub}
           onChange={(e) => handleSearchClubChange(e.target.value)}
           className="max-w-sm"

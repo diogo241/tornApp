@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { ZodError, z } from 'zod';
+import { API_MESSAGES } from './api-errors';
+
+export { API_MESSAGES };
 
 // Standard API response types
 
@@ -67,9 +70,9 @@ export function handleValidationError(
   }));
 
   return apiError(
-    'Validation failed',
+    API_MESSAGES.validationFailed,
     HttpStatusCode.BAD_REQUEST,
-    'The request contains invalid data',
+    API_MESSAGES.invalidPayload,
     details,
   );
 }

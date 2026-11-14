@@ -11,6 +11,8 @@ import {
   MemberFeesTable,
   type MemberFee,
 } from '@/components/features/member-fees-table';
+// MESQUITA - #20: import share link button for member detail header
+import { MemberShareLinkButton } from '@/components/features/member-share-link-button';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 import { areFeesUpToDate } from '@lib/services/members/member.helpers';
 import type { MemberWithPayments } from '@lib/types';
@@ -47,7 +49,20 @@ export function MemberShow({ fees }: MemberShowProps) {
 
   return (
     <ShowView>
-      <ShowViewHeader title={member?.name ?? 'Sócio'} backTo="/members" />
+      {/* MESQUITA - #20: pass share link action when member is loaded */}
+      <ShowViewHeader
+        title={member?.name ?? 'Sócio'}
+        backTo="/members"
+        actions={
+          member ? (
+            <MemberShareLinkButton
+              viewToken={member.viewToken}
+              memberName={member.name}
+              variant="button"
+            />
+          ) : undefined
+        }
+      />
       <LoadingOverlay loading={isLoading}>
         {member ? (
           <>
@@ -72,7 +87,7 @@ export function MemberShow({ fees }: MemberShowProps) {
                   </Badge>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium mb-2">Cotas em dia</h4>
+                  <h4 className="text-sm font-medium mb-2">Quotas em dia</h4>
                   {areFeesUpToDate(member.lastPaidYear) ? (
                     <Badge variant="default">Sim</Badge>
                   ) : (

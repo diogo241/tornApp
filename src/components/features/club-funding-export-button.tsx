@@ -41,7 +41,7 @@ export function ClubFundingExportButton() {
       const blob = await response.blob();
 
       const contentDisposition = response.headers.get('Content-Disposition');
-      let downloadFilename = `club_funding_report_${Date.now()}.pdf`;
+      let downloadFilename = `relatorio-financiamento-municipal_${Date.now()}.pdf`;
 
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
@@ -62,13 +62,13 @@ export function ClubFundingExportButton() {
       window.URL.revokeObjectURL(downloadUrl);
 
       // Show success toast
-      toast.success('PDF Exported Successfully', {
+      toast.success('PDF exportado com sucesso', {
         richColors: true,
       });
     } catch (error) {
-      toast.error('Export Failed', {
+      toast.error('Falha na exportação', {
         description:
-          'Network error occurred. Please check your connection and try again.',
+          'Ocorreu um erro de rede. Verifique a ligação e tente novamente.',
       });
     } finally {
       setIsLoading(false);
@@ -85,12 +85,12 @@ export function ClubFundingExportButton() {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
+              A gerar...
             </>
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
-              Export Municipal Resume
+              Exportar resumo municipal
             </>
           )}
         </Button>

@@ -39,7 +39,7 @@ export async function getAllClubsWithBalances() {
     if (!clubs || clubs.length === 0) {
       return {
         success: false,
-        message: 'No clubs found in the database',
+        message: 'Não existem clubes para exportar',
       };
     }
 
@@ -59,7 +59,7 @@ export async function getAllClubsWithBalances() {
     if (processedData.length === 0) {
       return {
         success: false,
-        message: 'No valid clubs with club balance.',
+        message: 'Não existem clubes com saldo para exportar',
       };
     }
 
@@ -68,9 +68,10 @@ export async function getAllClubsWithBalances() {
       data: processedData,
     };
   } catch (error) {
+    console.error('Failed to retrieve club funding data', error);
     return {
       success: false,
-      message: 'Failed to retrieve club funding data',
+      message: 'Não foi possível obter os dados de financiamento municipal',
     };
   }
 }

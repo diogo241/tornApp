@@ -102,16 +102,17 @@ export function MemberFeesTable({ member, fees }: MemberFeesTableProps) {
   return (
     <Card id="cotas">
       <CardHeader>
-        <CardTitle>Cotas</CardTitle>
+        {/* MESQUITA - #19f: terminologia quota */}
+        <CardTitle>Quotas</CardTitle>
       </CardHeader>
       <CardContent>
         {rows.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            Sem cotas configuradas.
+            Sem quotas configuradas.
           </p>
         ) : (
           <Table>
-            <TableCaption className="sr-only">Cotas por ano</TableCaption>
+            <TableCaption className="sr-only">Quotas por ano</TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>Ano</TableHead>
@@ -119,7 +120,7 @@ export function MemberFeesTable({ member, fees }: MemberFeesTableProps) {
                 <TableHead>Estado</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead>Tipologia</TableHead>
-                <TableHead>Meia cota</TableHead>
+                <TableHead>Meia quota</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -158,7 +159,7 @@ export function MemberFeesTable({ member, fees }: MemberFeesTableProps) {
                     <TableCell>
                       {row.payment?.halfFee ? (
                         <>
-                          ½<span className="sr-only"> meia cota</span>
+                          ½<span className="sr-only"> meia quota</span>
                         </>
                       ) : (
                         '—'
@@ -170,7 +171,7 @@ export function MemberFeesTable({ member, fees }: MemberFeesTableProps) {
                           type="button"
                           variant="outline"
                           size="sm"
-                          aria-label={`${row.payment ? 'Editar' : 'Registar'} cota ${row.year}`}
+                          aria-label={`${row.payment ? 'Editar' : 'Registar'} quota ${row.year}`}
                           onClick={() => {
                             setSelectedFeeId(fee.id);
                             setOpen(true);
