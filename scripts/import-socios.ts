@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 import type { Prisma } from '../generated/prisma/client';
@@ -18,10 +18,13 @@ const SOURCE_PATH = 'scripts/data/socios-cotas-2026.json';
 const DATABASE_URL_ERROR =
   'DATABASE_URL em falta ou inválido (corre a partir da raiz do repo, com .env).';
 
-const USAGE = `Uso: npx tsx scripts/import-socios.ts [--apply]
+const USAGE = `Uso: npx tsx scripts/import-socios.ts [--apply] [--reset]
 
   (sem flags)  Dry-run: valida e mostra o que seria criado ou atualizado.
   --apply      Grava sócios, cotas e pagamentos numa única transação.
+  --reset      Apaga todos os sócios existentes (pagamentos em cascata) antes
+               de importar. Com --apply grava primeiro um backup em
+               scripts/data/backup-socios-<timestamp>.json.
   -h, --help   Mostra esta ajuda.`;
 
 const CALENDAR_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -69,7 +72,7 @@ const importSchema = z
     fees: z
       .array(z.number().int('cota inválida').min(2000, 'cota inválida').max(2100, 'cota inválida'))
       .length(4, 'devem existir 4 cotas'),
-    members: z.array(memberSchema).length(30, 'devem existir 30 sócios'),
+    members: z.array(memberSchema).min(1, 'deve existir pelo menos um sócio'),
   })
   .strict()
   .superRefine((value, ctx) => {
@@ -173,7 +176,7 @@ type Plan = {
   };
 };
 
-type Options = { apply: boolean; help: boolean };
+type Options = { apply: boolean; reset: boolean; help: boolean };
 
 let connectionString: string | null = null;
 
@@ -183,11 +186,15 @@ const fail = (message: string): never => {
 };
 
 const parseOptions = (args: string[]): Options => {
-  const options: Options = { apply: false, help: false };
+  const options: Options = { apply: false, reset: false, help: false };
 
   for (const arg of args) {
     if (arg === '--apply') {
       options.apply = true;
+      continue;
+    }
+    if (arg === '--reset') {
+      options.reset = true;
       continue;
     }
     if (arg === '--help' || arg === '-h') {
@@ -252,14 +259,20 @@ const loadData = (): ImportData => {
 const loadState = async (
   db: Prisma.TransactionClient,
   data: ImportData,
+  reset: boolean,
 ): Promise<CurrentState> => {
-  const members = await db.member.findMany({
-    where: { number: { in: data.members.map((member) => member.number) } },
-    select: { id: true, number: true, name: true, memberSince: true },
-  });
   const fees = await db.fee.findMany({
     where: { year: { in: data.fees } },
     select: { id: true, year: true },
+  });
+
+  if (reset) {
+    return { members: [], fees, payments: [] };
+  }
+
+  const members = await db.member.findMany({
+    where: { number: { in: data.members.map((member) => member.number) } },
+    select: { id: true, number: true, name: true, memberSince: true },
   });
   const payments = await db.feePayment.findMany({
     where: { memberId: { in: members.map((member) => member.id) } },
@@ -350,17 +363,20 @@ const buildPlan = (data: ImportData, state: CurrentState): Plan => {
 const countPayments = (data: ImportData): number =>
   data.members.reduce((total, member) => total + member.payments.length, 0);
 
-const printHeader = (data: ImportData, host: string, mode: string): void => {
+const printHeader = (data: ImportData, host: string, mode: string, reset: boolean): void => {
   console.log('Import de sócios · cotas');
   console.log(`Origem: ${SOURCE_PATH}`);
   console.log(`BD: ${host} (${mode})`);
+  if (reset) {
+    console.log('Reset: os sócios existentes serão apagados (pagamentos em cascata).');
+  }
   console.log(
     `Plano: ${data.members.length} sócios, ${data.fees.length} cotas, ${countPayments(data)} pagamentos`,
   );
 };
 
-const printDryRun = (data: ImportData, host: string, plan: Plan): void => {
-  printHeader(data, host, 'dry-run');
+const printDryRun = (data: ImportData, host: string, plan: Plan, reset: boolean): void => {
+  printHeader(data, host, 'dry-run', reset);
   console.log(
     `Sócios: ${plan.members.create.length} a criar, ${plan.members.update.length} a atualizar, ${plan.members.unchanged} inalterados`,
   );
@@ -373,8 +389,8 @@ const printDryRun = (data: ImportData, host: string, plan: Plan): void => {
   console.log('Dry-run: nada foi escrito. Usa --apply para gravar.');
 };
 
-const printApply = (data: ImportData, host: string, plan: Plan): void => {
-  printHeader(data, host, 'aplicar');
+const printApply = (data: ImportData, host: string, plan: Plan, reset: boolean): void => {
+  printHeader(data, host, 'aplicar', reset);
   console.log(
     `Sócios: ${plan.members.create.length} criados, ${plan.members.update.length} atualizados, ${plan.members.unchanged} inalterados`,
   );
@@ -389,7 +405,12 @@ const executePlan = async (
   tx: Prisma.TransactionClient,
   state: CurrentState,
   plan: Plan,
+  reset: boolean,
 ): Promise<void> => {
+  if (reset) {
+    await tx.member.deleteMany({});
+  }
+
   const feeIdByYear = new Map(state.fees.map((fee) => [fee.year, fee.id]));
   for (const year of plan.fees.create) {
     const fee = await tx.fee.create({
@@ -447,6 +468,56 @@ const executePlan = async (
   }
 };
 
+const BACKUP_DIR = 'scripts/data';
+
+const writeBackup = async (db: Prisma.TransactionClient, host: string): Promise<string> => {
+  const members = await db.member.findMany({
+    orderBy: { number: 'asc' },
+    select: {
+      number: true,
+      name: true,
+      memberSince: true,
+      active: true,
+      feePayments: {
+        select: {
+          paidAt: true,
+          halfFee: true,
+          method: true,
+          methodDetail: true,
+          fee: { select: { year: true } },
+        },
+      },
+    },
+  });
+
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  const path = `${BACKUP_DIR}/backup-socios-${stamp}.json`;
+  if (existsSync(path)) {
+    throw new Error(`backup já existe: ${path}`);
+  }
+
+  const document = {
+    exportedAt: new Date().toISOString(),
+    database: host,
+    members: members.map((member) => ({
+      number: member.number,
+      name: member.name,
+      memberSince: member.memberSince,
+      active: member.active,
+      payments: member.feePayments.map((payment) => ({
+        year: payment.fee.year,
+        paidAt: payment.paidAt ? payment.paidAt.toISOString().slice(0, 10) : null,
+        halfFee: payment.halfFee,
+        method: payment.method,
+        methodDetail: payment.methodDetail,
+      })),
+    })),
+  };
+
+  writeFileSync(path, `${JSON.stringify(document, null, 2)}\n`, 'utf8');
+  return path;
+};
+
 const main = async (): Promise<void> => {
   const options = parseOptions(process.argv.slice(2));
   if (options.help) {
@@ -462,22 +533,27 @@ const main = async (): Promise<void> => {
 
   try {
     if (!options.apply) {
-      const state = await loadState(prisma, data);
-      printDryRun(data, database.host, buildPlan(data, state));
+      const state = await loadState(prisma, data, options.reset);
+      printDryRun(data, database.host, buildPlan(data, state), options.reset);
       return;
+    }
+
+    const backupPath = options.reset ? await writeBackup(prisma, database.host) : null;
+    if (backupPath) {
+      console.log(`Backup: ${backupPath}`);
     }
 
     const plan = await prisma.$transaction(
       async (tx) => {
-        const state = await loadState(tx, data);
+        const state = await loadState(tx, data, options.reset);
         const plan = buildPlan(data, state);
-        await executePlan(tx, state, plan);
+        await executePlan(tx, state, plan, options.reset);
         return plan;
       },
       { maxWait: 10_000, timeout: 60_000 },
     );
 
-    printApply(data, database.host, plan);
+    printApply(data, database.host, plan, options.reset);
   } finally {
     await prisma.$disconnect();
   }

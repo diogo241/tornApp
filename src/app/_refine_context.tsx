@@ -13,6 +13,7 @@ import { dataProvider } from '@providers/data-provider';
 import { i18nProvider } from '@lib/i18n';
 import { DevtoolsPanel, DevtoolsProvider } from '@refinedev/devtools';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import {
   BanknoteIcon,
   BrickWallIcon,
@@ -33,7 +34,13 @@ type RefineContextProps = {
 };
 
 export const RefineContext = ({ children }: RefineContextProps) => {
+  const pathname = usePathname();
   const notificationProvider = useNotificationProvider();
+
+  // MESQUITA - #20: suppress admin Kbar and devtools on the public member view
+  if (pathname === '/members/view' || pathname.startsWith('/members/view/')) {
+    return <ThemeProvider>{children}</ThemeProvider>;
+  }
 
   return (
     <DevtoolsProvider>

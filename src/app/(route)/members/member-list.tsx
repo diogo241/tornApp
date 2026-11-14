@@ -1,6 +1,8 @@
 'use client';
 
 import { FeePaymentDialog } from '@/components/features/fee-payment-dialog';
+// MESQUITA - #20: import share link button for member list actions
+import { MemberShareLinkButton } from '@/components/features/member-share-link-button';
 import { ShowButton } from '@/components/refine-ui/buttons/show';
 import { DataTable } from '@/components/refine-ui/data-table/data-table';
 import {
@@ -92,7 +94,7 @@ export function MemberList({ fees }: MemberListProps) {
       columnHelper.display({
         id: 'actions',
         header: 'Ações',
-        size: 150,
+        size: 190,
         cell: ({ row }) => {
           const paidFeeIds = new Set(
             row.original.feePayments.map((payment) => payment.feeId),
@@ -100,7 +102,7 @@ export function MemberList({ fees }: MemberListProps) {
           const hasUnpaidFee = fees.some((fee) => !paidFeeIds.has(fee.id));
 
           return (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               {/* MESQUITA - #19f: terminologia quota no botao de pagamento */}
               {!areFeesUpToDate(row.original.lastPaidYear) && hasUnpaidFee && (
                 <Button
@@ -118,6 +120,12 @@ export function MemberList({ fees }: MemberListProps) {
                 recordItemId={row.original.id}
                 size="sm"
                 aria-label="Ver"
+              />
+              {/* MESQUITA - #20: copy public member view link */}
+              <MemberShareLinkButton
+                viewToken={row.original.viewToken}
+                memberName={row.original.name}
+                variant="icon"
               />
             </div>
           );

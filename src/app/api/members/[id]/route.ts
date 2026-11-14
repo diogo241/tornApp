@@ -13,6 +13,11 @@ import {
   MemberHasFeePaymentsError,
   updateMember as updateMemberRecord,
 } from '@lib/services/members/member.service';
+// MESQUITA - #20: import server-only view token helpers for share links
+import {
+  createMemberViewToken,
+  hasMemberViewSecret,
+} from '@lib/members/view-token';
 import { Prisma } from '../../../../../generated/prisma/client';
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -38,7 +43,19 @@ export const GET = async (request: NextRequest, { params }: RouteContext) => {
       return apiError('Sócio não encontrado', HttpStatusCode.NOT_FOUND);
     }
 
-    return NextResponse.json(member);
+    // MESQUITA - #20: attach signed viewToken on member detail when secret is configured
+    let viewToken: string | undefined;
+    if (hasMemberViewSecret()) {
+      try {
+        viewToken = createMemberViewToken(member.id);
+      } catch {
+        viewToken = undefined;
+      }
+    }
+
+    return NextResponse.json(
+      viewToken ? { ...member, viewToken } : member,
+    );
   } catch {
     return apiError(
       API_MESSAGES.serverError,

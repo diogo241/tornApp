@@ -87,7 +87,7 @@ export default function DashboardPage() {
 
         <Card className="gap-4">
           <CardHeader className="">
-            <h2 className="text-2xl font-bold">Jogos arbitrados</h2>
+            <h2 className="text-2xl font-bold">Árbitros com jogos</h2>
           </CardHeader>
           <CardContent className="">
             <p className="text-6xl font-bold text-muted-foreground">
