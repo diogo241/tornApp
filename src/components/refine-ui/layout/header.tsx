@@ -1,4 +1,5 @@
 import { UserAvatar } from "@/components/refine-ui/layout/user-avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +50,8 @@ function MobileHeader() {
 
   const { title } = useRefineOptions();
 
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+
   return (
     <header
       className={cn(
@@ -76,38 +79,50 @@ function MobileHeader() {
         })}
       />
 
-      <div
-        className={cn(
-          "whitespace-nowrap",
-          "flex",
-          "flex-row",
-          "h-full",
-          "items-center",
-          "justify-start",
-          "gap-2",
-          "transition-discrete",
-          "duration-200",
-          {
-            "pl-3": !open,
-            "pl-5": open,
-          }
-        )}
-      >
-        <div className='h-8 w-8'>{title.icon}</div>
-        <h2
+      <div className="flex items-center gap-2">
+        <div
           className={cn(
-            "text-sm",
-            "font-bold",
-            "transition-opacity",
+            "whitespace-nowrap",
+            "flex",
+            "flex-row",
+            "h-full",
+            "items-center",
+            "justify-start",
+            "gap-2",
+            "transition-discrete",
             "duration-200",
             {
-              "opacity-0": !open,
-              "opacity-100": open,
+              "pl-3": !open,
+              "pl-5": open,
             }
           )}
         >
-          {title.text}
-        </h2>
+          <div className='h-8 w-8'>{title.icon}</div>
+          <h2
+            className={cn(
+              "text-sm",
+              "font-bold",
+              "transition-opacity",
+              "duration-200",
+              {
+                "opacity-0": !open,
+                "opacity-100": open,
+              }
+            )}
+          >
+            {title.text}
+          </h2>
+        </div>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Sair"
+          disabled={isLoggingOut}
+          onClick={() => logout()}
+        >
+          <LogOutIcon className={cn("h-4", "w-4", "text-destructive")} />
+        </Button>
       </div>
     </header>
   );
