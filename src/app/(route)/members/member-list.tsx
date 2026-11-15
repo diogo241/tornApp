@@ -9,6 +9,7 @@ import {
   ListView,
   ListViewHeader,
 } from '@/components/refine-ui/views/list-view';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -22,11 +23,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { FeePaymentOption } from '@/components/features/fee-payment-dialog';
-import { areFeesUpToDate } from '@lib/services/members/member.helpers';
+import {
+  areFeesUpToDate,
+  getFeeDueDate,
+  getRequiredFeeYear,
+} from '@lib/services/members/member.helpers';
 import type { MemberWithPayments } from '@lib/types';
 import type { CrudFilters } from '@refinedev/core';
 import { useTable } from '@refinedev/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
+import { TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 
@@ -35,7 +41,11 @@ export type MemberListProps = {
 };
 
 export function MemberList({ fees }: MemberListProps) {
-  const overdueBeforeYear = new Date().getFullYear() + 1;
+  // MESQUITA: atraso e nota de quotas contados a partir de 1 de fevereiro.
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const requiredFeeYear = getRequiredFeeYear(now);
+  const isFeeDeadlineReached = now >= getFeeDueDate(currentYear);
   const years = fees.map((fee) => fee.year);
   const [paymentMember, setPaymentMember] =
     useState<MemberWithPayments | null>(null);
@@ -176,7 +186,7 @@ export function MemberList({ fees }: MemberListProps) {
       {
         field: 'lastPaidBefore',
         operator: 'eq',
-        value: onlyOverdue ? overdueBeforeYear : lastPaidBefore,
+        value: onlyOverdue ? requiredFeeYear : lastPaidBefore,
       },
     ];
   }, [
@@ -184,7 +194,7 @@ export function MemberList({ fees }: MemberListProps) {
     onlyActive,
     onlyHalfFee,
     onlyOverdue,
-    overdueBeforeYear,
+    requiredFeeYear,
     searchName,
   ]);
 
@@ -275,6 +285,18 @@ export function MemberList({ fees }: MemberListProps) {
           </Button>
         </div>
       </div>
+      {/* MESQUITA: nota global de quotas em atraso a partir de 1 de fevereiro. */}
+      {isFeeDeadlineReached && (
+        <Alert>
+          <TriangleAlert />
+          <AlertTitle>Quotas de {currentYear} em atraso</AlertTitle>
+          <AlertDescription>
+            As quotas de {currentYear} devem estar pagas até 1 de fevereiro de{' '}
+            {currentYear}. Os sócios sem a quota paga estão assinalados em
+            «Quotas em dia».
+          </AlertDescription>
+        </Alert>
+      )}
       <DataTable
         table={table}
         emptyState={
