@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
@@ -16,9 +17,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { areFeesUpToDate } from '@lib/services/members/member.helpers';
+import {
+  areFeesUpToDate,
+  getRequiredFeeYear,
+} from '@lib/services/members/member.helpers';
 import type { FeePaymentMethod, PublicMemberView as PublicMemberViewData } from '@lib/types';
 import { formatCurrency, formatDateTime } from '@lib/utils';
+import { TriangleAlert } from 'lucide-react';
 
 type PublicMemberViewProps = {
   data: PublicMemberViewData | null;
@@ -72,6 +77,28 @@ function InvalidLinkCard() {
         </p>
       </CardContent>
     </Card>
+  );
+}
+
+// MESQUITA: nota com a data-limite das quotas e o ano efetivamente em atraso.
+function DuesNote({ lastPaidYear }: { lastPaidYear: number | null }) {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const requiredFeeYear = getRequiredFeeYear(now);
+  const isUpToDate = areFeesUpToDate(lastPaidYear, now);
+
+  return (
+    <Alert>
+      <TriangleAlert />
+      <AlertTitle>
+        Quotas de {isUpToDate ? currentYear : requiredFeeYear}
+      </AlertTitle>
+      <AlertDescription>
+        {isUpToDate
+          ? `As quotas de ${currentYear} devem estar pagas até 1 de fevereiro de ${currentYear}.`
+          : `As quotas de ${requiredFeeYear} devem estar pagas até 1 de fevereiro de ${requiredFeeYear}.`}
+      </AlertDescription>
+    </Alert>
   );
 }
 
@@ -138,6 +165,8 @@ export function PublicMemberView({ data }: PublicMemberViewProps) {
                   </dl>
                 </CardContent>
               </Card>
+
+              <DuesNote lastPaidYear={data.lastPaidYear} />
 
               <Card>
                 <CardHeader>
