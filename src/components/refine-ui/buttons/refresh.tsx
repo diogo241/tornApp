@@ -58,6 +58,7 @@ export const RefreshButton = React.forwardRef<
           }
           refresh();
         }}
+        aria-label={label ?? "Atualizar"}
         {...rest}
         ref={ref}
         disabled={isDisabled}
@@ -69,7 +70,7 @@ export const RefreshButton = React.forwardRef<
                 "animate-spin": loading,
               })}
             />
-            <span>{label ?? "Atualizar"}</span>
+            <span className="hidden sm:inline">{label ?? "Atualizar"}</span>
           </div>
         )}
       </Button>
