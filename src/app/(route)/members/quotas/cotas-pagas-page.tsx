@@ -242,7 +242,7 @@ export function CotasPagasPage() {
           <PopoverContent className="w-auto overflow-hidden p-0" align="start">
             <Calendar
               mode="range"
-              numberOfMonths={2}
+              numberOfMonths={1}
               selected={range}
               onSelect={(nextRange) => {
                 setRange(nextRange);

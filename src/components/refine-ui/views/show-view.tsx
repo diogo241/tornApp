@@ -84,9 +84,11 @@ export const ShowViewHeader = ({
       <div
         className={cn(
           'flex',
-          'gap-1',
-          'items-center',
-          'justify-between',
+          'flex-col',
+          'gap-2',
+          'sm:flex-row',
+          'sm:items-center',
+          'sm:justify-between',
           '-ml-2.5',
           headerClassName,
         )}
@@ -99,7 +101,7 @@ export const ShowViewHeader = ({
         </div>
 
         {/* MESQUITA - #20: render optional custom actions in ShowViewHeader */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 justify-start px-4 sm:px-0">
           {actions}
           <RefreshButton
             variant="outline"

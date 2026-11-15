@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
@@ -17,8 +18,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
@@ -30,7 +35,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { API_MESSAGES } from '@lib/api-errors';
 import type { FeePayment } from '@lib/types';
-import { formatCurrency } from '@lib/utils';
+import { formatCurrency, formatDateTime } from '@lib/utils';
 import { updateFeePayment } from '@lib/validators';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -40,6 +45,7 @@ import {
   useUpdate,
   type HttpError,
 } from '@refinedev/core';
+import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -82,11 +88,31 @@ type PaymentFormProps = {
   onClose: () => void;
 };
 
-const todayAsDateInput = () => {
-  const now = new Date();
-  const localTime = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
+const parseLocalDate = (value: string | null | undefined) => {
+  if (!value) {
+    return undefined;
+  }
 
-  return localTime.toISOString().slice(0, 10);
+  const [year, month, day] = value
+    .slice(0, 10)
+    .split('-')
+    .map(Number);
+  const date = new Date(year, month - 1, day);
+
+  return Number.isNaN(date.getTime()) ? undefined : date;
+};
+
+const formatLocalDate = (date: Date) =>
+  [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('-');
+
+const todayLocalDate = () => {
+  const now = new Date();
+
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 };
 
 const errorMessage = (error: HttpError | null, fallback: string) => {
@@ -125,7 +151,7 @@ function PaymentForm({
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(updateFeePayment),
     defaultValues: {
-      paidAt: payment?.paidAt?.slice(0, 10) ?? todayAsDateInput(),
+      paidAt: payment?.paidAt?.slice(0, 10) ?? formatLocalDate(todayLocalDate()),
       method: payment && payment.method !== 'cash' ? 'other' : 'cash',
       methodDetail: payment?.methodDetail ?? null,
       halfFee: payment?.halfFee ?? false,
@@ -247,15 +273,35 @@ function PaymentForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Data do pagamento</FormLabel>
-              <FormControl>
-                <Input
-                  type="date"
-                  max={todayAsDateInput()}
-                  value={field.value}
-                  onChange={(event) => field.onChange(event.target.value)}
-                  disabled={isSaving}
-                />
-              </FormControl>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full justify-between font-normal"
+                      disabled={isSaving}
+                    >
+                      {field.value
+                        ? formatDateTime(parseLocalDate(field.value)).dateOnly
+                        : 'Selecionar data'}
+                      <CalendarIcon />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={parseLocalDate(field.value)}
+                    onSelect={(date) => {
+                      if (date) {
+                        field.onChange(formatLocalDate(date));
+                      }
+                    }}
+                    disabled={{ after: todayLocalDate() }}
+                  />
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}

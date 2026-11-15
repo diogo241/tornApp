@@ -107,7 +107,7 @@ export function MemberList({ fees }: MemberListProps) {
       columnHelper.display({
         id: 'actions',
         header: 'Ações',
-        size: 190,
+        size: 240,
         cell: ({ row }) => {
           const paidFeeIds = new Set(
             row.original.feePayments.map((payment) => payment.feeId),
