@@ -285,13 +285,13 @@ export function MemberList({ fees }: MemberListProps) {
           </Button>
         </div>
       </div>
-      {/* MESQUITA: nota global de quotas em atraso a partir de 1 de fevereiro. */}
+      {/* MESQUITA: nota global de quotas em atraso a partir de 1 de fevereiro */}
       {isFeeDeadlineReached && (
         <Alert>
           <TriangleAlert />
           <AlertTitle>Quotas de {currentYear} em atraso</AlertTitle>
           <AlertDescription>
-            As quotas de {currentYear} devem estar pagas até 1 de fevereiro de{' '}
+            As quotas de {currentYear} devem estar pagas até 31 de janeiro de{' '}
             {currentYear}. Os sócios sem a quota paga estão assinalados em
             «Quotas em dia».
           </AlertDescription>

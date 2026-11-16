@@ -117,10 +117,10 @@ export function MemberFeesTable({ member, fees }: MemberFeesTableProps) {
               <TableRow>
                 <TableHead>Ano</TableHead>
                 <TableHead>Valor</TableHead>
+                <TableHead>Valor pago</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead>Tipologia</TableHead>
-                <TableHead>Meia quota</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -145,6 +145,22 @@ export function MemberFeesTable({ member, fees }: MemberFeesTableProps) {
                     <TableCell>
                       {row.amount !== null ? formatCurrency(row.amount) : '—'}
                     </TableCell>
+                    <TableCell>
+                      {row.payment && row.amount !== null ? (
+                        <div className="inline-flex flex-wrap items-center gap-2">
+                          {formatCurrency(
+                            row.payment.halfFee
+                              ? row.amount / 2
+                              : row.amount,
+                          )}
+                          {row.payment.halfFee ? (
+                            <Badge variant="secondary">Meia quota</Badge>
+                          ) : null}
+                        </div>
+                      ) : (
+                        '—'
+                      )}
+                    </TableCell>
                     <TableCell>{row.payment ? 'Paga' : 'Não paga'}</TableCell>
                     <TableCell>
                       {row.payment
@@ -155,15 +171,6 @@ export function MemberFeesTable({ member, fees }: MemberFeesTableProps) {
                     </TableCell>
                     <TableCell>
                       {row.payment ? <MethodCell payment={row.payment} /> : '—'}
-                    </TableCell>
-                    <TableCell>
-                      {row.payment?.halfFee ? (
-                        <>
-                          ½<span className="sr-only"> meia quota</span>
-                        </>
-                      ) : (
-                        '—'
-                      )}
                     </TableCell>
                     <TableCell>
                       {row.active && fee ? (
