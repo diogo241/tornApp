@@ -95,8 +95,8 @@ function DuesNote({ lastPaidYear }: { lastPaidYear: number | null }) {
       </AlertTitle>
       <AlertDescription>
         {isUpToDate
-          ? `As quotas de ${currentYear} devem estar pagas até 1 de fevereiro de ${currentYear}.`
-          : `As quotas de ${requiredFeeYear} devem estar pagas até 1 de fevereiro de ${requiredFeeYear}.`}
+          ? `As quotas de ${currentYear} devem estar pagas até 31 de janeiro de ${currentYear}.`
+          : `As quotas de ${requiredFeeYear} devem estar pagas até 31 de janeiro de ${requiredFeeYear}.`}
       </AlertDescription>
     </Alert>
   );
