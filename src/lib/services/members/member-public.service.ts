@@ -11,6 +11,8 @@ import type { Prisma } from '../../../../generated/prisma/client';
 const publicMemberSelect = {
   name: true,
   number: true,
+  // MESQUITA: email do socio no DTO publico
+  email: true,
   memberSince: true,
   active: true,
   feePayments: {
@@ -65,6 +67,7 @@ export const getMemberPublicView = async (
     member: {
       name: member.name,
       number: member.number,
+      email: member.email,
       memberSince: member.memberSince,
       active: member.active,
     },

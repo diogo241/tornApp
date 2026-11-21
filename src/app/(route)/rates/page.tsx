@@ -97,9 +97,11 @@ export default function RateList() {
       },
     },
   });
+  const { setCurrentPage } = table.refineCore;
 
   const handleSearchChange = (value: string) => {
     setSearchName(value);
+    setCurrentPage(1);
   };
 
   return (

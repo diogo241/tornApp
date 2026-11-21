@@ -161,6 +161,7 @@ export type PublicMemberView = {
   member: {
     name: string;
     number: number;
+    email: string | null;
     memberSince: number | null;
     active: boolean;
   };

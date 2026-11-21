@@ -138,9 +138,11 @@ export default function ClubListPage() {
       },
     },
   });
+  const { setCurrentPage } = table.refineCore;
 
   const handleSearchChange = (value: string) => {
     setSearchName(value);
+    setCurrentPage(1);
   };
 
   return (

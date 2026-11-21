@@ -93,6 +93,26 @@ export default function MemberEditPage() {
               )}
             />
 
+            {/* MESQUITA: campo email opcional do sócio, editável e apagável */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      {...field}
+                      value={field.value ?? ''}
+                      placeholder="Ex.: socio@exemplo.pt"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="memberSince"

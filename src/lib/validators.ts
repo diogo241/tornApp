@@ -227,6 +227,20 @@ const memberSinceSchema = z
   )
   .nullable();
 
+// MESQUITA: email opcional do sócio; vazio ou nulo guarda null
+const memberEmailFormat = z.string().email();
+const memberEmailSchema = z
+  .string({ invalid_type_error: 'Email tem de ser texto' })
+  .trim()
+  .max(250, 'Email não pode ter mais de 250 caracteres')
+  .refine(
+    (value) => value === '' || memberEmailFormat.safeParse(value).success,
+    'Email inválido',
+  )
+  .nullable()
+  .optional()
+  .transform((value) => (value === '' ? null : value));
+
 export const insertMember = z.object({
   number: z.coerce
     .number({
@@ -240,6 +254,7 @@ export const insertMember = z.object({
     .min(3, 'Nome tem de ter pelo menos 3 caracteres')
     .max(250, 'Nome não pode ter mais de 250 caracteres')
     .trim(),
+  email: memberEmailSchema,
   memberSince: memberSinceSchema,
   active: z.boolean().optional(),
 });
@@ -253,6 +268,7 @@ export const updateMember = z
       .max(250, 'Nome não pode ter mais de 250 caracteres')
       .trim()
       .optional(),
+    email: memberEmailSchema,
     memberSince: memberSinceSchema.optional(),
     active: z.boolean().optional(),
   })

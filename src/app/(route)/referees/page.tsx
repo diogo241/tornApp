@@ -100,9 +100,11 @@ export default function RefereeList() {
       },
     },
   });
+  const { setCurrentPage } = table.refineCore;
 
   const handleSearchChange = (value: string) => {
     setSearchName(value);
+    setCurrentPage(1);
   };
 
   return (
