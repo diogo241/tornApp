@@ -122,11 +122,14 @@ export default function TournamentList() {
     },
   });
 
+  const { setCurrentPage } = table.refineCore;
   const handleSearchNameChange = (value: string) => {
     setSearchName(value);
+    setCurrentPage(1);
   };
   const handleSearchClubChange = (value: string) => {
     setSearchClub(value);
+    setCurrentPage(1);
   };
 
   return (

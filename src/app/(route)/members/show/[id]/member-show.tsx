@@ -13,6 +13,8 @@ import {
 } from '@/components/features/member-fees-table';
 // MESQUITA - #20: import share link button for member detail header
 import { MemberShareLinkButton } from '@/components/features/member-share-link-button';
+// MESQUITA: alternar estado do socio na ficha
+import { MemberActiveToggle } from '@/app/(route)/members/member-list';
 import { LoadingOverlay } from '@components/refine-ui/layout/loading-overlay';
 import { areFeesUpToDate } from '@lib/services/members/member.helpers';
 import type { MemberWithPayments } from '@lib/types';
@@ -55,11 +57,22 @@ export function MemberShow({ fees }: MemberShowProps) {
         backTo="/members"
         actions={
           member ? (
-            <MemberShareLinkButton
-              viewToken={member.viewToken}
-              memberName={member.name}
-              variant="button"
-            />
+            <>
+              {member.active && (
+                <MemberShareLinkButton
+                  viewToken={member.viewToken}
+                  memberName={member.name}
+                  variant="button"
+                />
+              )}
+              {/* MESQUITA: alternar estado do socio na ficha */}
+              <MemberActiveToggle
+                id={member.id}
+                active={member.active}
+                memberName={member.name}
+                withLabel
+              />
+            </>
           ) : undefined
         }
       />
@@ -74,10 +87,29 @@ export function MemberShow({ fees }: MemberShowProps) {
                     {member.number}
                   </p>
                 </div>
+                {/* MESQUITA: email do sócio no cartão de detalhe */}
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Email</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {member.email ?? '—'}
+                  </p>
+                </div>
                 <div>
                   <h4 className="text-sm font-medium mb-2">Sócio desde</h4>
                   <p className="text-sm text-muted-foreground">
                     {member.memberSince ?? '—'}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Anos de associado</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {member.memberSince === null
+                      ? '—'
+                      : `${new Date().getFullYear() - member.memberSince} ${
+                          new Date().getFullYear() - member.memberSince === 1
+                            ? 'ano'
+                            : 'anos'
+                        }`}
                   </p>
                 </div>
                 <div>

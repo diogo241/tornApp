@@ -21,6 +21,8 @@ const memberSelect = {
   id: true,
   number: true,
   name: true,
+  // MESQUITA: email do sócio incluído nas respostas de listagem e detalhe
+  email: true,
   memberSince: true,
   active: true,
   createdAt: true,

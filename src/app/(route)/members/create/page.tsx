@@ -38,6 +38,7 @@ export default function MemberCreatePage() {
     },
     defaultValues: {
       name: '',
+      email: '',
       number: undefined,
       memberSince: null,
       active: true,
@@ -88,6 +89,26 @@ export default function MemberCreatePage() {
                   <FormLabel>Nome</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Nome do sócio" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* MESQUITA: campo email opcional do sócio */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      {...field}
+                      value={field.value ?? ''}
+                      placeholder="Ex.: socio@exemplo.pt"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

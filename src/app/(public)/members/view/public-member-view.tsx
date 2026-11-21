@@ -23,7 +23,6 @@ import {
 } from '@lib/services/members/member.helpers';
 import type { FeePaymentMethod, PublicMemberView as PublicMemberViewData } from '@lib/types';
 import { formatCurrency, formatDateTime } from '@lib/utils';
-import { TriangleAlert } from 'lucide-react';
 
 type PublicMemberViewProps = {
   data: PublicMemberViewData | null;
@@ -89,7 +88,6 @@ function DuesNote({ lastPaidYear }: { lastPaidYear: number | null }) {
 
   return (
     <Alert>
-      <TriangleAlert />
       <AlertTitle>
         Quotas de {isUpToDate ? currentYear : requiredFeeYear}
       </AlertTitle>
@@ -142,6 +140,22 @@ export function PublicMemberView({ data }: PublicMemberViewProps) {
                         {data.member.memberSince ?? '—'}
                       </dd>
                     </div>
+                    {/* MESQUITA - #1b-follow: anos de associado na pagina partilhada do socio */}
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground">
+                        Anos de associado
+                      </dt>
+                      <dd className="mt-1 text-base font-medium">
+                        {data.member.memberSince === null
+                          ? '—'
+                          : `${new Date().getFullYear() - data.member.memberSince} ${
+                              new Date().getFullYear() - data.member.memberSince ===
+                              1
+                                ? 'ano'
+                                : 'anos'
+                            }`}
+                      </dd>
+                    </div>
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground">
                         Última quota paga
@@ -161,6 +175,19 @@ export function PublicMemberView({ data }: PublicMemberViewProps) {
                           <Badge variant="destructive">Não</Badge>
                         )}
                       </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground">
+                        Email
+                      </dt>
+                      <dd className="mt-1 text-base font-medium">
+                        {data.member.email ?? '—'}
+                      </dd>
+                      {data.member.email && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Email utilizado nas comunicações do núcleo
+                        </p>
+                      )}
                     </div>
                   </dl>
                 </CardContent>

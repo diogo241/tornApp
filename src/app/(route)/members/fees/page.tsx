@@ -99,6 +99,7 @@ export default function FeeListPage() {
       },
     },
   });
+  const { setCurrentPage } = table.refineCore;
 
   return (
     <ListView>
@@ -108,7 +109,10 @@ export default function FeeListPage() {
           <Checkbox
             id="show-inactive"
             checked={showInactive}
-            onCheckedChange={(checked) => setShowInactive(checked === true)}
+            onCheckedChange={(checked) => {
+              setShowInactive(checked === true);
+              setCurrentPage(1);
+            }}
           />
           <Label htmlFor="show-inactive">Mostrar inativas</Label>
         </div>

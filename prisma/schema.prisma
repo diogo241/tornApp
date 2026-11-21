@@ -150,6 +150,7 @@ model Member {
   id          String   @id @default(uuid())
   number      Int      @unique
   name        String
+  email       String?
   memberSince Int?
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
